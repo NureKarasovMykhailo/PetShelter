@@ -4,7 +4,7 @@
   "description": "PetShelter server",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "dev": "nodemon index.js"
   },
   "repository": {
@@ -31,6 +31,7 @@
     "sequelize": "^6.33.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.6",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"

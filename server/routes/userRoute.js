@@ -1,7 +1,7 @@
 const Router = require('express');
 const router = new Router();
 const userController = require('../controllers/userController')
-const subscriberRegistrationValidation = require('../middleware/validators/subscriberRegistrationValidator');
+const subscriberRegistrationValidation = require('../middleware/validators/userRegistrationValidator');
 const checkAuthMiddleware = require('../middleware/checkAuthMiddleware');
 
 router.post('/registration', subscriberRegistrationValidation, userController.userRegistration);
