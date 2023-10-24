@@ -21,11 +21,14 @@ const start = async() => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
-        app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     } catch (e) {
         console.log(e);
     }
 }
 
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+    start().then(r => console.log('Database created'));
+}
 
-start().then(r => console.log('Database created'));
+module.exports.app = app;

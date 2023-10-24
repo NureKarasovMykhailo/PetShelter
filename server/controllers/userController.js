@@ -5,6 +5,43 @@ const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
 const jwt = require('jsonwebtoken');
 
+
+const generateJwt = async (id, login, image, domainEmail, email, fullName,
+                           birthday, phoneNumber, isPaid, shelterId) => {
+
+    try {
+        const userRoles = await UserRole.findAll({ where: { userId: id } });
+        const roles = [];
+
+        await Promise.all(userRoles.map(async (userRole) => {
+            const role = await Role.findOne({ where: { id: userRole.roleId } });
+            roles.push(role.role_title);
+        }));
+
+        const token = jwt.sign(
+            {
+                id: id,
+                login: login,
+                user_image: image,
+                domain_email: domainEmail,
+                email: email,
+                full_name: fullName,
+                birthday: birthday,
+                phone_number: phoneNumber,
+                is_paid: isPaid,
+                shelterId: shelterId,
+                roles: roles
+            },
+            process.env.SECRET_KEY,
+            { expiresIn: '24h' }
+        );
+
+        return token;
+    } catch (e) {
+        return ApiError.internal('Server error while generating JWT token');
+    }
+}
+
 class UserController {
     async userRegistration(req, res, next) {
         try {
@@ -55,7 +92,7 @@ class UserController {
             return res.status(200).json({message: 'User successfully created'});
         } catch (e) {
             console.log(e);
-            return next(ApiError.internal('Server Error'));
+            return next(ApiError.internal('Server Error while registration'));
         }
     }
 
@@ -67,40 +104,47 @@ class UserController {
                 return next(ApiError.badRequest('Invalid login or password'));
             }
             let comparePassword = bcrypt.compareSync(password, user.hashed_password);
-
             if (!comparePassword) {
                 return next(ApiError.badRequest('Invalid login or password'));
 
             }
-            const token = jwt.sign(
-                {
-                    id: user.id,
-                    login: login,
-                    email: user.email,
-                    phone_number: user.phone_number,
-                    is_paid: user.is_paid,
-                    domain_email: user.domain_email,
-                    user_image: user.user_image,
-                    full_name: user.full_name,
-                    birthday: user.birthday,
-                    shelterId: user.shelterId
-                },
-                process.env.SECRET_KEY,
-                {expiresIn: '24h'}
+            const token = await generateJwt(
+                user.id,
+                user.login,
+                user.user_image,
+                user.domain_email,
+                user.email,
+                user.full_name,
+                user.birthday,
+                user.phone_number,
+                user.is_paid,
+                user.shelterId
             );
-
             return res.json({token});
 
         } catch (e) {
-            return next(ApiError.internal('Server error'));
+            return next(ApiError.internal('Server error while authorization'));
         }
     }
 
-    async check (req, res) {
+    async check (req, res, next) {
         try {
-
+            const user = req.user;
+            const token = await generateJwt(
+                user.id,
+                user.login,
+                user.user_image,
+                user.domain_email,
+                user.email,
+                user.full_name,
+                user.birthday,
+                user.phone_number,
+                user.is_paid,
+                user.shelterId
+            );
+            return res.json({token});
         } catch (e) {
-
+            return next(ApiError.internal('Server error'));
         }
     }
 }
