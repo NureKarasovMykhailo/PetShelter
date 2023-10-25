@@ -1,24 +1,29 @@
 const ApiError = require('../error/ApiError');
 const jwt = require('jsonwebtoken');
+const getToken = require('./getToken');
+const {decode} = require("jsonwebtoken");
 
 module.exports = function (roles) {
     return  (req, res, next) => {
-        if (req.method === 'OPTIONS') {
-            next();
-        }
-        try {
-            const token = req.headers.authorization.split(' ')[1];
-            if (!token) {
-                return next(ApiError.unauthorized('Non authorized user'));
+        let decodedToken = getToken(req, res, next);
+        if (decodedToken) {
+            let userRoles = decodedToken.roles;
+            let haveAccess = false;
+            userRoles.map(userRole => {
+               roles.map(role => {
+                   if (userRole === role) {
+                       haveAccess = true;
+                   }
+               });
+            });
+            if (haveAccess) {
+                req.user = decodedToken;
+                next();
+            } else {
+                next(ApiError.forbidden('Access dined'));
             }
-            let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-
-
-            req.user = decodedToken;
+        } else {
             next();
-        } catch (e) {
-            return next(ApiError.unauthorized('Non authorized user'));
         }
-
     };
 }

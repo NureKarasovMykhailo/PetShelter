@@ -33,7 +33,8 @@ const Shelter = sequelize.define('shelter', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     shelter_name: {type: DataTypes.STRING, unique: true},
     shelter_address: {type: DataTypes.STRING},
-    shelter_domain: {type: DataTypes.STRING, unique: true}
+    shelter_domain: {type: DataTypes.STRING, unique: true},
+    shelter_image: {type: DataTypes.STRING}
 });
 
 const Pet = sequelize.define('pet', {
