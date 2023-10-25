@@ -1,24 +1,21 @@
 const ApiError = require('../error/ApiError');
 const jwt = require('jsonwebtoken');
+const getToken = require('./getToken');
+const {decode} = require("jsonwebtoken");
 
 module.exports = function (roles) {
     return  (req, res, next) => {
-        if (req.method === 'OPTIONS') {
+        let decodedToken = getToken(req, res, next);
+        if (decodedToken) {
+            let roles = decodedToken.roles;
+            roles.map(role => {
+               if (role === 'subscriber') {
+                   next();
+               }
+            });
+            return next(ApiError.forbidden('You must subscribe for creating a shelter'));
+        } else {
             next();
         }
-        try {
-            const token = req.headers.authorization.split(' ')[1];
-            if (!token) {
-                return next(ApiError.unauthorized('Non authorized user'));
-            }
-            let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-
-
-            req.user = decodedToken;
-            next();
-        } catch (e) {
-            return next(ApiError.unauthorized('Non authorized user'));
-        }
-
     };
 }
