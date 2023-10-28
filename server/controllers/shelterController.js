@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 const {Shelter, User} = require('../models/models');
 const {Sequelize} = require("sequelize");
 const ApiError = require('../error/ApiError');
@@ -57,15 +57,11 @@ const changeUsersDomain = async (shelterId, oldDomain, newDomain) => {
     }));
 }
 
-
-=======
->>>>>>> origin/main
 class ShelterController {
 
     async create(req, res, next) {
         const {
             shelterName,
-<<<<<<< HEAD
             shelterCity,
             shelterStreet,
             shelterHouse,
@@ -215,29 +211,6 @@ class ShelterController {
             return next(ApiError.internal('Server error while deleting shelter'));
         }
     }
-=======
-            shelterAddress,
-            shelterDomain,
-        } = req.body;
-        const {shelterImage} = req.files;
-
-
-    }
-
-    async get(req, res, next) {
-
-    }
-
-    async update(req, res, next) {
-
-    }
-
-    async delete(req, res, next){
-
-    }
-
-
->>>>>>> origin/main
 }
 
 module.exports = new ShelterController();

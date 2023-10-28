@@ -6,21 +6,13 @@ const ApiError = require('../error/ApiError');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 const path = require('path');
+const getUserRole = require('../middleware/getUserRoles');
 
 
 const generateJwt = async (id, login, image, domainEmail, email, fullName,
-                           birthday, phoneNumber, isPaid, shelterId) => {
-
+                           birthday, phoneNumber, isPaid, shelterId, roles) => {
     try {
-        const userRoles = await UserRole.findAll({ where: { userId: id } });
-        const roles = [];
-
-        await Promise.all(userRoles.map(async (userRole) => {
-            const role = await Role.findOne({ where: { id: userRole.roleId } });
-            roles.push(role.role_title);
-        }));
-
-        const token = jwt.sign(
+        return jwt.sign(
             {
                 id: id,
                 login: login,
@@ -35,10 +27,8 @@ const generateJwt = async (id, login, image, domainEmail, email, fullName,
                 roles: roles
             },
             process.env.SECRET_KEY,
-            { expiresIn: '24h' }
+            {expiresIn: '24h'}
         );
-
-        return token;
     } catch (e) {
         return ApiError.internal('Server error while generating JWT token');
     }
@@ -94,7 +84,7 @@ class UserController {
                 }
             })
 
-            const userRole = UserRole.create({
+            await UserRole.create({
                 userId: user.id,
                 roleId: role.id
             });
@@ -120,6 +110,7 @@ class UserController {
                 return next(ApiError.badRequest('Invalid login or password'));
 
             }
+            const roles = await getUserRole(user);
             const token = await generateJwt(
                 user.id,
                 user.login,
@@ -130,7 +121,8 @@ class UserController {
                 user.birthday,
                 user.phone_number,
                 user.is_paid,
-                user.shelterId
+                user.shelterId,
+                roles
             );
             return res.json({token});
 
@@ -142,6 +134,7 @@ class UserController {
     async check (req, res, next) {
         try {
             const user = req.user;
+            const roles = await getUserRole(user)
             const token = await generateJwt(
                 user.id,
                 user.login,
@@ -152,7 +145,8 @@ class UserController {
                 user.birthday,
                 user.phone_number,
                 user.is_paid,
-                user.shelterId
+                user.shelterId,
+                roles
             );
             return res.json({token});
         } catch (e) {

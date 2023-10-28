@@ -39,11 +39,8 @@ describe('User authorization tests', () => {
         expect(decodedToken.phone_number).toEqual(user.phone_number);
         expect(decodedToken.is_paid).toEqual(user.is_paid);
         expect(decodedToken.shelterId).toEqual(user.shelterId);
-<<<<<<< HEAD
         expect(decodedToken.roles).toEqual(expect.arrayContaining(roles));
-=======
-        expect(decodedToken.roles).toEqual(roles);
->>>>>>> origin/main
+        //expect(decodedToken.roles).toEqual(roles);
     });
     test('User authorization test without data', async () => {
        const authorizationData = {

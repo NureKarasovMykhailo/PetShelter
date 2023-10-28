@@ -1,9 +1,8 @@
 const request = require('supertest');
 const path = require("node:path");
 const app = require('../../index').app;
-const getToken = require('../getToken');
+const getToken = require('../userTests/userCheckAuth.test');
 const {User, Shelter, UserRole} = require('../../models/models');
-const getJwt = require('../getToken');
 const bcrypt = require('bcrypt');
 
 const shelterData = {
