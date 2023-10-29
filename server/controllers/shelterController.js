@@ -5,7 +5,6 @@ const ApiError = require('../error/ApiError');
 const uuid = require('uuid');
 const {validationResult} = require('express-validator')
 const path = require("path");
-const deleteImageFromStatic = require('../functions/deleteImage');
 const fs = require("node:fs");
 
 const isShelterExistChecking = async (shelterName, shelterDomain) => {

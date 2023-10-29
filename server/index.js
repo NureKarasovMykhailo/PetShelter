@@ -7,6 +7,7 @@ const router = require('./routes/index');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 const fileUpload = require('express-fileupload');
 const path = require('path');
+const transporter = require('./nodemailerConfig');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -35,5 +36,7 @@ const start = async() => {
 if (process.env.NODE_ENV !== 'test') {
     start().then(r => console.log('Database created'));
 }
+
+
 
 module.exports.app = app;

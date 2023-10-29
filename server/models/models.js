@@ -42,8 +42,8 @@ const Pet = sequelize.define('pet', {
     pet_image: {type: DataTypes.STRING},
     pet_name: {type: DataTypes.STRING},
     pet_age: {type: DataTypes.INTEGER},
-    pet_gender: {type: DataTypes.INTEGER},
-    cell_number: {type: DataTypes.INTEGER}
+    pet_gender: {type: DataTypes.STRING},
+    cell_number: {type: DataTypes.STRING}
 });
 
 const PetCharacteristic = sequelize.define('pet_characteristic', {
