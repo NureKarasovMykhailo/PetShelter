@@ -3,14 +3,14 @@ const router = new Router();
 const petController = require('../controllers/petController');
 const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
-const perCreationValidation = require('../middleware/validators/petCreationValidator');
+const petCreationValidation = require('../middleware/validators/petCreationValidator');
 const checkAuthMiddleware = require('../middleware/checkAuthMiddleware');
 
 router.post(
     '/',
     checkRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    perCreationValidation,
+    petCreationValidation,
     petController.create
 );
 router.get('/', checkAuthMiddleware, hasUserShelterMiddleware, petController.get);
@@ -19,7 +19,7 @@ router.put(
     '/:id',
     checkRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    perCreationValidation,
+    petCreationValidation,
     petController.update
 );
 router.delete(

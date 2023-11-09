@@ -20,6 +20,10 @@ class ApiError extends Error{
     static unauthorized(message) {
         return new ApiError(401, message);
     }
+
+    static conflict(message){
+        return new ApiError(409, message);
+    }
 }
 
 module.exports = ApiError;

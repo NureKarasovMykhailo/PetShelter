@@ -40,7 +40,7 @@ class PetController {
         const {petImage} = req.files;
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            next(ApiError.badRequest(errors));
+            return next(ApiError.badRequest(errors));
         }
         const petImageName = uuid.v4() + '.jpg';
         const pet = await Pet.create({

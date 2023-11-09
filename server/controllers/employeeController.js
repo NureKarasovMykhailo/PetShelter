@@ -91,7 +91,7 @@ class EmployeeController {
         const shelterId = req.user.shelterId;
         const employees = await User.findAll({where: {shelterId}})
         return res.json(
-            employees.filter(employee => employee.login !== req.user.login)
+            {employees: employees.filter(employee => employee.login !== req.user.login)}
         );
     }
 

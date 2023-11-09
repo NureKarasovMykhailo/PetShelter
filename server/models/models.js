@@ -85,8 +85,8 @@ const UserRole = sequelize.define('user_role', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
 });
 
-User.hasMany(WorkAnnouncement);
-WorkAnnouncement.belongsTo(User);
+Shelter.hasMany(WorkAnnouncement);
+WorkAnnouncement.belongsTo(Shelter);
 
 Shelter.hasMany(User);
 User.belongsTo(Shelter);
