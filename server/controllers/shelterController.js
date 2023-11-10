@@ -102,6 +102,7 @@ class ShelterController {
             user.domain_email = subscriberDomainEmail + shelterDomain;
             user.shelterId = shelter.id;
             await user.save();
+
         } catch (e) {
             return next(ApiError.internal('Server error while creating new shelter'));
         }

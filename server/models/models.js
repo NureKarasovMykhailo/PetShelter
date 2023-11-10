@@ -110,7 +110,13 @@ Pet.hasMany(AdoptionAnnouncement);
 AdoptionAnnouncement.belongsTo(Pet);
 
 AdoptionAnnouncement.hasMany(ApplicationForAdoption);
-ApplicationForAdoption.belongsTo(AdoptionAnnouncement)
+ApplicationForAdoption.belongsTo(AdoptionAnnouncement);
+
+User.hasMany(ApplicationForAdoption);
+ApplicationForAdoption.belongsTo(User);
+
+Shelter.hasMany(Feeder);
+Feeder.belongsTo(Shelter);
 
 User.belongsToMany(Role, {through: UserRole});
 Role.belongsToMany(User, {through: UserRole})
