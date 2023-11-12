@@ -10,15 +10,11 @@ function shelterCreatingValidation(req, res, next) {
         body('shelterCity')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
-            .matches(/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ\s-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
+            .withMessage('Please enter the address of your shelter'),
         body('shelterStreet')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
-            .matches(/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ\s-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
+            .withMessage('Please enter the address of your shelter'),
         body('shelterHouse')
             .trim()
             .notEmpty()

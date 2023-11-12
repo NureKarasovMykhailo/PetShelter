@@ -1,4 +1,3 @@
-
 const {Shelter, User} = require('../models/models');
 const {Sequelize} = require("sequelize");
 const ApiError = require('../error/ApiError');
@@ -6,6 +5,8 @@ const uuid = require('uuid');
 const {validationResult} = require('express-validator')
 const path = require("path");
 const fs = require("node:fs");
+const generateJWT = require('../functions/generateJWT');
+const getUserRoles = require('../middleware/getUserRoles');
 
 const isShelterExistChecking = async (shelterName, shelterDomain) => {
     const existedShelter = await Shelter.findOne({
@@ -102,14 +103,28 @@ class ShelterController {
             user.domain_email = subscriberDomainEmail + shelterDomain;
             user.shelterId = shelter.id;
             await user.save();
+            const roles = await getUserRoles(user);
+            const newToken = await generateJWT(
+                user.id,
+                user.login,
+                user.user_image,
+                user.domain_email,
+                user.email,
+                user.full_name,
+                user.birthday,
+                user.phone_number,
+                user.is_paid,
+                user.shelterId,
+                roles,
+            );
+            if (shelterImageName !== 'default-shelter-image.jpg') {
+                await shelterImage.mv(path.resolve(__dirname, '..', 'static', shelterImageName));
+            }
+            return res.json({message: shelter, token: newToken});
 
         } catch (e) {
             return next(ApiError.internal('Server error while creating new shelter'));
         }
-        if (shelterImageName !== 'default-shelter-image.jpg') {
-            await shelterImage.mv(path.resolve(__dirname, '..', 'static', shelterImageName));
-        }
-        return res.json({message: 'Shelter successfully created'});
     }
 
     async get(req, res, next) {
@@ -183,7 +198,21 @@ class ShelterController {
             }
             await shelter.save();
             await user.save();
-            return res.json(shelter);
+            const roles = await getUserRoles(user);
+            const newToken = await generateJWT(
+                user.id,
+                user.login,
+                user.user_image,
+                user.domain_email,
+                user.email,
+                user.full_name,
+                user.birthday,
+                user.phone_number,
+                user.is_paid,
+                user.shelterId,
+                roles,
+            );
+            return res.json({message: shelter, token: newToken});
         } catch (e) {
             return next(ApiError.internal('Server error while updating shelter'));
         }

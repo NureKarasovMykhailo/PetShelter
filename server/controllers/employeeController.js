@@ -46,6 +46,7 @@ class EmployeeController {
             birthday,
             roles
         } = req.body;
+        roles.push("employee");
         if (!await isEmployeeWithSuchDataDoesntExist(login, email, domainEmail)){
             return next(ApiError.badRequest('User with such data already exist'));
         }

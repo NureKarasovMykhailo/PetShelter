@@ -12,7 +12,8 @@ const User = sequelize.define('user', {
     phone_number: {type: DataTypes.STRING, unique: true},
     date_of_registration: {type: DataTypes.DATE},
     hashed_password: {type: DataTypes.STRING},
-    is_paid: {type: DataTypes.BOOLEAN, default: false}
+    is_paid: {type: DataTypes.BOOLEAN, default: false},
+    subscriptionId: {type: DataTypes.STRING}
 });
 
 const Role = sequelize.define('role', {
@@ -85,6 +86,12 @@ const UserRole = sequelize.define('user_role', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
 });
 
+const ConfirmationCode = sequelize.define('confirmation_code', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    code: {type: DataTypes.STRING},
+    expiresAt: {type: DataTypes.DATE}
+})
+
 Shelter.hasMany(WorkAnnouncement);
 WorkAnnouncement.belongsTo(Shelter);
 
@@ -119,7 +126,10 @@ Shelter.hasMany(Feeder);
 Feeder.belongsTo(Shelter);
 
 User.belongsToMany(Role, {through: UserRole});
-Role.belongsToMany(User, {through: UserRole})
+Role.belongsToMany(User, {through: UserRole});
+
+User.hasMany(ConfirmationCode);
+ConfirmationCode.belongsTo(User);
 
 module.exports = {
     User,
@@ -132,5 +142,6 @@ module.exports = {
     FeederInfo,
     AdoptionAnnouncement,
     ApplicationForAdoption,
-    UserRole
+    UserRole,
+    ConfirmationCode
 };
