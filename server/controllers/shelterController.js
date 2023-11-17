@@ -1,4 +1,4 @@
-const {Shelter, User} = require('../models/models');
+const models = require('../models/models')
 const {Sequelize} = require("sequelize");
 const ApiError = require('../error/ApiError');
 const uuid = require('uuid');
@@ -7,9 +7,11 @@ const path = require("path");
 const fs = require("node:fs");
 const generateJWT = require('../functions/generateJWT');
 const getUserRoles = require('../middleware/getUserRoles');
+const {Transaction} = require('sequelize')
+const {Feeder} = require("../models/models");
 
 const isShelterExistChecking = async (shelterName, shelterDomain) => {
-    const existedShelter = await Shelter.findOne({
+    const existedShelter = await models.Shelter.findOne({
         where: {
             [Sequelize.Op.or] : [
                 {shelter_name: shelterName},
@@ -25,7 +27,7 @@ const isShelterExistChecking = async (shelterName, shelterDomain) => {
 }
 
 const checkNewShelterName = async (newName) => {
-    const shelter = await Shelter.findOne({where: {shelter_name: newName}});
+    const shelter = await models.Shelter.findOne({where: {shelter_name: newName}});
     if (shelter) {
         return false;
     }
@@ -33,7 +35,7 @@ const checkNewShelterName = async (newName) => {
 };
 
 const checkNewDomain = async (newDomain) => {
-    const shelter = await Shelter.findOne({where: {shelter_domain: newDomain}});
+    const shelter = await models.Shelter.findOne({where: {shelter_domain: newDomain}});
     if (shelter) {
         return false;
     }
@@ -48,12 +50,111 @@ const checkUserDomain =  (user, shelter) => {
 };
 
 const changeUsersDomain = async (shelterId, oldDomain, newDomain) => {
-    let shelterUsers = await User.findAll({where: {shelterId}});
+    let shelterUsers = await models.User.findAll({where: {shelterId}});
     const regex = new RegExp(`${oldDomain}\\b`, 'g');
     await Promise.all(shelterUsers.map(async shelterUser => {
         let domainEmail = shelterUser.domain_email;
         shelterUser.domain_email = domainEmail.replace(regex, `${newDomain}`);
         await shelterUser.save();
+    }));
+}
+
+const deleteAllShelterUsers = async (shelterId, shelterOwnerId) => {
+    const shelterEmployees = await models.User.findAll({
+        where: {
+            shelterId,
+            id: {
+                [Sequelize.Op.not]: shelterOwnerId
+            }
+        },
+    });
+    await Promise.all(shelterEmployees.map(async shelterEmployee => {
+        if (shelterEmployee.user_image !== 'default-user-image.jpg'){
+            await fs.unlink(
+                path.resolve(__dirname, '..', '..static', shelterEmployee.user_image),
+                () => {console.log(`Image: ${shelterEmployee.user_image} was deleted`)}
+            );
+        }
+        await shelterEmployee.destroy();
+    }));
+}
+
+const deleteAllWorkOffers = async (shelterId) => {
+    await models.WorkAnnouncement.destroy({
+        where: {shelterId}
+    });
+}
+
+const deleteAllPetsCharacteristics = async (shelterId) => {
+    const petsArr = await models.Pet.findAll({
+        where: {shelterId}
+    });
+    await Promise.all(petsArr.map(async pet => {
+        await models.PetCharacteristic.destroy({
+           where: {petId: pet.id}
+        });
+    }));
+}
+
+const deleteAllPets = async (shelterId) => {
+    let petImageNames;
+    petImageNames = await models.Pet.findAll({
+        where: {shelterId},
+        attributes: ['pet_image']
+    });
+    await Promise.all(petImageNames.map(async petImageName => {
+        fs.unlink(
+            path.resolve(__dirname, '..', 'static', petImageName.pet_image),
+            () => `${petImageName} was deleted`
+        );
+    }));
+    await models.Pet.destroy({
+        where: {shelterId}
+    });
+}
+
+const deleteAllFeedersInfo = async (shelterId) => {
+    const feedersOfShelter = await models.Feeder.findAll({
+        where: {shelterId}
+    });
+    await Promise.all(feedersOfShelter.map(async feeder => {
+        await models.FeederInfo.destroy({
+            where: {feederId: feeder.id}
+        });
+    }));
+}
+
+const deleteAllFeeders = async (shelterId) => {
+    await models.Feeder.destroy({
+        where: {shelterId}
+    });
+}
+
+const deleteAllApplicationForAdoption = async (shelterId) => {
+    const adoptionOffers = await models.AdoptionAnnouncement.findAll({
+        include: [{
+            model: models.Pet,
+            attributes: [],
+            where: {shelterId}
+        }]
+    });
+    await Promise.all(adoptionOffers.map(async adoptionOffer => {
+        await models.ApplicationForAdoption.destroy({
+            where: {adoptionAnnouncementId: adoptionOffer.id}
+        })
+    }));
+}
+
+const deleteAllAdoptionOffers = async (shelterId) => {
+    const adoptionOffers = await models.AdoptionAnnouncement.findAll({
+        include: [{
+            model: models.Pet,
+            attributes: [],
+            where: {shelterId}
+        }]
+    });
+    await Promise.all(adoptionOffers.map(async adoptionOffer => {
+        await adoptionOffer.destroy()
     }));
 }
 
@@ -90,7 +191,7 @@ class ShelterController {
         const shelterFullAddress = 'City ' + shelterCity + ' street '
             + shelterStreet + ' house ' + shelterHouse;
         try {
-            const shelter = await Shelter.create(
+            const shelter = await models.Shelter.create(
                 {
                     shelter_name: shelterName,
                     shelter_address: shelterFullAddress,
@@ -130,7 +231,7 @@ class ShelterController {
     async get(req, res, next) {
         const {id} = req.params;
         try {
-            const shelter = await Shelter.findOne({where: {id}});
+            const shelter = await models.Shelter.findOne({where: {id}});
             const user = req.user;
             const hasAccess = checkUserDomain(user, shelter);
             if (!hasAccess) {
@@ -157,9 +258,9 @@ class ShelterController {
         }
 
         try {
-            let shelter = await Shelter.findOne({where: {id: id}});
+            let shelter = await models.Shelter.findOne({where: {id: id}});
             let userId = req.user.id;
-            let user = await User.findOne({where: {id: userId}});
+            let user = await models.User.findOne({where: {id: userId}});
             const hasAccess = checkUserDomain(user, shelter);
             if (!hasAccess) {
                 return next(ApiError.forbidden('You do not have access to this shelter'));
@@ -221,7 +322,7 @@ class ShelterController {
     async delete(req, res, next){
         const {id} = req.params;
         try {
-            const shelter = await Shelter.findOne({where: {id}});
+            const shelter = await models.Shelter.findOne({where: {id}});
             const user = req.user;
             const hasAccess = checkUserDomain(user, shelter);
             if (!hasAccess) {
@@ -233,10 +334,37 @@ class ShelterController {
                     () => console.log('Shelter image was deleted')
                 );
             }
+
+            await deleteAllApplicationForAdoption(id);
+            await deleteAllAdoptionOffers(id);
+            await deleteAllPetsCharacteristics(id);
+            await deleteAllPets(id);
+            await deleteAllWorkOffers(id);
+            await deleteAllFeedersInfo(id);
+            await deleteAllFeeders(id);
+            await deleteAllShelterUsers(id, req.user.id);
+
             await shelter.destroy();
-            //TODO add deleting of ALL information releated to the shelter
-            return res.json({message: 'Shelter successfully deleted'});
+            const shelterOwner = await models.User.findOne({where: {id: req.user.id}});
+            shelterOwner.shelterId = null;
+            await shelterOwner.save();
+            const roles = await getUserRoles(shelterOwner);
+            const newToken = await generateJWT(
+                user.id,
+                user.login,
+                user.user_image,
+                user.domain_email,
+                user.email,
+                user.full_name,
+                user.birthday,
+                user.phone_number,
+                user.is_paid,
+                user.shelterId,
+                roles,
+            );
+            return res.json({message: 'Shelter successfully deleted', token: newToken});
         } catch (e) {
+            console.log(e);
             return next(ApiError.internal('Server error while deleting shelter'));
         }
     }

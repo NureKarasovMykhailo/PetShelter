@@ -19,6 +19,6 @@ router.post(
 );
 router.get('/:id', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid,  shelterController.get);
 router.put('/:id', checkUserRole(['subscriber']), shelterUpdatingValidator, shelterController.update);
-router.delete('/:id', checkUserRole(['subscriber']), checkSubscription, shelterController.delete);
+router.delete('/:id', checkUserRole(['subscriber']), shelterController.delete);
 
 module.exports = router;

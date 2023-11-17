@@ -32,4 +32,5 @@ router.delete(
 router.get('/', workOfferController.getAll);
 router.get('/:id', ifSubscribeOfShelterOwnerIsValid, workOfferController.getOne);
 
+
 module.exports = router;

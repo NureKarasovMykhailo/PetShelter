@@ -21,14 +21,13 @@ const isEmployeeWithSuchDataDoesntExist = async (login, email, domainEmail) => {
     return !candidate;
 };
 const createUserRoles = async (id, roleTitles) => {
-    roleTitles = JSON.parse(roleTitles);
     await Promise.all(roleTitles.map(async roleTitle => {
         let role = await Role.findOne({where: {role_title: roleTitle}});
         await UserRole.create({userId: id, roleId: role.id});
     }));
 }
 
-const isDeletingUserSubscriber = async (employee) => {
+const isSubscriber = async (employee) => {
     const roles = await getUserRoles(employee);
     return roles.includes('subscriber');
 }
@@ -89,23 +88,88 @@ class EmployeeController {
     }
 
     async getAll(req, res, next) {
-        const shelterId = req.user.shelterId;
-        const employees = await User.findAll({where: {shelterId}})
-        return res.json(
-            {employees: employees.filter(employee => employee.login !== req.user.login)}
-        );
+        try {
+            const shelterId = req.user.shelterId;
+            let { roleTitle, domainEmail, limit, page, sortBy} = req.query;
+            limit = limit || 9;
+            page = page || 1;
+            let offset = page * limit - limit;
+
+            let employeesArr = [];
+
+           if (domainEmail){
+               let employee = await User.findOne({where: {shelterId: req.user.shelterId, domain_email: domainEmail}});
+               if (employee){
+                   employeesArr.push(employee);
+               }
+           }
+
+           if (roleTitle){
+               const role = await Role.findOne({where: {role_title: roleTitle}});
+               employeesArr = await User.findAll({
+                  where: {shelterId: req.user.shelterId},
+                  include: [{
+                      model: Role,
+                      attributes: [],
+                      where: {id: role.id}
+                  }]
+               });
+           }
+
+           if (!roleTitle && !domainEmail){
+               employeesArr = await User.findAll({
+                   where: {shelterId: req.user.shelterId}
+               });
+           }
+
+           employeesArr = employeesArr.filter(employee => employee.login !== req.user.login);
+
+           await Promise.all(employeesArr.map(async employee => {
+                employee = employee.get();
+                employee.role = await getUserRoles(employee);
+           }));
+
+            if (sortBy === 'asc') {
+                employeesArr.sort((a, b) => a.full_name.localeCompare(b.full_name));
+            } else if (sortBy === 'desc') {
+                employeesArr.sort((a, b) => b.full_name.localeCompare(a.full_name));
+            }
+
+            let employeesCount = employeesArr.length;
+            let totalPages = Math.ceil(employeesCount / limit);
+            let paginatedEmployees = employeesArr.slice(offset, offset + limit);
+
+            return res.json({
+                employees: paginatedEmployees,
+                pagination: {
+                    totalItems: employeesCount,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    itemsPerPage: limit,
+                },
+            });
+        } catch (error) {
+            console.log(error)
+            return next(ApiError.internal(error));
+        }
     }
 
     async getOne(req, res, next) {
         const {id} = req.params;
-        const employee = await User.findOne({where: {id}});
+        const employee = await User.findOne({
+            where: {id},
+        });
         if (!employee) {
             return next(ApiError.badRequest(`There is not user with id:${id}`));
         }
         if (employee.shelterId !== req.user.shelterId) {
             return next(ApiError.forbidden('You do not have access to information of this shelter'));
         }
-        return res.json(employee);
+
+        let employeeWithRole = employee.get();
+        employeeWithRole.roles = await getUserRoles(employeeWithRole);
+
+        return res.json({employee: employeeWithRole});
     }
 
     async delete(req, res, next) {
@@ -118,11 +182,55 @@ class EmployeeController {
         if (employee.shelterId !== req.user.shelterId) {
             return next(ApiError.forbidden('You do not have access to information of this shelter'));
         }
-        if (await isDeletingUserSubscriber(employee)) {
+        if (await isSubscriber(employee)) {
             return next(ApiError.forbidden('You can not delete the owner of the shelter'));
         }
         await employee.destroy();
         return res.json({message: `Employee ${employee.login} was deleted`})
+    }
+
+    async addRoles(req, res, next){
+        let {roles} = req.body;
+        const {id} = req.params;
+
+
+        const user = await User.findOne({where: {id}});
+        if (!user){
+            return next(ApiError.badRequest(`There no user with ID: ${id}`));
+        }
+        if (roles.includes('subscriber')){
+            return next(ApiError.badRequest('You can\'t add role subscriber for the user'));
+        }
+
+        const existedUserRoles = await getUserRoles(user);
+        existedUserRoles.map(existedUserRole => {
+           if (roles.includes(existedUserRole)){
+               roles.splice(roles.indexOf(existedUserRole), 1);
+           }
+        });
+
+        await createUserRoles(id, roles);
+        return res.status(200).json({message: "Roles was added"});
+    }
+
+    async deleteRoles(req, res, next){
+        const {roles} = req.body;
+        const {id} = req.params;
+        const user = await User.findOne({where: {id}});
+        if (!user){
+            return next(ApiError.badRequest(`There are no user with ID: ${id}`));
+        }
+        const existedUserRoles = await getUserRoles(user);
+        if (existedUserRoles.includes('subscriber')){
+            return next(ApiError.forbidden('You can\'t change subscriber account'));
+        }
+        await Promise.all(roles.map(async roleTitle => {
+            if (roleTitle !== 'employee') {
+                let role = await Role.findOne({where: {role_title: roleTitle}});
+                await UserRole.destroy({where: {userId: id, roleId: role.id}});
+            }
+        }));
+        return res.status(200).json({message: "Roles were successfully deleted"});
     }
 }
 

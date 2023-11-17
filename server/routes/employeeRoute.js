@@ -17,6 +17,21 @@ router.post(
     employeeCreatingValidator,
     employeeController.create
 );
+router.patch(
+    '/roles/add/:id',
+    checkRoleMiddleware(['subscriber', 'workerAdmin']),
+    hasUserShelterMiddleware,
+    ifSubscribeOfShelterOwnerIsValid,
+    employeeController.addRoles
+);
+router.patch(
+    '/roles/delete/:id',
+    checkRoleMiddleware(['subscriber', 'workerAdmin']),
+    hasUserShelterMiddleware,
+    ifSubscribeOfShelterOwnerIsValid,
+    employeeController.deleteRoles
+);
+
 router.get('/', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid, hasUserShelterMiddleware, employeeController.getAll);
 router.get('/:id', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid, hasUserShelterMiddleware, employeeController.getOne);
 router.delete(

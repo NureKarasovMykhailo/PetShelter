@@ -40,4 +40,20 @@ router.get(
     feederController.get
 );
 
+router.post(
+    '/:id',
+    checkUserRoleMiddleware(['subscriber', 'petAdmin']),
+    hasUserShelterMiddleware,
+    ifSubscribeOfShelterOwnerIsValid,
+    feederController.setPet
+);
+
+router.patch(
+    '/:id',
+    checkUserRoleMiddleware(['subscriber', 'petAdmin']),
+    hasUserShelterMiddleware,
+    ifSubscribeOfShelterOwnerIsValid,
+    feederController.unpinFeederFromPet
+);
+
 module.exports = router;

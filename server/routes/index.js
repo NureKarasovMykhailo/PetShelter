@@ -9,7 +9,6 @@ const petAdoptionApplicationRouter = require('./petAdoptionApplicationRouter');
 const feederRouter = require('./feederRoute');
 const employeeRouter = require('./employeeRoute');
 
-// TODO написать обновление токена, сделать обновление токена после создание, обновление, удаления приюта
 router.use('/user', userRouter);
 router.use('/shelter', shelterRouter);
 router.use('/pet', petRouter);

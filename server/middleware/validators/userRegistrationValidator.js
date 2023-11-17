@@ -25,9 +25,9 @@ function subscriberRegistrationValidation(req, res, next) {
         body('birthday')
             .trim()
             .notEmpty()
-            .withMessage('Please enter your birthday')
-            .matches(/^\+\d{12}$/)
-            .withMessage('Please enter a valid birthday'),
+            .withMessage('Please enter your birthday'),
+            // .matches(/^\+\d{12}$/)
+            // .withMessage('Please enter a valid birthday'),
         body('phoneNumber')
             .trim()
             .isInt()

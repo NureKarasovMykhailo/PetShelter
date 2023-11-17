@@ -5,6 +5,8 @@ const checkUserRoleMiddleware = require('../middleware/checkRoleMiddleware');
 const checkAuthorizationMiddleware = require('../middleware/checkAuthMiddleware');
 const petAdoptionApplicationValidator = require('../middleware/validators/petAdoptionApplicationValidator');
 const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
+const checkRoleMiddleware = require("../middleware/checkRoleMiddleware");
+const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
 
 router.post(
     '/:adoptionOfferId',
@@ -31,6 +33,14 @@ router.get(
     checkUserRoleMiddleware(['subscriber', 'adoptionAdmin']),
     hasUserShelterMiddleware,
     petAdoptionApplicationController.getAllForOneOffer
+);
+
+router.put(
+    '/approved/:id',
+    checkRoleMiddleware(['subscriber', 'adoptionAdmin']),
+    ifSubscribeOfShelterOwnerIsValid,
+    hasUserShelterMiddleware,
+    petAdoptionApplicationController.approvedApplication
 );
 
 module.exports = router;

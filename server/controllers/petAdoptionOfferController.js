@@ -1,7 +1,8 @@
 const ApiError = require('../error/ApiError');
 const {validationResult} = require('express-validator');
-const {AdoptionAnnouncement, Pet} = require('../models/models');
+const {AdoptionAnnouncement, Pet, Shelter, PetCharacteristic} = require('../models/models');
 const {isEmpty} = require("validator");
+const {Sequelize} = require("sequelize");
 
 const isPetBelongToShelter = async (petId, shelterId) => {
     const pet = await Pet.findOne({where: {id: petId}});
@@ -9,6 +10,20 @@ const isPetBelongToShelter = async (petId, shelterId) => {
         return false;
     }
     return pet.shelterId === shelterId;
+}
+
+const filterByShelter = (adoptionOffers, filteredShelters) => {
+    const filteredAdoptionOffer = [];
+    console.log(filteredShelters.length)
+    adoptionOffers.map(adoptionOffer => {
+       filteredShelters.map(filteredShelter => {
+          if (adoptionOffer.pet.shelterId === filteredShelter.id){
+              filteredAdoptionOffer.push(adoptionOffer);
+          }
+       });
+    });
+    console.log(filteredAdoptionOffer)
+    return filteredAdoptionOffer;
 }
 
 class petAdoptionOfferController {
@@ -122,12 +137,104 @@ class petAdoptionOfferController {
     }
 
     async getAll(req, res, next){
+       let {
+           country,
+           city,
+           petKind,
+           petName,
+           limit,
+           page
+       } = req.query;
+       let filteredShelters = null;
+       let adoptionOffers;
+       limit = limit || 9;
+       page = page || 1;
+       let offset = page * limit - limit;
         try{
-            const petAdoptionOffers = await AdoptionAnnouncement.findAll();
-            return res.json({message: petAdoptionOffers});
-        } catch (e){
-            return next(ApiError.internal(e));
-        }
+            if (country && city){
+                filteredShelters = await Shelter.findAll({
+                    where: {
+                        [Sequelize.Op.and]: [
+                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } },
+                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
+                        ]
+                    }
+                })
+            }
+            if (!country && city){
+                filteredShelters = await Shelter.findAll({
+                    where: { shelter_address: { [Sequelize.Op.like]: `%${city}%`}
+                    }
+                })
+            }
+            if (!city && country){
+                filteredShelters = await Shelter.findAll({
+                    where: {shelter_address: { [Sequelize.Op.like]: `%${city}%`}}
+                });
+            }
+
+            if (petKind && petName){
+                adoptionOffers = await AdoptionAnnouncement.findAll({
+                    include : [{
+                        model: Pet,
+                        where: {
+                            [Sequelize.Op.and]: [
+                                { pet_kind: petKind },
+                                { pet_name: petName }
+                            ]
+                        },
+                        include: [{model: PetCharacteristic}, {model: Shelter}]
+                    }]
+                });
+            }
+            if (petKind && !petName){
+                adoptionOffers = await AdoptionAnnouncement.findAll({
+                    include : [{
+                        model: Pet,
+                        where: { pet_kind: petKind },
+                        include: [{model: PetCharacteristic}, {model: Shelter}]
+                    }]
+                });
+            }
+            if (!petKind && petName){
+                adoptionOffers = await AdoptionAnnouncement.findAll({
+                    include : [{
+                        model: Pet,
+                        where: { pet_name: petName },
+                        include: [{model: PetCharacteristic}, {model: Shelter}]
+                    }]
+                });
+            }
+            if (!petKind && !petName){
+                adoptionOffers = await AdoptionAnnouncement.findAll({
+                    include: [{
+                        model: Pet,
+                        include: [{model: PetCharacteristic}, {model: Shelter}],
+                    }]
+                });
+            }
+
+            if (filteredShelters){
+                adoptionOffers = filterByShelter(adoptionOffers, filteredShelters);
+            }
+
+            const adoptionOfferCount = adoptionOffers.length;
+            let totalPages = Math.ceil(adoptionOfferCount / limit);
+            const paginatedAdoptionOffer = adoptionOffers.splice(offset, offset + limit);
+
+            return res.json({
+                adoptionOffer: paginatedAdoptionOffer,
+                pagination: {
+                    totalItems: adoptionOfferCount,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    itemsPerPage: limit
+                }
+            });
+
+       } catch (e) {
+           return next(ApiError.internal(e));
+       }
     }
 
 }

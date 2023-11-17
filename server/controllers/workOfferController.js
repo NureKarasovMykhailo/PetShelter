@@ -1,6 +1,7 @@
 const {WorkAnnouncement, User, Shelter} = require('../models/models');
 const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
+const {Sequelize} = require("sequelize");
 
 
 class WorkOfferController {
@@ -88,8 +89,96 @@ class WorkOfferController {
     }
 
     async getAll(req, res){
-        const workOffersArr = await WorkAnnouncement.findAll();
-        return res.json(workOffersArr);
+        let {city, country, title, limit, page, sortBy} = req.query;
+        let workOffersArr;
+        limit = limit || 9;
+        page = page || 1;
+        let offset = page * limit - limit;
+        if (city && country){
+            workOffersArr = await WorkAnnouncement.findAll({
+                include: [{
+                    model: Shelter,
+                    where: {
+                        [Sequelize.Op.and]: [
+                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } },
+                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
+                        ]
+                    }
+                }],
+
+            });
+        }
+
+        if (!city && country){
+            workOffersArr = await WorkAnnouncement.findAll({
+                include: [{
+                    model: Shelter,
+                    where: {
+                        [Sequelize.Op.and]: [
+                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
+                        ]
+                    }
+                }],
+
+            });
+        }
+
+        if (city && !country){
+            workOffersArr = await WorkAnnouncement.findAll({
+                include: [{
+                    model: Shelter,
+                    where: {
+                        [Sequelize.Op.and]: [
+                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } }
+                        ]
+                    }
+                }],
+            });
+        }
+
+        if (!city && !country){
+            workOffersArr = await WorkAnnouncement.findAll({
+                include: [{
+                    model: Shelter
+                }],
+                limit,
+                offset
+            });
+        }
+
+        if (title){
+            let workOffersArrWithTitle = [];
+            workOffersArr.map(workOffer => {
+                if (workOffer.work_title === title){
+                    workOffersArrWithTitle.push(workOffer);
+                }
+            })
+            workOffersArr = workOffersArrWithTitle;
+        }
+
+        if (sortBy === 'desc'){
+            applicationForAdoption.sort((a, b) => {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+        } else if (sortBy === 'asc'){
+            applicationForAdoption.sort((a, b) => {
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            });
+        }
+
+        let workOffersArrCount = workOffersArr.length;
+        let totalPages = Math.ceil(workOffersArrCount / limit);
+        let paginatedWorkOffers = workOffersArr.slice(offset, offset + limit);
+
+        return res.json({
+            workOffers: paginatedWorkOffers,
+            pagination: {
+                totalItems: workOffersArrCount,
+                totalPages: totalPages,
+                currentPage: page,
+                itemsPerPage: limit
+            }
+        });
     }
 }
 

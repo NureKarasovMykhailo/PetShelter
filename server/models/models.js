@@ -44,7 +44,8 @@ const Pet = sequelize.define('pet', {
     pet_name: {type: DataTypes.STRING},
     pet_age: {type: DataTypes.INTEGER},
     pet_gender: {type: DataTypes.STRING},
-    cell_number: {type: DataTypes.STRING}
+    cell_number: {type: DataTypes.STRING},
+    pet_kind: {type: DataTypes.STRING}
 });
 
 const PetCharacteristic = sequelize.define('pet_characteristic', {
@@ -76,10 +77,8 @@ const AdoptionAnnouncement = sequelize.define('adoption_announcement', {
 
 const ApplicationForAdoption = sequelize.define('application_for_adoption', {
    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-   application_name: {type: DataTypes.STRING},
    application_address: {type: DataTypes.STRING},
-   application_email: {type: DataTypes.STRING},
-   application_telephone: {type: DataTypes.STRING}
+    is_application_approved: {type: DataTypes.BOOLEAN}
 });
 
 const UserRole = sequelize.define('user_role', {
@@ -109,6 +108,9 @@ PetCharacteristic.belongsTo(Pet);
 
 Pet.hasOne(Feeder);
 Feeder.belongsTo(Pet);
+
+Feeder.hasOne(Pet);
+Pet.belongsTo(Feeder);
 
 Feeder.hasMany(FeederInfo);
 FeederInfo.belongsTo(Feeder);

@@ -61,6 +61,11 @@ const setSubscriptionPayload = (subscriptionPlanId) => {
 const setSubscriberId = async (userId, subscriptionId) => {
     const user = await User.findOne({where: {id: userId}});
     user.subscriptionId = subscriptionId;
+    const userRole = await getUserRole(user);
+    if (!userRole.includes('subscriber')){
+        const subscriptionRole = await Role.findOne({where: {role_title: 'subscriber'}});
+        await UserRole.create({userId: user.id, roleId: subscriptionRole.id});
+    }
     await user.save();
 }
 
