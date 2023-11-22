@@ -89,7 +89,22 @@ const ConfirmationCode = dbClass.db.define('confirmation_code', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     code: {type: DataTypes.STRING},
     expiresAt: {type: DataTypes.DATE}
-})
+});
+
+const Collar = dbClass.db.define('collar', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    max_temperature: {type: DataTypes.DOUBLE},
+    min_temperature: {type: DataTypes.DOUBLE},
+    min_pulse: {type: DataTypes.DOUBLE},
+    max_pulse: {type: DataTypes.DOUBLE}
+});
+
+const CollarInfo = dbClass.db.define('collar_info', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    temperature: {type: DataTypes.DOUBLE},
+    pulse: {type: DataTypes.DOUBLE},
+    in_safe_radius: {type: DataTypes.BOOLEAN, default: true}
+});
 
 Shelter.hasMany(WorkOffer);
 WorkOffer.belongsTo(Shelter);
@@ -127,11 +142,23 @@ ApplicationForAdoption.belongsTo(User);
 Shelter.hasMany(Feeder);
 Feeder.belongsTo(Shelter);
 
+Shelter.hasMany(Collar);
+Collar.belongsTo(Shelter);
+
 User.belongsToMany(Role, {through: UserRole});
 Role.belongsToMany(User, {through: UserRole});
 
 User.hasMany(ConfirmationCode);
 ConfirmationCode.belongsTo(User);
+
+Pet.hasOne(Collar);
+Collar.belongsTo(Pet);
+
+Collar.hasOne(Pet);
+Pet.belongsTo(Collar);
+
+Collar.hasMany(CollarInfo);
+CollarInfo.belongsTo(Collar);
 
 module.exports = {
     User,
@@ -145,5 +172,7 @@ module.exports = {
     AdoptionAnnouncement: AdoptionOffer,
     ApplicationForAdoption,
     UserRole,
-    ConfirmationCode
+    ConfirmationCode,
+    Collar,
+    CollarInfo
 };

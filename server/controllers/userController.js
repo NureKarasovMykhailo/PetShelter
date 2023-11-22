@@ -42,7 +42,7 @@ class UserController {
                 userImageName = uuid.v4() + '.jpg';
             }
 
-            if (await userService.checkUserDuplicates(login, email, phoneNumber)) {
+            if (await userService.isUserDuplicates(login, email, phoneNumber)) {
                 return next(ApiError.conflict('User with this data already exists'))
             }
 

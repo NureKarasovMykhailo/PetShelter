@@ -18,7 +18,7 @@ class UserService {
         }));
     }
 
-    async checkUserDuplicates(login, email, phoneNumber){
+    async isUserDuplicates(login, email, phoneNumber){
         const candidates = await User.findOne({
             where: {
                 [Sequelize.Op.or]: [
@@ -28,7 +28,7 @@ class UserService {
                 ]
             }
         });
-        return candidates === null;
+        return candidates !== null;
     }
 
     async assignUserRoles(userId){

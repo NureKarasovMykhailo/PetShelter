@@ -59,14 +59,11 @@ class FeederService {
         const feeder = await Feeder.findOne({ where: { id: feederId } });
         const pet = await Pet.findOne({ where: { id: petId } });
 
-        // Привязываем кормушку к питомцу
         feeder.petId = pet.id;
         pet.feederId = feeder.id;
 
-        // Очищаем информацию о предыдущей кормушке питомца
         await this.clearInformationAboutLastFeeder(pet.id);
 
-        // Сохраняем изменения
         await feeder.save();
         await pet.save();
 

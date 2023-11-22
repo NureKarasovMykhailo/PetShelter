@@ -14,6 +14,8 @@ const feederService = require("../services/FeederService");
 const petAdoptionOfferService = require("../services/PetAdoptionOfferService");
 const petService = require("../services/PetService");
 const workOfferService = require("../services/WorkOfferService");
+const collarsService = require("../services/CollarService");
+const collarsInfoService = require("../services/CollarInfoService");
 
 class ShelterService {
     async isShelterExistChecking(shelterName, shelterDomain){
@@ -115,6 +117,8 @@ class ShelterService {
             await workOfferService.deleteAllWorkOffers(shelter.id);
             await feederInfoService.deleteAllShelterFeedersInfo(shelter.id);
             await feederService.deleteAllShelterFeeders(shelter.id);
+            await collarsService.deleteAllShelterCollars(shelter.id);
+            await collarsInfoService.deleteAllShelterCollarsInfo(shelter.id);
             await employeeService.deleteAllShelterEmployee(shelter.id, shelterOwner.id);
 
             await shelter.destroy();
