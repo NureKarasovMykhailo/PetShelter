@@ -1,16 +1,8 @@
 const ApiError = require('../error/ApiError');
 const {validationResult} = require('express-validator');
-const {AdoptionAnnouncement, Pet, Shelter, PetCharacteristic} = require('../models/models');
-const {isEmpty} = require("validator");
-const {Sequelize} = require("sequelize");
-
-const isPetBelongToShelter = async (petId, shelterId) => {
-    const pet = await Pet.findOne({where: {id: petId}});
-    if (!pet){
-        return false;
-    }
-    return pet.shelterId === shelterId;
-}
+const petAdoptionOfferService = require('../services/PetAdoptionOfferService');
+const petService = require('../services/PetService');
+const pagination = require('../classes/Pagination');
 
 const filterByShelter = (adoptionOffers, filteredShelters) => {
     const filteredAdoptionOffer = [];
@@ -28,212 +20,152 @@ const filterByShelter = (adoptionOffers, filteredShelters) => {
 
 class petAdoptionOfferController {
 
-    async create(req, res, next){
-        const {petId} = req.params;
-
-        if (petId === null){
-            return next(ApiError.badRequest('Invalid pet ID'));
-        }
-
-        const {
-            adoptionPrice,
-            adoptionTelephone,
-            adoptionEmail,
-            adoptionInfo
-        } = req.body;
-
-        const errors = validationResult(req);
-        if (!errors.isEmpty()){
-            return next(ApiError.badRequest(errors));
-        }
-
-        if (!await isPetBelongToShelter(petId, req.user.shelterId)) {
-            return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-        }
-
+    async createPetAdoptionOffer(req, res, next){
         try {
-            const petAdoptionOffer = await AdoptionAnnouncement.create(
-                {
-                    adoption_price: adoptionPrice,
-                    adoption_telephone: adoptionTelephone,
-                    adoption_email: adoptionEmail,
-                    adoption_info: adoptionInfo,
-                    petId: petId
-                }
-            );
-            return res.json({message: petAdoptionOffer});
-        } catch (e){
-            return next(ApiError.internal(e));
-        }
-    }
-
-    async update(req, res, next){
-        const {offerId} = req.params;
-        const {
-            adoptionPrice,
-            adoptionTelephone,
-            adoptionEmail,
-            adoptionInfo
-        } = req.body;
-
-        try {
-            const petAdoptionOffer = await AdoptionAnnouncement.findOne({where: {id: offerId}});
-
-            if (!petAdoptionOffer){
-                return next(ApiError.badRequest(`There is no pet adoption offer with ID: ${offerId}`));
-            }
-            if (!await isPetBelongToShelter(petAdoptionOffer.petId, req.user.shelterId)){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-            }
+            const {petId} = req.params;
+            const {
+                adoptionPrice,
+                adoptionTelephone,
+                adoptionEmail,
+                adoptionInfo
+            } = req.body;
 
             const errors = validationResult(req);
-
             if (!errors.isEmpty()){
                 return next(ApiError.badRequest(errors));
             }
 
-            petAdoptionOffer.adoption_price = adoptionPrice;
-            petAdoptionOffer.adoption_telephone = adoptionTelephone;
-            petAdoptionOffer.adoption_email = adoptionEmail;
-            petAdoptionOffer.adoption_info = adoptionInfo;
-            await petAdoptionOffer.save();
-            return res.json({message: petAdoptionOffer});
-        } catch (e){
-            return ApiError.internal(e);
-        }
-    }
-
-    async delete(req, res, next){
-        const {offerId} = req.params;
-        try {
-            const adoptionOffer = await AdoptionAnnouncement.findOne(
-                {where: {id: offerId}}
-            )
-            if (!adoptionOffer){
-                return next(ApiError.badRequest(`There are no pet adoption offer with ID: ${offerId}`));
-            }
-            if (!await isPetBelongToShelter(adoptionOffer.petId, req.user.shelterId)){
+            if (!await petService.isPetBelongToShelter(petId, req.user.shelterId)) {
                 return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
             }
-            await adoptionOffer.destroy();
-            return res.json({message: `Pet adoption offer with ID: ${offerId} was deleted`});
-        } catch (e){
-            return next(ApiError.internal(e))
+
+
+            const createdPetAdoptionOffer = await petAdoptionOfferService.createPetAdoptionOffer({
+                adoptionPrice,
+                adoptionTelephone,
+                adoptionEmail,
+                adoptionInfo,
+                petId
+            });
+            return res.status(200).json(createdPetAdoptionOffer);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while creating pet adoption offer ' + error));
         }
     }
 
-    async getOne(req, res, next){
-        const {offerId} = req.params;
+    async update(req, res, next){
+        try {
+            const {offerId} = req.params;
+            const {
+                adoptionPrice,
+                adoptionTelephone,
+                adoptionEmail,
+                adoptionInfo
+            } = req.body;
+
+            const targetPetAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
+
+            if (!targetPetAdoptionOffer){
+                return next(ApiError.badRequest(`There is no pet adoption offer with ID: ${offerId}`));
+            }
+            if (!await petService.isPetBelongToShelter(targetPetAdoptionOffer.petId, req.user.shelterId)){
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()){
+                return next(ApiError.badRequest(errors));
+            }
+
+            const updatedPetAdoptionOffer = await petAdoptionOfferService.updatePetAdoptionOffer(targetPetAdoptionOffer, {
+               adoptionInfo,
+               adoptionEmail,
+               adoptionPrice,
+               adoptionTelephone
+            });
+
+            return res.status(200).json(updatedPetAdoptionOffer);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while updating pet adoption offer' + error));
+        }
+
+    }
+
+    async deletePetAdoptionOffer(req, res, next){
+        try {
+            const {offerId} = req.params;
+            const targetAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
+
+            if (!targetAdoptionOffer){
+                return next(ApiError.badRequest(`There are no pet adoption offer with ID: ${offerId}`));
+            }
+
+            if (!await petService.isPetBelongToShelter(targetAdoptionOffer.petId, req.user.shelterId)){
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
+
+            await targetAdoptionOffer.destroy();
+            return res.json({message: `Pet adoption offer with ID: ${offerId} was deleted`});
+        } catch (error){
+            console.log(error);
+            return next(ApiError.internal('Internal server error while deleting pet adoption offer' + error))
+        }
+    }
+
+    async getOneAdoptionOffer(req, res, next){
         try{
-            const petAdoptionOffer = await AdoptionAnnouncement.findOne({where: {id: offerId}});
+            const {offerId} = req.params;
+            const petAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
             if (!petAdoptionOffer){
                 return next(ApiError.badRequest(`There are no pet adoption offer with ID: ${offerId}`));
             }
-            return res.json({message: petAdoptionOffer});
+            return res.status(200).json(petAdoptionOffer);
 
-        } catch (e) {
-            return next(ApiError.internal(e));
+        } catch (error) {
+            console.log(error)
+            return next(ApiError.internal('Internal server error while getting one pet adoption offer' + error));
         }
     }
 
-    async getAll(req, res, next){
-       let {
-           country,
-           city,
-           petKind,
-           petName,
-           limit,
-           page
-       } = req.query;
-       let filteredShelters = null;
-       let adoptionOffers;
-       limit = limit || 9;
-       page = page || 1;
-       let offset = page * limit - limit;
-        try{
-            if (country && city){
-                filteredShelters = await Shelter.findAll({
-                    where: {
-                        [Sequelize.Op.and]: [
-                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } },
-                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
-                        ]
-                    }
-                })
-            }
-            if (!country && city){
-                filteredShelters = await Shelter.findAll({
-                    where: { shelter_address: { [Sequelize.Op.like]: `%${city}%`}
-                    }
-                })
-            }
-            if (!city && country){
-                filteredShelters = await Shelter.findAll({
-                    where: {shelter_address: { [Sequelize.Op.like]: `%${city}%`}}
-                });
-            }
+    async getAllAdoptionOffers(req, res, next){
+        try {
+            let {
+                country,
+                city,
+                petKind,
+                petName,
+                limit,
+                page
+            } = req.query;
 
-            if (petKind && petName){
-                adoptionOffers = await AdoptionAnnouncement.findAll({
-                    include : [{
-                        model: Pet,
-                        where: {
-                            [Sequelize.Op.and]: [
-                                { pet_kind: petKind },
-                                { pet_name: petName }
-                            ]
-                        },
-                        include: [{model: PetCharacteristic}, {model: Shelter}]
-                    }]
-                });
-            }
-            if (petKind && !petName){
-                adoptionOffers = await AdoptionAnnouncement.findAll({
-                    include : [{
-                        model: Pet,
-                        where: { pet_kind: petKind },
-                        include: [{model: PetCharacteristic}, {model: Shelter}]
-                    }]
-                });
-            }
-            if (!petKind && petName){
-                adoptionOffers = await AdoptionAnnouncement.findAll({
-                    include : [{
-                        model: Pet,
-                        where: { pet_name: petName },
-                        include: [{model: PetCharacteristic}, {model: Shelter}]
-                    }]
-                });
-            }
-            if (!petKind && !petName){
-                adoptionOffers = await AdoptionAnnouncement.findAll({
-                    include: [{
-                        model: Pet,
-                        include: [{model: PetCharacteristic}, {model: Shelter}],
-                    }]
-                });
-            }
+            limit = limit || 9;
+            page = page || 1;
+            let offset = page * limit - limit;
 
-            if (filteredShelters){
+            const filteredShelters = await petAdoptionOfferService.getFilteredShelters(country, city);
+            let adoptionOffers = await petAdoptionOfferService.getAdoptionOffersWithPets(petKind, petName);
+
+            if (filteredShelters) {
                 adoptionOffers = filterByShelter(adoptionOffers, filteredShelters);
             }
 
-            const adoptionOfferCount = adoptionOffers.length;
-            let totalPages = Math.ceil(adoptionOfferCount / limit);
-            const paginatedAdoptionOffer = adoptionOffers.splice(offset, offset + limit);
+            const paginatedAdoptionOffer = pagination.paginateItems(adoptionOffers, offset, limit);
 
             return res.json({
-                adoptionOffer: paginatedAdoptionOffer,
+                adoptionOffer: paginatedAdoptionOffer.paginatedItems,
                 pagination: {
-                    totalItems: adoptionOfferCount,
-                    totalPages: totalPages,
+                    totalItems: paginatedAdoptionOffer.itemCount,
+                    totalPages: paginatedAdoptionOffer.totalPages,
                     currentPage: page,
                     itemsPerPage: limit
                 }
             });
 
        } catch (e) {
-           return next(ApiError.internal(e));
+            console.log(e);
+            return next(ApiError.internal(e));
        }
     }
 

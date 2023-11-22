@@ -1,31 +1,29 @@
 const {body} = require('express-validator');
 function shelterUpdatingValidation(req, res, next) {
     return [
-        body('shelterName')
+        body('newShelterName')
             .trim()
             .notEmpty()
             .withMessage('Please enter name of your shelter')
             .isLength({min: 5, max: 100})
             .withMessage('Name of shelter must be from 5 to 100 symbols'),
-        body('shelterCity')
+        body('newShelterCountry')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
-            .matches(/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ\s-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
-        body('shelterStreet')
+            .withMessage('Please enter the address of your shelter'),
+        body('newShelterCity')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
-            .matches(/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ\s-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
-        body('shelterHouse')
+            .withMessage('Please enter the address of your shelter'),
+        body('newShelterStreet')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
-            .matches(/^[\dA-Za-z\s/-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
-        body('shelterDomain')
+            .withMessage('Please enter the address of your shelter'),
+        body('newShelterHouse')
+            .trim()
+            .notEmpty()
+            .withMessage('Please enter the address of your shelter'),
+        body('newShelterDomain')
             .trim()
             .notEmpty()
             .withMessage('Please enter domain of your shelter')

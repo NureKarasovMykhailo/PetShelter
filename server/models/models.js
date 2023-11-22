@@ -1,7 +1,7 @@
-const sequelize = require('../db');
+const dbClass = require('../classes/DataBase');
 const {DataTypes} = require('sequelize');
 
-const User = sequelize.define('user', {
+const User = dbClass.db.define('user', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     login: {type: DataTypes.STRING, unique: true},
     user_image: {type: DataTypes.STRING},
@@ -16,12 +16,12 @@ const User = sequelize.define('user', {
     subscriptionId: {type: DataTypes.STRING}
 });
 
-const Role = sequelize.define('role', {
+const Role = dbClass.db.define('role', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     role_title: {type: DataTypes.STRING, unique: true}
 });
 
-const WorkAnnouncement = sequelize.define('work_announcement', {
+const WorkOffer = dbClass.db.define('work_offer', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     work_title: {type: DataTypes.STRING},
     work_description: {type: DataTypes.TEXT},
@@ -30,7 +30,7 @@ const WorkAnnouncement = sequelize.define('work_announcement', {
     publish_date: {type: DataTypes.DATE}
 });
 
-const Shelter = sequelize.define('shelter', {
+const Shelter = dbClass.db.define('shelter', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     shelter_name: {type: DataTypes.STRING, unique: true},
     shelter_address: {type: DataTypes.STRING},
@@ -38,7 +38,7 @@ const Shelter = sequelize.define('shelter', {
     shelter_image: {type: DataTypes.STRING}
 });
 
-const Pet = sequelize.define('pet', {
+const Pet = dbClass.db.define('pet', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     pet_image: {type: DataTypes.STRING},
     pet_name: {type: DataTypes.STRING},
@@ -48,26 +48,26 @@ const Pet = sequelize.define('pet', {
     pet_kind: {type: DataTypes.STRING}
 });
 
-const PetCharacteristic = sequelize.define('pet_characteristic', {
+const PetCharacteristic = dbClass.db.define('pet_characteristic', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     title: {type: DataTypes.STRING},
     description: {type: DataTypes.STRING}
 });
 
-const Feeder = sequelize.define('feeder', {
+const Feeder = dbClass.db.define('feeder', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     capacity: {type: DataTypes.DOUBLE},
     designed_for: {type: DataTypes.STRING},
     feeder_colour: {type: DataTypes.STRING}
 });
 
-const FeederInfo = sequelize.define('feeder_info', {
+const FeederInfo = dbClass.db.define('feeder_info', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     amount_of_food: {type: DataTypes.DOUBLE},
     feeding_time: {type: DataTypes.DATE}
 });
 
-const AdoptionAnnouncement = sequelize.define('adoption_announcement', {
+const AdoptionOffer = dbClass.db.define('adoption_offer', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     adoption_price: {type: DataTypes.DECIMAL},
     adoption_telephone: {type: DataTypes.STRING},
@@ -75,24 +75,24 @@ const AdoptionAnnouncement = sequelize.define('adoption_announcement', {
     adoption_info: {type: DataTypes.TEXT}
 });
 
-const ApplicationForAdoption = sequelize.define('application_for_adoption', {
+const ApplicationForAdoption = dbClass.db.define('application_for_adoption', {
    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
    application_address: {type: DataTypes.STRING},
     is_application_approved: {type: DataTypes.BOOLEAN}
 });
 
-const UserRole = sequelize.define('user_role', {
+const UserRole = dbClass.db.define('user_role', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
 });
 
-const ConfirmationCode = sequelize.define('confirmation_code', {
+const ConfirmationCode = dbClass.db.define('confirmation_code', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     code: {type: DataTypes.STRING},
     expiresAt: {type: DataTypes.DATE}
 })
 
-Shelter.hasMany(WorkAnnouncement);
-WorkAnnouncement.belongsTo(Shelter);
+Shelter.hasMany(WorkOffer);
+WorkOffer.belongsTo(Shelter);
 
 Shelter.hasMany(User);
 User.belongsTo(Shelter);
@@ -115,11 +115,11 @@ Pet.belongsTo(Feeder);
 Feeder.hasMany(FeederInfo);
 FeederInfo.belongsTo(Feeder);
 
-Pet.hasMany(AdoptionAnnouncement);
-AdoptionAnnouncement.belongsTo(Pet);
+Pet.hasMany(AdoptionOffer);
+AdoptionOffer.belongsTo(Pet);
 
-AdoptionAnnouncement.hasMany(ApplicationForAdoption);
-ApplicationForAdoption.belongsTo(AdoptionAnnouncement);
+AdoptionOffer.hasMany(ApplicationForAdoption);
+ApplicationForAdoption.belongsTo(AdoptionOffer);
 
 User.hasMany(ApplicationForAdoption);
 ApplicationForAdoption.belongsTo(User);
@@ -136,13 +136,13 @@ ConfirmationCode.belongsTo(User);
 module.exports = {
     User,
     Role,
-    WorkAnnouncement,
+    WorkAnnouncement: WorkOffer,
     Shelter,
     Pet,
     PetCharacteristic,
     Feeder,
     FeederInfo,
-    AdoptionAnnouncement,
+    AdoptionAnnouncement: AdoptionOffer,
     ApplicationForAdoption,
     UserRole,
     ConfirmationCode

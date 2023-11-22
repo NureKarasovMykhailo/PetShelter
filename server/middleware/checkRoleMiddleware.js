@@ -1,7 +1,5 @@
 const ApiError = require('../error/ApiError');
-const jwt = require('jsonwebtoken');
 const getToken = require('./getToken');
-const {decode} = require("jsonwebtoken");
 
 module.exports = function (roles) {
     return  (req, res, next) => {

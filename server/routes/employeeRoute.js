@@ -5,7 +5,6 @@ const hasUserShelterMiddleware = require("../middleware/hasUserShelterMiddleware
 const employeeCreatingValidator = require("../middleware/validators/employeeCreatingValidator");
 const employeeController = require("../controllers/employeeController");
 const checkAuthMiddleware = require("../middleware/checkAuthMiddleware");
-const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
 
 
 
@@ -13,33 +12,41 @@ router.post(
     '/',
     checkRoleMiddleware(['subscriber', 'workerAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     employeeCreatingValidator,
-    employeeController.create
+    employeeController.createEmployee
 );
 router.patch(
-    '/roles/add/:id',
+    '/roles/add/:employeeId',
     checkRoleMiddleware(['subscriber', 'workerAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     employeeController.addRoles
 );
 router.patch(
-    '/roles/delete/:id',
+    '/roles/delete/:employeeId',
     checkRoleMiddleware(['subscriber', 'workerAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     employeeController.deleteRoles
 );
 
-router.get('/', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid, hasUserShelterMiddleware, employeeController.getAll);
-router.get('/:id', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid, hasUserShelterMiddleware, employeeController.getOne);
+router.get(
+    '/',
+    checkAuthMiddleware,
+    hasUserShelterMiddleware,
+    employeeController.getAllEmployees
+);
+
+router.get(
+    '/:employeeId',
+    checkAuthMiddleware,
+    hasUserShelterMiddleware,
+    employeeController.getOneEmployee
+);
+
 router.delete(
-    '/:id',
+    '/:employeeId',
     checkRoleMiddleware(['subscriber', 'workerAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    employeeController.delete
+    employeeController.deleteEmployee
 );
 
 module.exports = router;

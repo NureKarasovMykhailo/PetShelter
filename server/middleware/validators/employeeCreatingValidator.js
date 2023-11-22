@@ -26,14 +26,10 @@ function userCreatingValidation(req, res, next) {
             .trim()
             .notEmpty()
             .withMessage('Please enter your birthday'),
-            // .matches(/^\+\d{12}$/)
-            // .withMessage('Please enter a valid birthday'),
         body('domainEmail')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter domain email')
             .isEmail()
-            .withMessage('Please enter correct domain email')
+            .withMessage('Please enter domain email')
     ];
 }
 

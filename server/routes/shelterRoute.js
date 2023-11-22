@@ -7,7 +7,7 @@ const checkShelterCount = require('../middleware/checkShelterCount');
 const checkAuthMiddleware = require('../middleware/checkAuthMiddleware');
 const shelterUpdatingValidator = require('../middleware/validators/shelterUpdatingValidator');
 const checkSubscription = require('../middleware/checkSubsciptionMiddleware');
-const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
+const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
 
 router.post(
     '/',
@@ -15,10 +15,39 @@ router.post(
     checkSubscription,
     checkShelterCount,
     shelterValidator,
-    shelterController.create
+    shelterController.createShelter
 );
-router.get('/:id', checkAuthMiddleware, ifSubscribeOfShelterOwnerIsValid,  shelterController.get);
-router.put('/:id', checkUserRole(['subscriber']), shelterUpdatingValidator, shelterController.update);
-router.delete('/:id', checkUserRole(['subscriber']), shelterController.delete);
+
+router.get(
+    'one/:shelterId',
+    checkAuthMiddleware,
+    shelterController.getShelterById
+);
+
+router.put(
+    '/:shelterId',
+    checkUserRole(['subscriber']),
+    shelterUpdatingValidator,
+    shelterController.updateShelter
+);
+
+router.delete(
+    '/',
+    checkUserRole(['subscriber']),
+    hasUserShelterMiddleware,
+    shelterController.deleteShelterByToken
+);
+
+router.delete(
+    '/:shelterId',
+    checkUserRole(['systemAdmin']),
+    shelterController.deleteShelterById
+);
+
+router.get(
+    '/all',
+    checkUserRole(['systemAdmin']),
+    shelterController.getAllShelters
+);
 
 module.exports = router;

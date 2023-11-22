@@ -4,22 +4,19 @@ const petAdoptionOfferController = require('../controllers/petAdoptionOfferContr
 const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
 const petAdoptionValidator = require('../middleware/validators/petAdoptionValidator');
-const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
 
 router.post(
     '/:petId',
     checkRoleMiddleware(['adoptionAdmin', 'subscriber']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     petAdoptionValidator,
-    petAdoptionOfferController.create
+    petAdoptionOfferController.createPetAdoptionOffer
 );
 
 router.put(
     '/:offerId',
     checkRoleMiddleware(['adoptionAdmin', 'subscriber']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     petAdoptionValidator,
     petAdoptionOfferController.update
 );
@@ -27,10 +24,9 @@ router.delete(
     '/:offerId',
     checkRoleMiddleware(['adoptionAdmin', 'subscriber']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    petAdoptionOfferController.delete
+    petAdoptionOfferController.deletePetAdoptionOffer
 );
-router.get('/:offerId', petAdoptionOfferController.getOne);
-router.get('/', petAdoptionOfferController.getAll);
+router.get('/:offerId', petAdoptionOfferController.getOneAdoptionOffer);
+router.get('/', petAdoptionOfferController.getAllAdoptionOffers);
 
 module.exports = router;

@@ -1,371 +1,252 @@
-const models = require('../models/models')
-const {Sequelize} = require("sequelize");
+const {User} = require('../models/models')
 const ApiError = require('../error/ApiError');
 const uuid = require('uuid');
 const {validationResult} = require('express-validator')
-const path = require("path");
-const fs = require("node:fs");
-const generateJWT = require('../functions/generateJWT');
+const path = require("node:path");
+const generateJWT = require('../functions/generateJwt');
 const getUserRoles = require('../middleware/getUserRoles');
-const {Transaction} = require('sequelize')
-const {Feeder} = require("../models/models");
-
-const isShelterExistChecking = async (shelterName, shelterDomain) => {
-    const existedShelter = await models.Shelter.findOne({
-        where: {
-            [Sequelize.Op.or] : [
-                {shelter_name: shelterName},
-                {shelter_domain: shelterDomain}
-            ]
-        }
-    });
-    if (existedShelter === null) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-const checkNewShelterName = async (newName) => {
-    const shelter = await models.Shelter.findOne({where: {shelter_name: newName}});
-    if (shelter) {
-        return false;
-    }
-    return true;
-};
-
-const checkNewDomain = async (newDomain) => {
-    const shelter = await models.Shelter.findOne({where: {shelter_domain: newDomain}});
-    if (shelter) {
-        return false;
-    }
-    return true;
-};
-
-const checkUserDomain =  (user, shelter) => {
-    if (user.domain_email === null) {
-        return false;
-    }
-    return user.domain_email.includes(shelter.shelter_domain);
-};
-
-const changeUsersDomain = async (shelterId, oldDomain, newDomain) => {
-    let shelterUsers = await models.User.findAll({where: {shelterId}});
-    const regex = new RegExp(`${oldDomain}\\b`, 'g');
-    await Promise.all(shelterUsers.map(async shelterUser => {
-        let domainEmail = shelterUser.domain_email;
-        shelterUser.domain_email = domainEmail.replace(regex, `${newDomain}`);
-        await shelterUser.save();
-    }));
-}
-
-const deleteAllShelterUsers = async (shelterId, shelterOwnerId) => {
-    const shelterEmployees = await models.User.findAll({
-        where: {
-            shelterId,
-            id: {
-                [Sequelize.Op.not]: shelterOwnerId
-            }
-        },
-    });
-    await Promise.all(shelterEmployees.map(async shelterEmployee => {
-        if (shelterEmployee.user_image !== 'default-user-image.jpg'){
-            await fs.unlink(
-                path.resolve(__dirname, '..', '..static', shelterEmployee.user_image),
-                () => {console.log(`Image: ${shelterEmployee.user_image} was deleted`)}
-            );
-        }
-        await shelterEmployee.destroy();
-    }));
-}
-
-const deleteAllWorkOffers = async (shelterId) => {
-    await models.WorkAnnouncement.destroy({
-        where: {shelterId}
-    });
-}
-
-const deleteAllPetsCharacteristics = async (shelterId) => {
-    const petsArr = await models.Pet.findAll({
-        where: {shelterId}
-    });
-    await Promise.all(petsArr.map(async pet => {
-        await models.PetCharacteristic.destroy({
-           where: {petId: pet.id}
-        });
-    }));
-}
-
-const deleteAllPets = async (shelterId) => {
-    let petImageNames;
-    petImageNames = await models.Pet.findAll({
-        where: {shelterId},
-        attributes: ['pet_image']
-    });
-    await Promise.all(petImageNames.map(async petImageName => {
-        fs.unlink(
-            path.resolve(__dirname, '..', 'static', petImageName.pet_image),
-            () => `${petImageName} was deleted`
-        );
-    }));
-    await models.Pet.destroy({
-        where: {shelterId}
-    });
-}
-
-const deleteAllFeedersInfo = async (shelterId) => {
-    const feedersOfShelter = await models.Feeder.findAll({
-        where: {shelterId}
-    });
-    await Promise.all(feedersOfShelter.map(async feeder => {
-        await models.FeederInfo.destroy({
-            where: {feederId: feeder.id}
-        });
-    }));
-}
-
-const deleteAllFeeders = async (shelterId) => {
-    await models.Feeder.destroy({
-        where: {shelterId}
-    });
-}
-
-const deleteAllApplicationForAdoption = async (shelterId) => {
-    const adoptionOffers = await models.AdoptionAnnouncement.findAll({
-        include: [{
-            model: models.Pet,
-            attributes: [],
-            where: {shelterId}
-        }]
-    });
-    await Promise.all(adoptionOffers.map(async adoptionOffer => {
-        await models.ApplicationForAdoption.destroy({
-            where: {adoptionAnnouncementId: adoptionOffer.id}
-        })
-    }));
-}
-
-const deleteAllAdoptionOffers = async (shelterId) => {
-    const adoptionOffers = await models.AdoptionAnnouncement.findAll({
-        include: [{
-            model: models.Pet,
-            attributes: [],
-            where: {shelterId}
-        }]
-    });
-    await Promise.all(adoptionOffers.map(async adoptionOffer => {
-        await adoptionOffer.destroy()
-    }));
-}
+const shelterService = require('../services/ShelterService');
+const userService = require('../services/UserService');
+const pagination = require('../classes/Pagination');
 
 class ShelterController {
 
-    async create(req, res, next) {
-        const {
-            shelterName,
-            shelterCity,
-            shelterStreet,
-            shelterHouse,
-            shelterDomain,
-            subscriberDomainEmail
-        } = req.body;
+    constructor() {
+        this.createShelter = this.createShelter.bind(this);
+    }
+
+    async createShelter(req, res, next) {
+        try {
+            const {
+                shelterName,
+                shelterCountry,
+                shelterCity,
+                shelterStreet,
+                shelterHouse,
+                shelterDomain,
+                subscriberDomainEmail
+            } = req.body;
+
+            let {shelterImage, shelterImageName} = await this._getImageName(req);
+
+            let isShelterExist = await shelterService.isShelterExistChecking(shelterName, shelterDomain);
+
+            if (isShelterExist) {
+                return next(ApiError.badRequest('Shelter with this data already exists'));
+            }
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors));
+            }
+
+            const shelterFullAddress = `${shelterCountry} ${shelterCity} ${shelterStreet} ${shelterHouse}`;
+            const createdShelter = await shelterService.createShelter({
+                shelterDomain,
+                shelterFullAddress,
+                shelterName,
+                shelterImageName,
+                userId: req.user.id
+            });
+
+            const shelterCreator = await this._changeShelterCreatorData(req.user.id, subscriberDomainEmail, shelterDomain, createdShelter.id);
+
+            const roles = await getUserRoles(shelterCreator);
+            const newToken = await generateJWT(
+                shelterCreator.id,
+                shelterCreator.login,
+                shelterCreator.user_image,
+                shelterCreator.domain_email,
+                shelterCreator.email,
+                shelterCreator.full_name,
+                shelterCreator.birthday,
+                shelterCreator.phone_number,
+                shelterCreator.is_paid,
+                shelterCreator.shelterId,
+                roles,
+            );
+
+            if (shelterImageName !== 'default-shelter-image.jpg') {
+                await shelterImage.mv(path.resolve(__dirname, '..', 'static', shelterImageName));
+            }
+            return res.status(200).json({shelter: createdShelter, token: newToken});
+
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server error while creating new shelter' + error));
+        }
+    }
+
+    async _changeShelterCreatorData(userId, subscriberDomainEmail, shelterDomain, shelterId){
+        const user = await User.findOne({where: {id: userId}});
+        user.domain_email = subscriberDomainEmail + shelterDomain;
+        user.shelterId = shelterId;
+        await user.save();
+        return user;
+    }
+
+    async _getImageName(req) {
         let shelterImage;
         let shelterImageName;
-        console.log('Starting creating')
-
         if (!req.files || Object.keys(req.files).length === 0) {
             shelterImageName = 'default-shelter-image.jpg';
         } else {
             shelterImage = req.files.shelterImage;
             shelterImageName = uuid.v4() + '.jpg';
         }
-        let isShelterExist = false;
-        isShelterExist = await isShelterExistChecking(shelterName, shelterDomain);
-        if (isShelterExist) {
-            return next(ApiError.badRequest('Shelter with this data already exists'));
-        }
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return next(ApiError.badRequest(errors));
-        }
-        const shelterFullAddress = 'City ' + shelterCity + ' street '
-            + shelterStreet + ' house ' + shelterHouse;
-        try {
-            const shelter = await models.Shelter.create(
-                {
-                    shelter_name: shelterName,
-                    shelter_address: shelterFullAddress,
-                    shelter_domain: shelterDomain,
-                    shelter_image: shelterImageName,
-                    userId: req.user.id
-                }
-            );
-            const user = await User.findOne({where: {id: req.user.id}})
-            user.domain_email = subscriberDomainEmail + shelterDomain;
-            user.shelterId = shelter.id;
-            await user.save();
-            const roles = await getUserRoles(user);
-            const newToken = await generateJWT(
-                user.id,
-                user.login,
-                user.user_image,
-                user.domain_email,
-                user.email,
-                user.full_name,
-                user.birthday,
-                user.phone_number,
-                user.is_paid,
-                user.shelterId,
-                roles,
-            );
-            if (shelterImageName !== 'default-shelter-image.jpg') {
-                await shelterImage.mv(path.resolve(__dirname, '..', 'static', shelterImageName));
-            }
-            return res.json({message: shelter, token: newToken});
+        return {shelterImage, shelterImageName};
+    }
 
-        } catch (e) {
-            return next(ApiError.internal('Server error while creating new shelter'));
+    async getShelterById(req, res, next) {
+        try {
+            const {shelterId} = req.params;
+            const targetShelter = await shelterService.getShelterById(shelterId);
+            if (!targetShelter) {
+                return next(ApiError.notFound(`There is no shelter with ID: ${shelterId}`));
+            }
+            if (req.user.shelterId !== targetShelter.id) {
+                return next(ApiError.forbidden('You do not have access to this shelter'));
+            }
+            return res.status(200).json(targetShelter);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server error while getting shelter\'s info ' + error));
         }
     }
 
-    async get(req, res, next) {
-        const {id} = req.params;
+    async updateShelter(req, res, next) {
         try {
-            const shelter = await models.Shelter.findOne({where: {id}});
-            const user = req.user;
-            const hasAccess = checkUserDomain(user, shelter);
-            if (!hasAccess) {
+            const {shelterId} = req.params;
+            const {
+                newShelterName,
+                newShelterCountry,
+                newShelterCity,
+                newShelterStreet,
+                newShelterHouse,
+                newShelterDomain
+            } = req.body;
+
+            let shelterImage = null;
+            if (req.files !== null) {
+                shelterImage = req.files.shelterImage;
+            }
+
+            let targetShelter = await shelterService.getShelterById(shelterId);
+            if (!targetShelter) {
+                return next(ApiError.notFound(`There is no shelter with ID: ${shelterId}`));
+            }
+            let requestedUser = await User.findOne({where: {id: req.user.id}});
+
+            if (req.user.shelterId !== targetShelter.id) {
                 return next(ApiError.forbidden('You do not have access to this shelter'));
             }
-            return res.json(shelter);
-        } catch (e) {
-            return next(ApiError.internal('Server error while getting shelter\'s info'));
-        }
-    }
 
-    async update(req, res, next) {
-        const {id} = req.params;
-        const {
-            shelterName,
-            shelterCity,
-            shelterStreet,
-            shelterHouse,
-            shelterDomain
-        } = req.body;
-        let shelterImage = null;
-        if (req.files !== null) {
-            shelterImage = req.files.shelterImage;
-        }
 
-        try {
-            let shelter = await models.Shelter.findOne({where: {id: id}});
-            let userId = req.user.id;
-            let user = await models.User.findOne({where: {id: userId}});
-            const hasAccess = checkUserDomain(user, shelter);
-            if (!hasAccess) {
-                return next(ApiError.forbidden('You do not have access to this shelter'));
-            }
-            if (shelterName !== shelter.shelter_name) {
-                const isValidNewName = await checkNewShelterName(shelterName);
-                if (!isValidNewName) {
-                    return next(ApiError.badRequest('Shelter with this data already exists'));
-                }
-            }
-            if (shelterDomain !== shelter.shelter_domain) {
-                const isValidDomain = await checkNewDomain(shelterDomain);
-                if (!isValidDomain) {
-                    return next(ApiError.badRequest('Shelter with this data already exists'));
-                }
-            }
             const errors = validationResult(req);
             if (!errors.isEmpty()){
                 return next(ApiError.badRequest(errors));
             }
-            const shelterFullAddress = 'City ' + shelterCity + ' street ' + shelterStreet + ' house ' + shelterHouse;
-            shelter.shelter_name = shelterName;
-            await changeUsersDomain(shelter.id, shelter.shelter_domain, shelterDomain);
-            shelter.shelter_domain = shelterDomain;
-            shelter.shelter_address = shelterFullAddress;
-            if (shelterImage !== null) {
-                const shelterImageName = uuid.v4() + '.jpg';
-                await shelterImage.mv(path.resolve(__dirname, '..', 'static', shelterImageName));
-                if (shelter.shelter_image !== 'default-shelter-image.jpg') {
-                    fs.unlink(
-                        path.resolve(__dirname, '../static/', shelter.shelter_image),
-                        () => console.log('Shelter image was deleted')
-                    );
+
+            if (newShelterName !== targetShelter.shelter_name) {
+                if (!await shelterService.isShelterNameExist(newShelterName)) {
+                    return next(ApiError.badRequest('Shelter with this data already exists'));
                 }
-                shelter.shelter_image = shelterImageName;
             }
-            await shelter.save();
-            await user.save();
-            const roles = await getUserRoles(user);
+            if (newShelterDomain !== targetShelter.shelter_domain) {
+                if (!await shelterService.isShelterDomainExist(newShelterDomain)) {
+                    return next(ApiError.badRequest('Shelter with this data already exists'));
+                }
+            }
+
+            const newShelterAddress = `${newShelterCountry} ${newShelterCity} ${newShelterStreet} ${newShelterHouse}`;
+            await userService.changeUsersDomain(targetShelter.id, targetShelter.domain_email, newShelterDomain);
+
+            let updatedShelter = await shelterService.updateShelter(targetShelter, {
+                newShelterName,
+                newShelterDomain,
+                newShelterAddress
+            });
+
+            if (shelterImage !== null) {
+                updatedShelter = await shelterService.changeShelterImage(shelterImage, updatedShelter);
+            }
+            const roles = await getUserRoles(requestedUser);
             const newToken = await generateJWT(
-                user.id,
-                user.login,
-                user.user_image,
-                user.domain_email,
-                user.email,
-                user.full_name,
-                user.birthday,
-                user.phone_number,
-                user.is_paid,
-                user.shelterId,
+                requestedUser.id,
+                requestedUser.login,
+                requestedUser.user_image,
+                requestedUser.domain_email,
+                requestedUser.email,
+                requestedUser.full_name,
+                requestedUser.birthday,
+                requestedUser.phone_number,
+                requestedUser.is_paid,
+                requestedUser.shelterId,
                 roles,
             );
-            return res.json({message: shelter, token: newToken});
-        } catch (e) {
-            return next(ApiError.internal('Server error while updating shelter'));
+            return res.json({shelter: updatedShelter, token: newToken});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server error while updating shelter ' + error));
         }
     }
 
-    async delete(req, res, next){
-        const {id} = req.params;
+    async deleteShelterByToken(req, res, next){
+        const deleteShelterResponse = await shelterService.deleteShelter(req.user.id);
+        if (deleteShelterResponse instanceof Error){
+            return next(deleteShelterResponse);
+        }
+        return res.status(200).json({
+            message: `Shelter was deleted`,
+            token: deleteShelterResponse
+        });
+    }
+
+    async deleteShelterById(req, res, next){
+        const {shelterId} = req.params;
+        const shelter = await shelterService.getShelterById(shelterId);
+        const deleteShelterResponse = await shelterService.deleteShelter(shelter.userId);
+        if (deleteShelterResponse instanceof Error){
+            return next(deleteShelterResponse);
+        }
+        return res.status(200).json({
+            message: `Shelter was deleted`,
+            token: deleteShelterResponse
+        });
+    }
+
+    async getAllShelters(req, res, next){
         try {
-            const shelter = await models.Shelter.findOne({where: {id}});
-            const user = req.user;
-            const hasAccess = checkUserDomain(user, shelter);
-            if (!hasAccess) {
-                return next(ApiError.forbidden('You do not have access to this shelter'));
-            }
-            if (shelter.shelter_image !== 'default-shelter-image.jpg') {
-                fs.unlink(
-                    path.resolve(__dirname, '../static/', shelter.shelter_image),
-                    () => console.log('Shelter image was deleted')
-                );
-            }
+            let {
+                limit,
+                page,
+                shelterName
+            } = req.query;
 
-            await deleteAllApplicationForAdoption(id);
-            await deleteAllAdoptionOffers(id);
-            await deleteAllPetsCharacteristics(id);
-            await deleteAllPets(id);
-            await deleteAllWorkOffers(id);
-            await deleteAllFeedersInfo(id);
-            await deleteAllFeeders(id);
-            await deleteAllShelterUsers(id, req.user.id);
+            if (shelterName){
+                const targetShelter = await shelterService.getShelterByName(shelterName);
+                return res.status(200).json(targetShelter);
+            } else {
+                limit = limit || 9;
+                page = page || 1;
+                let offset = page * limit - limit;
+                const shelters = await shelterService.getAllShelters()
 
-            await shelter.destroy();
-            const shelterOwner = await models.User.findOne({where: {id: req.user.id}});
-            shelterOwner.shelterId = null;
-            await shelterOwner.save();
-            const roles = await getUserRoles(shelterOwner);
-            const newToken = await generateJWT(
-                user.id,
-                user.login,
-                user.user_image,
-                user.domain_email,
-                user.email,
-                user.full_name,
-                user.birthday,
-                user.phone_number,
-                user.is_paid,
-                user.shelterId,
-                roles,
-            );
-            return res.json({message: 'Shelter successfully deleted', token: newToken});
-        } catch (e) {
-            console.log(e);
-            return next(ApiError.internal('Server error while deleting shelter'));
+                const paginatedShelters = pagination.paginateItems(shelters, offset, limit);
+
+                return res.json({
+                    shelters: paginatedShelters.paginatedItems,
+                    pagination: {
+                        totalItems: paginatedShelters.itemCount,
+                        totalPages: paginatedShelters.totalPages,
+                        currentPage: page,
+                        itemsPerPage: limit,
+                    },
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while getting all shelters ' + error));
         }
     }
 }

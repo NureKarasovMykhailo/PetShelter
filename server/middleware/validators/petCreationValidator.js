@@ -15,7 +15,7 @@ function petCreationValidator(req, res, next) {
             .notEmpty()
             .withMessage('Please enter gender of the pet')
             .custom((value) => {
-            if (value !== 'male' && value !== 'female') {
+            if (value !== 'male' && value !== 'female' && value != 'самець' && value != 'самка') {
                 throw new Error('Gender must be "male" or "female"');
             }
             return true;

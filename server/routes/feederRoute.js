@@ -5,54 +5,47 @@ const checkUserRoleMiddleware = require('../middleware/checkRoleMiddleware');
 const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
 const feederValidator = require('../middleware/validators/feederValidator');
 const checkAuthMiddleware = require('../middleware/checkAuthMiddleware');
-const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
 
 router.post(
     '/',
     checkUserRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
     feederValidator,
-    feederController.create
+    feederController.createFeeder
 );
 
 router.put(
-    '/:id',
+    '/:feederId',
     checkUserRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    feederController.update
+    feederController.updateFeeder
 );
 
 router.delete(
-    '/:id',
+    '/:feederId',
     checkUserRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    feederController.delete
+    feederController.deleteFeeder
 );
 
 router.get(
     '/',
     checkAuthMiddleware,
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    feederController.get
-);
-
-router.post(
-    '/:id',
-    checkUserRoleMiddleware(['subscriber', 'petAdmin']),
-    hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
-    feederController.setPet
+    feederController.getAllFeeders
 );
 
 router.patch(
-    '/:id',
+    '/set/:feederId',
     checkUserRoleMiddleware(['subscriber', 'petAdmin']),
     hasUserShelterMiddleware,
-    ifSubscribeOfShelterOwnerIsValid,
+    feederController.setFeederToPet
+);
+
+router.patch(
+    '/unpin/:feederId',
+    checkUserRoleMiddleware(['subscriber', 'petAdmin']),
+    hasUserShelterMiddleware,
     feederController.unpinFeederFromPet
 );
 

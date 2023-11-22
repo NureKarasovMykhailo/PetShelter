@@ -6,24 +6,23 @@ const checkAuthorizationMiddleware = require('../middleware/checkAuthMiddleware'
 const petAdoptionApplicationValidator = require('../middleware/validators/petAdoptionApplicationValidator');
 const hasUserShelterMiddleware = require('../middleware/hasUserShelterMiddleware');
 const checkRoleMiddleware = require("../middleware/checkRoleMiddleware");
-const ifSubscribeOfShelterOwnerIsValid = require('../middleware/ifSubscribeOfShelterOwnerIsValid');
 
 router.post(
     '/:adoptionOfferId',
     checkAuthorizationMiddleware,
     petAdoptionApplicationValidator,
-    petAdoptionApplicationController.create
+    petAdoptionApplicationController.createApplicationForAdoption
 );
 
 router.delete(
-    '/:id',
+    '/:applicationForAdoptionId',
     checkAuthorizationMiddleware,
-    petAdoptionApplicationController.delete
+    petAdoptionApplicationController.deleteApplicationForAdoption
 );
 
 
 router.get(
-    '/:id',
+    '/:applicationForAdoptionId',
     checkAuthorizationMiddleware,
     petAdoptionApplicationController.getOne
 );
@@ -35,10 +34,9 @@ router.get(
     petAdoptionApplicationController.getAllForOneOffer
 );
 
-router.put(
-    '/approved/:id',
+router.patch(
+    '/approved/:applicationForAdoptionId',
     checkRoleMiddleware(['subscriber', 'adoptionAdmin']),
-    ifSubscribeOfShelterOwnerIsValid,
     hasUserShelterMiddleware,
     petAdoptionApplicationController.approvedApplication
 );

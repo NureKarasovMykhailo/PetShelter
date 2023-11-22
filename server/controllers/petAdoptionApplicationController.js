@@ -1,258 +1,216 @@
-const {AdoptionAnnouncement, ApplicationForAdoption, Pet, User, Shelter} = require('../models/models');
+const {ApplicationForAdoption, User} = require('../models/models');
 const ApiError = require('../error/ApiError');
 const {validationResult} = require('express-validator');
-const {Sequelize} = require("sequelize");
 const getUserRoles = require('../middleware/getUserRoles');
-const transporter = require("../nodemailerConfig");
-const {app} = require("../index");
-const {application} = require("express");
-
-const isAdoptionApplicationBelongToShelter = async (user, adoptionApplication) => {
-    const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionApplication.adoptionAnnouncementId}});
-    const pet = await Pet.findOne({where: {id: adoptionOffer.petId}});
-    return pet.shelterId === user.shelterId;
-}
-
-const isAdoptionOfferBelongToShelter = async (shelterId, adoptionOffer) => {
-    const pet = await Pet.findOne({where: {id: adoptionOffer.petId}});
-    return shelterId === pet.shelterId;
-}
-
-const checkUserPermissionToApplicationForAdoption = async (roles, user, adoptionApplication) => {
-    if (!(roles.includes('subscriber') || roles.includes('adoptionAdmin'))){
-        return ApiError.forbidden('Access denied');
-    }
-    if (! await isAdoptionApplicationBelongToShelter(user, adoptionApplication)){
-        return ApiError.forbidden('You don\'t have an access to information about this shelter');
-    }
-}
-
-const getShelterInfo = async (applicationForAdoption) => {
-    const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: applicationForAdoption.adoptionAnnouncementId}});
-    const pet = await Pet.findOne({where: {id: adoptionOffer.petId}});
-    return await Shelter.findOne({where: {id: pet.shelterId}});
-}
-
-const getPetInfo = async (applicationForAdoption) => {
-    const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: applicationForAdoption.adoptionAnnouncementId}});
-    return await Pet.findOne({where: {id: adoptionOffer.petId}});
-}
-
-const destroyAllOtherApplicationForAdoption = async (applicationForAdoption) => {
-    await ApplicationForAdoption.destroy({
-        where: {adoptionAnnouncementId: applicationForAdoption.adoptionAnnouncementId, is_application_approved: false}
-    });
-}
+const petAdoptionOfferService = require('../services/PetAdoptionOfferService');
+const applicationForAdoptionService = require('../services/ApplicationForAdoptionService');
+const pagination = require('../classes/Pagination');
+const nodemailer = require('../classes/Nodemailer');
 
 class PetAdoptionApplicationController{
-    async create(req, res, next){
-        const {adoptionOfferId} = req.params;
-        const {
-            applicationAddress,
-        } = req.body;
+    async createApplicationForAdoption(req, res, next){
+        try {
+            const {adoptionOfferId} = req.params;
+            const {applicationAddress} = req.body;
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()){
-            return next(ApiError.badRequest(errors));
-        }
-
-        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionOfferId}});
-        if (!adoptionOffer){
-            return next(ApiError.badRequest(`There are no adoption offer with ID: ${adoptionOfferId}`));
-        }
-
-        const existedAdoptionApplication = await ApplicationForAdoption.findOne({
-            where: {
-                [Sequelize.Op.and]: [
-                    {userId: req.user.id},
-                    {adoptionAnnouncementId: adoptionOffer.id},
-                ]
+            const errors = validationResult(req);
+            if (!errors.isEmpty()){
+                return next(ApiError.badRequest(errors));
             }
-        });
-        if (existedAdoptionApplication){
-            return next(ApiError.forbidden('You have already one application for adoption'));
-        }
 
-        if (existedAdoptionApplication){
-            return next(ApiError.forbidden('You already have application of adoption'));
-        }
+            const adoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(adoptionOfferId);
 
-        const applicationForAdoption = await ApplicationForAdoption.create(
-            {
-                application_address: applicationAddress,
-                adoptionAnnouncementId: adoptionOfferId,
-                is_application_approved: false,
+            if (!adoptionOffer){
+                return next(ApiError.badRequest(`There are no adoption offer with ID: ${adoptionOfferId}`));
+            }
+
+            const existedAdoptionApplication = await applicationForAdoptionService.findApplicationForAdoption(req.user.id, adoptionOfferId);
+
+            if (existedAdoptionApplication){
+                return next(ApiError.forbidden('You have already one application for adoption'));
+            }
+
+            if (existedAdoptionApplication){
+                return next(ApiError.forbidden('You already have application of adoption'));
+            }
+
+            const applicationForAdoption = await applicationForAdoptionService.createApplicationForAdoption({
+                applicationAddress,
+                adoptionOfferId,
                 userId: req.user.id
-            }
-        );
-        return res.json({message: applicationForAdoption});
+            });
+            return res.status(200).json(applicationForAdoption);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while creating application for adoption ' + error));
+        }
     }
 
-    async delete(req, res, next){
-        const {id} = req.params;
-        const adoptionApplication = await ApplicationForAdoption.findOne({where: {id}});
-        if (!adoptionApplication){
-            return next(ApiError.badRequest(`There no application for adoption with ID: ${id}`));
-        }
-        if (adoptionApplication.userId === req.user.id){
+    async deleteApplicationForAdoption(req, res, next){
+        try {
+            const {applicationForAdoptionId} = req.params;
+            const adoptionApplication = await ApplicationForAdoption.findOne({where: {id: applicationForAdoptionId}});
+            if (!adoptionApplication){
+                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
+            }
+            if (adoptionApplication.userId === req.user.id){
+                await adoptionApplication.destroy();
+                return res.json({message: `Application for adoption with ID: ${applicationForAdoptionId} was deleted`});
+            }
+            const roles = await getUserRoles(req.user);
+
+            const error = await applicationForAdoptionService.checkUserPermissionToApplicationForAdoption(
+                roles,
+                req.user,
+                adoptionApplication
+            );
+
+            if (error){
+                return next(error);
+            }
             await adoptionApplication.destroy();
-            return res.json({message: `Application for adoption with ID: ${id} was deleted`});
+            return res.status(200).json({message: `Application for adoption with ID: ${applicationForAdoptionId} was deleted`});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while deleting application for adoption ' + error));
         }
-        const roles = await getUserRoles(req.user);
-
-        const error = await checkUserPermissionToApplicationForAdoption(
-            roles,
-            req.user,
-            adoptionApplication
-        );
-
-        if (error){
-            return next(error);
-        }
-        await adoptionApplication.destroy();
-        return res.json({message: `Application for adoption with ID: ${id} was deleted`});
     }
 
     async getOne(req, res, next){
-        const {id} = req.params;
-        const adoptionApplication = await ApplicationForAdoption.findOne({where: {id}});
-        if (!adoptionApplication){
-            return next(ApiError.badRequest(`There no application for adoption with ID: ${id}`));
+        try {
+            const {applicationForAdoptionId} = req.params;
+            const adoptionApplication = await applicationForAdoptionService.findApplicationForAdoption(applicationForAdoptionId);
+
+            if (!adoptionApplication){
+                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
+            }
+
+            if (adoptionApplication.userId === req.user.id){
+                return res.status(200).json(adoptionApplication);
+            }
+
+            const roles = await getUserRoles(req.user);
+            const error = await applicationForAdoptionService.checkUserPermissionToApplicationForAdoption(
+                roles,
+                req.user,
+                adoptionApplication
+            );
+            if (error){
+                return next(error);
+            }
+
+            return res.status(200).json(adoptionApplication);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while getting one application for adoption ' + error));
         }
-
-        if (adoptionApplication.userId === req.user.id){
-            return res.json({message: adoptionApplication});
-        }
-        const roles = await getUserRoles(req.user);
-
-        const error = await checkUserPermissionToApplicationForAdoption(
-            roles,
-            req.user,
-            adoptionApplication
-        );
-
-        if (error){
-            return next(error);
-        }
-
-        return res.json({message: adoptionApplication});
     }
 
     async getAllForOneOffer(req, res, next){
-        const {adoptionOfferId} = req.params;
-        let {
-            adopterName,
-            page,
-            limit,
-            sortBy
-        } = req.query;
+        try {
+            const {adoptionOfferId} = req.params;
+            let {
+                adopterName,
+                page,
+                limit,
+                sortBy
+            } = req.query;
 
-        page = page || 1;
-        limit = limit || 9;
+            page = page || 1;
+            limit = limit || 9;
 
-        let offset = page * limit - limit;
-        console.log(adoptionOfferId)
+            let offset = page * limit - limit;
 
-        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionOfferId}});
-        if (!adoptionOffer){
-            return next(ApiError.badRequest(`There are no offer of adoption with ID: ${adoptionOfferId}`));
-        }
-        if (!await isAdoptionOfferBelongToShelter(req.user.shelterId, adoptionOffer)){
-            return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-        }
+            const adoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(adoptionOfferId);
 
-        let applicationForAdoption;
-        if (adopterName){
-            applicationForAdoption = await ApplicationForAdoption.findAll({
-               where: {adoptionAnnouncementId: adoptionOffer.id, application_name: adopterName},
-            });
-        } else {
-            applicationForAdoption = await ApplicationForAdoption.findAll({
-                where: {adoptionAnnouncementId: adoptionOffer.id},
-            });
-        }
-
-        if (sortBy === 'desc'){
-            applicationForAdoption.sort((a, b) => {
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            });
-        } else if (sortBy === 'asc'){
-            applicationForAdoption.sort((a, b) => {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            });
-        }
-
-        const applicationForAdoptionCount = applicationForAdoption.length;
-        let totalPages = Math.ceil(applicationForAdoptionCount / limit);
-        const paginatedApplicationForAdoption = applicationForAdoption.splice(offset, offset + limit);
-
-        return res.json({
-            applicationForAdoption: paginatedApplicationForAdoption,
-            pagination: {
-                totalItems: applicationForAdoptionCount,
-                totalPages: totalPages,
-                currentPage: page,
-                itemsPerPage: limit
+            if (!adoptionOffer){
+                return next(ApiError.badRequest(`There are no offer of adoption with ID: ${adoptionOfferId}`));
             }
-        });
+            console.log(adoptionOffer);
+            if (!await petAdoptionOfferService.isAdoptionOfferBelongToShelter(req.user.shelterId, adoptionOffer)){
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
+            let applicationForAdoption = [];
+            if (adopterName){
+                applicationForAdoption = await applicationForAdoptionService.filterApplicationsByName(adoptionOfferId, adopterName);
+            } else {
+                applicationForAdoption = await applicationForAdoptionService.getAllApplications(adoptionOfferId);
+            }
+            applicationForAdoptionService.sortApplications(applicationForAdoption, sortBy);
+
+            const paginatedApplicationForAdoption = pagination.paginateItems(applicationForAdoption, offset, limit);
+
+            return res.json({
+                applicationForAdoption: paginatedApplicationForAdoption.paginatedItems,
+                pagination: {
+                    totalItems: paginatedApplicationForAdoption.itemCount,
+                    totalPages: paginatedApplicationForAdoption.totalPages,
+                    currentPage: page,
+                    itemsPerPage: limit
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while getting application for one offer ' + error));
+        }
     }
 
     async approvedApplication(req, res, next){
-        const {id} = req.params;
-        const applicationForAdoption = await ApplicationForAdoption.findOne({where: {id}});
-        if (!applicationForAdoption){
-            return next(ApiError.badRequest(`There no application for adoption with ID: ${id}`));
-        }
-        if (! await isAdoptionApplicationBelongToShelter(req.user, applicationForAdoption)){
-            return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-        }
+        try {
+            const {applicationForAdoptionId} = req.params;
+            const applicationForAdoption = await applicationForAdoptionService.findApplicationForAdoption(applicationForAdoptionId);
 
-        if (applicationForAdoption.is_application_approved){
-            return next(ApiError.badRequest(`Application for adoption with ID: ${id} is already approved`));
-        }
-
-        const adopter = await User.findOne({where: {id: applicationForAdoption.userId}});
-        if (!adopter){
-            return next(ApiError.badRequest(`Invalid user ID: ${applicationForAdoption.userId}`));
-        }
-        applicationForAdoption.is_application_approved = true;
-        await applicationForAdoption.save();
-        await destroyAllOtherApplicationForAdoption(applicationForAdoption);
-
-        const shelterInfo = await getShelterInfo(applicationForAdoption);
-        const petInfo = await getPetInfo(applicationForAdoption);
-        const mailOptions = {
-            from: 'petshelter04@ukr.net',
-            to: `${adopter.email}`,
-            subject: 'Підтвердження заявки',
-            text: `Шановний/шановна ${adopter.full_name},
-
-З радістю повідомляємо, що ваша заявка на усиновлення тепер одобрена!
-
-Інформація про притулок:
-Назва приюту: ${shelterInfo.shelter_name}
-Адреса: ${shelterInfo.shelter_address}
-
-Ваш новий чотирилапий друг:
-Ім'я тварини: ${petInfo.pet_name}
-Вік: ${petInfo.pet_age}
-Вид: ${petInfo.pet_kind}
-Стать:  ${petInfo.pet_gender}
-
-Нехай цей момент стане початком довгого та щасливого спільного життя! Будь ласка, звертайтеся до нас, якщо у вас є які-небудь питання чи потреба у допомозі.
-
-З найкращими побажаннями,
-Команда ${shelterInfo.shelter_name}`
-        };
-
-        await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error while sending email: ' + error);
-                return next(ApiError.internal('Error while sending email'))
+            if (!applicationForAdoption){
+                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
             }
-        });
+            if (!await applicationForAdoptionService.isAdoptionApplicationBelongToShelter(req.user, applicationForAdoption)){
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
 
-        return res.status(200).json({applicationForAdoption: applicationForAdoption});
+            if (applicationForAdoption.is_application_approved){
+                return next(ApiError.badRequest(`Application for adoption with ID: ${applicationForAdoptionId} is already approved`));
+            }
+
+            const adopter = await User.findOne({where: {id: applicationForAdoption.userId}});
+            if (!adopter){
+                return next(ApiError.badRequest(`Invalid user ID: ${applicationForAdoption.userId}`));
+            }
+
+            applicationForAdoption.is_application_approved = true;
+            await applicationForAdoption.save();
+            await applicationForAdoptionService.destroyAllOtherApplicationForAdoption(applicationForAdoption);
+
+            const shelterInfo = await applicationForAdoptionService.getShelterInfo(applicationForAdoption);
+            const petInfo = await applicationForAdoptionService.getAdoptedPetInfo(applicationForAdoption);
+
+            const mailSubject = 'Підтвердження заявки';
+            const mailText = `Шановний/шановна ${adopter.full_name}\n`
+                + `\n`
+                + `З радістю повідомляємо, що ваша заявка на усиновлення тепер одобрена!\n`
+                + `\n`
+                + `Інформація про притулок:`
+                + `Назва приюту: ${shelterInfo.shelter_name}`
+                + `Адреса: ${shelterInfo.shelter_address}`
+
+                + `Ваш новий чотирилапий друг:\n`
+                + `Ім'я тварини: ${petInfo.pet_name}\n`
+                + `Вік: ${petInfo.pet_age}\n`
+                + `Вид: ${petInfo.pet_kind}\n`
+                + `Стать:  ${petInfo.pet_gender}\n`
+                + `\n`
+                + `Нехай цей момент стане початком довгого та щасливого спільного життя! `
+                + `Будь ласка, звертайтеся до нас, якщо у вас є які-небудь питання чи потреба у допомозі.`
+                + `\n`
+                + `З найкращими побажаннями,\n`
+                + `Команда ${shelterInfo.shelter_name}`;
+
+            await nodemailer.sendEmail(adopter.email, mailSubject, mailText);
+
+            return res.status(200).json(applicationForAdoption);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while approving application for adoption ' + error));
+        }
 
     }
 }

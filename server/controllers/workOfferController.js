@@ -1,184 +1,146 @@
-const {WorkAnnouncement, User, Shelter} = require('../models/models');
+const { User} = require('../models/models');
 const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
-const {Sequelize} = require("sequelize");
+const workOfferService = require('../services/WorkOfferService');
+const pagination = require('../classes/Pagination');
 
 
 class WorkOfferController {
 
-    async create(req, res, next){
-        const {workTitle, workDescription, workTelephone,
-            workEmail} = req.body;
+    async createWorkOffer(req, res, next){
+        try {
+            const {
+                workTitle,
+                workDescription,
+                workTelephone,
+                workEmail
+            } = req.body;
 
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return next(ApiError.badRequest(errors));
-        }
-
-        const workOffer = await WorkAnnouncement.create(
-            {
-                work_title: workTitle,
-                work_description: workDescription,
-                work_telephone: workTelephone,
-                work_email: workEmail,
-                shelterId: req.user.shelterId,
-                publish_date: Date.now()
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors));
             }
-        );
 
-        return res.json({message: workOffer});
+            const createdWorkOffer = await workOfferService.createWorkOffer({
+                workTitle,
+                workDescription,
+                workTelephone,
+                workEmail,
+                shelterId: req.user.shelterId
+            });
+
+            return res.status(200).json(createdWorkOffer);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while creating work offer ' + error));
+        }
     }
 
-    async update(req, res, next){
-        const {id} = req.params;
-        if (id === null) {
-            return next(ApiError.badRequest('Invalid work offer ID'));
-        }
-        const {workTitle, workDescription, workTelephone,
-            workEmail} = req.body;
+    async updateWorkOffer(req, res, next){
+        try {
+            const {workOfferId} = req.params;
 
-        const workOffer = await WorkAnnouncement.findOne({where: {id}});
-        if (!workOffer) {
-            return next(ApiError.badRequest('Invalid work offer ID'));
-        }
+            if (workOfferId === null) {
+                return next(ApiError.badRequest('Invalid work offer ID'));
+            }
+            const {
+                workTitle,
+                workDescription,
+                workTelephone,
+                workEmail
+            } = req.body;
 
-        const workOfferOwnerUser = await User.findOne({where: {id: req.user.id}});
-        if (workOfferOwnerUser.shelterId !== req.user.shelterId) {
-            return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-        }
+            const workOffer = await workOfferService.getWorkOfferById(workOfferId);
 
-        workOffer.work_title = workTitle;
-        workOffer.work_description = workDescription;
-        workOffer.work_telephone = workTelephone;
-        workOffer.work_email = workEmail;
-        await workOffer.save();
-        return res.json({message: workOffer});
+            if (!workOffer) {
+                return next(ApiError.badRequest('Invalid work offer ID'));
+            }
+
+            const workOfferOwnerUser = await User.findOne({where: {id: req.user.id}});
+            if (workOfferOwnerUser.shelterId !== req.user.shelterId) {
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
+
+            const updatedWorkOffer = await workOfferService.updateWorkOffer(workOffer, {
+                workTitle,
+                workDescription,
+                workTelephone,
+                workEmail
+            });
+
+            return res.status(200).json(updatedWorkOffer);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while updating work offer ' + error));
+        }
     }
 
-    async delete(req, res, next){
-        const {id} = req.params;
-        if (id === null) {
-            return next(ApiError.badRequest('Invalid work offer ID'));
-        }
-        const workOffer = await WorkAnnouncement.findOne({where: {id}});
+    async deleteWorkOffer(req, res, next){
+        try {
+            const {workOfferId} = req.params;
+            const workOffer = await workOfferService.getWorkOfferById(workOfferId);
 
-        if (!workOffer) {
-            return next(ApiError.badRequest('Invalid work offer ID'));
-        }
+            if (!workOffer) {
+                return next(ApiError.badRequest('Invalid work offer ID'));
+            }
 
-        if (workOffer.shelterId !== req.user.shelterId){
-            return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
-        }
+            if (workOffer.shelterId !== req.user.shelterId){
+                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+            }
 
-        await workOffer.destroy();
-        return res.json({message: `Work offer with ID ${id} successfully deleted`});
+            await workOffer.destroy();
+            return res.status(200).json({message: `Work offer with ID ${workOfferId} successfully deleted`});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while deleting work offer ' + error));
+        }
     }
 
-    async getOne(req, res, next){
-        const {id} = req.params;
-
-        if (id === null){
-            return next(ApiError.badRequest('Invalid shelter offer ID'));
+    async getOneWorkOffer(req, res, next){
+        try {
+            const {workOfferId} = req.params;
+            const workOffer = await workOfferService.getWorkOfferById(workOfferId);
+            if (!workOffer){
+                return next(ApiError.badRequest(`There no shelter with ID: ${workOfferId}`));
+            }
+            return res.status(200).json({message: workOffer});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while getting one work offer ' + error));
         }
-        const workOffer = await WorkAnnouncement.findOne({where: {id}});
-        if (!workOffer){
-            return next(ApiError.badRequest(`There no shelter with ID: ${id}`));
-        }
-        return res.json({message: workOffer});
     }
 
-    async getAll(req, res){
-        let {city, country, title, limit, page, sortBy} = req.query;
-        let workOffersArr;
-        limit = limit || 9;
-        page = page || 1;
-        let offset = page * limit - limit;
-        if (city && country){
-            workOffersArr = await WorkAnnouncement.findAll({
-                include: [{
-                    model: Shelter,
-                    where: {
-                        [Sequelize.Op.and]: [
-                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } },
-                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
-                        ]
-                    }
-                }],
+    async getAllWorkOffers(req, res, next){
+        try {
+            let {city, country, title, limit, page, sortBy} = req.query;
+            let workOffers = [];
+            limit = limit || 9;
+            page = page || 1;
+            let offset = page * limit - limit;
 
-            });
-        }
+            workOffers = await workOfferService.getWorkOfferByCityAndCountry(workOffers, city, country);
 
-        if (!city && country){
-            workOffersArr = await WorkAnnouncement.findAll({
-                include: [{
-                    model: Shelter,
-                    where: {
-                        [Sequelize.Op.and]: [
-                            { shelter_address: { [Sequelize.Op.like]: `%${country}%` } }
-                        ]
-                    }
-                }],
+            if (title){
+                workOffers = await workOfferService.filterWorkOffersByTitle(workOffers, title);
+            }
 
-            });
-        }
+            workOfferService.sortWorkOffers(workOffers, sortBy);
 
-        if (city && !country){
-            workOffersArr = await WorkAnnouncement.findAll({
-                include: [{
-                    model: Shelter,
-                    where: {
-                        [Sequelize.Op.and]: [
-                            { shelter_address: { [Sequelize.Op.like]: `%${city}%` } }
-                        ]
-                    }
-                }],
-            });
-        }
+            const paginatedWorkOffers = pagination.paginateItems(workOffers, offset, limit);
 
-        if (!city && !country){
-            workOffersArr = await WorkAnnouncement.findAll({
-                include: [{
-                    model: Shelter
-                }],
-                limit,
-                offset
-            });
-        }
-
-        if (title){
-            let workOffersArrWithTitle = [];
-            workOffersArr.map(workOffer => {
-                if (workOffer.work_title === title){
-                    workOffersArrWithTitle.push(workOffer);
+            return res.status(200).json({
+                workOffers: paginatedWorkOffers.paginatedItems,
+                pagination: {
+                    totalItems: paginatedWorkOffers.itemCount,
+                    totalPages: paginatedWorkOffers.totalPages,
+                    currentPage: page,
+                    itemsPerPage: limit
                 }
-            })
-            workOffersArr = workOffersArrWithTitle;
-        }
-
-        if (sortBy === 'desc'){
-            applicationForAdoption.sort((a, b) => {
-                return new Date(b.createdAt) - new Date(a.createdAt);
             });
-        } else if (sortBy === 'asc'){
-            applicationForAdoption.sort((a, b) => {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            });
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while getting all work offers' + error));
         }
-
-        let workOffersArrCount = workOffersArr.length;
-        let totalPages = Math.ceil(workOffersArrCount / limit);
-        let paginatedWorkOffers = workOffersArr.slice(offset, offset + limit);
-
-        return res.json({
-            workOffers: paginatedWorkOffers,
-            pagination: {
-                totalItems: workOffersArrCount,
-                totalPages: totalPages,
-                currentPage: page,
-                itemsPerPage: limit
-            }
-        });
     }
 }
 

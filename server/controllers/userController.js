@@ -1,117 +1,49 @@
-const {User, Role, UserRole, ConfirmationCode} = require('../models/models');
-const {Sequelize} = require("sequelize");
+const {User, Role, ConfirmationCode} = require('../models/models');
 const bcrypt = require('bcrypt');
 const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
-const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 const getUserRole = require('../middleware/getUserRoles');
 const generateConfirmationCode = require('../functions/generateConfirmationCode');
-const transporter = require("../nodemailerConfig");
-
-
-const generateJwt = async (id, login, image, domainEmail, email, fullName,
-                           birthday, phoneNumber, isPaid, shelterId, roles) => {
-    try {
-        return jwt.sign(
-            {
-                id: id,
-                login: login,
-                user_image: image,
-                domain_email: domainEmail,
-                email: email,
-                full_name: fullName,
-                birthday: birthday,
-                phone_number: phoneNumber,
-                is_paid: isPaid,
-                shelterId: shelterId,
-                roles: roles
-            },
-            process.env.SECRET_KEY,
-            {expiresIn: '24h'}
-        );
-    } catch (e) {
-        return ApiError.internal('Server error while generating JWT token');
-    }
-}
-
-const auth = Buffer.from(process.env.CLIENT_ID + ':' + process.env.SECRET).toString('base64');
-
-
-const setSubscriptionPayload = (subscriptionPlanId) => {
-    const subscriptionPayload = {
-        "plan_id": subscriptionPlanId,
-        "application_context": {
-            "brand_name": "Subscription Plan",
-            "locale": "en-US",
-            "user_action": "SUBSCRIBE_NOW",
-            "payment_method": {
-                "payer_selected": "PAYPAL",
-                "payee_preferred": "IMMEDIATE_PAYMENT_REQUIRED"
-            },
-            "return_url": "http://localhost:7000/api/user/subscribe/succeed",
-            "cancel_url": "http://localhost:7000/subscription/payPalCancelPayment"
-        }
-    }
-    return subscriptionPayload;
-}
-
-const setSubscriberId = async (userId, subscriptionId) => {
-    const user = await User.findOne({where: {id: userId}});
-    user.subscriptionId = subscriptionId;
-    const userRole = await getUserRole(user);
-    if (!userRole.includes('subscriber')){
-        const subscriptionRole = await Role.findOne({where: {role_title: 'subscriber'}});
-        await UserRole.create({userId: user.id, roleId: subscriptionRole.id});
-    }
-    await user.save();
-}
-
-const applyUserChanges = async (user) => {
-    await user.save();
-    const roles = await getUserRole(user);
-    const newToken = await generateJwt(
-        user.id,
-        user.login,
-        user.user_image,
-        user.domain_email,
-        user.email,
-        user.full_name,
-        user.birthday,
-        user.phone_number,
-        user.is_paid,
-        user.shelterId,
-        roles
-    );
-    return {user: user, token: newToken};
-}
+const userService = require("../services/UserService");
+const generateJwt = require("../functions/generateJwt");
+const subscription = require('../classes/Subscription');
+const nodemailer = require('../classes/Nodemailer');
+const conformationCode = require('../classes/ConformationCode');
 
 class UserController {
+
+    constructor() {
+        this.userRegistration = this.userRegistration.bind(this);
+        this.changeEmail = this.changeEmail.bind(this);
+        this.changePhoneNumber = this.changePhoneNumber.bind(this);
+    }
+
     async userRegistration(req, res, next) {
         try {
-            const {login, email, fullName,
-                birthday, phoneNumber, password} = req.body;
+            const {
+                login,
+                email,
+                fullName,
+                birthday,
+                phoneNumber,
+                password
+            } = req.body;
+
             let userImageName;
             let userImage;
+
             if (!req.files || Object.keys(req.files).length === 0) {
                 userImageName = 'default-user-image.jpg';
             } else {
                 userImage = req.files.userImage;
                 userImageName = uuid.v4() + '.jpg';
             }
-            const candidates = await User.findOne({
-                where: {
-                    [Sequelize.Op.or]: [
-                        {login: login},
-                        {email: email},
-                        {phone_number: phoneNumber}
-                    ]
-                }
-            });
-            if (candidates){
-                return next(ApiError.badRequest('User with this data already exists'));
+
+            if (await userService.checkUserDuplicates(login, email, phoneNumber)) {
+                return next(ApiError.conflict('User with this data already exists'))
             }
 
             const errors = validationResult(req);
@@ -121,7 +53,7 @@ class UserController {
             }
 
             const hashedPassword = bcrypt.hashSync(password, 7);
-            const user = await User.create({
+            const createdUser = await User.create({
                 login: login,
                 user_image: userImageName,
                 email: email,
@@ -132,23 +64,21 @@ class UserController {
                 hashed_password: hashedPassword,
                 is_paid: false
             });
-            const role = await Role.findOne({
-                where: {
-                    role_title: 'user'
-                }
-            })
 
-            await UserRole.create({
-                userId: user.id,
-                roleId: role.id
-            });
-            if (userImageName !== 'default-user-imag.jpg') {
-                await userImage.mv(path.resolve(__dirname, '..', 'static', userImageName));
-            }
+            await userService.assignUserRoles(createdUser.id);
+
+            await this._saveUserImage(userImage, userImageName);
+
             return res.status(200).json({message: 'User successfully created'});
-        } catch (e) {
-            console.log(e);
-            return next(ApiError.internal('Server Error while registration'));
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server Error while registration ' + error));
+        }
+    }
+
+    async _saveUserImage(userImage, userImageName) {
+        if (userImageName !== 'default-user-image.jpg') {
+            await userImage.mv(path.resolve(__dirname, '..', 'static', userImageName));
         }
     }
 
@@ -178,10 +108,11 @@ class UserController {
                 user.shelterId,
                 roles
             );
-            return res.json({token});
+            return res.status(200).json({token: token});
 
-        } catch (e) {
-            return next(ApiError.internal('Server error while authorization'));
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server error while authorization ' + error));
         }
     }
 
@@ -202,114 +133,127 @@ class UserController {
                 user.shelterId,
                 roles
             );
-            return res.json({token});
-        } catch (e) {
-            return next(ApiError.internal('Server error'));
+            return res.status(200).json({token: token});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Server error while checking auth ' + error));
         }
     }
 
-    async subscribe(req, res){
-        const subscriptionPlanId = 'P-2C7336821T225793KMVHJYMQ';
-        const response = await fetch('https://api-m.sandbox.paypal.com/v1/billing/subscriptions', {
-            method: 'post',
-            body: JSON.stringify(setSubscriptionPayload(subscriptionPlanId)),
-            headers: {
-                'Authorization': 'Basic ' + auth,
-                'Content-Type': 'application/json'
-            },
-        });
-        if (response.ok) {
-            const subscriptionDetails = await response.json();
-            const subscriptionId = subscriptionDetails.id;
-
-            await setSubscriberId(req.user.id, subscriptionId);
-
-            res.send(subscriptionDetails);
+    async subscribe(req, res, next){
+        try {
+            const response = await subscription.subscribeRequest();
+            if (response.ok) {
+                const subscriptionDetails = await response.json();
+                const subscriptionId = subscriptionDetails.id;
+                await userService.setSubscriberId(req.user.id, subscriptionId);
+                res.send(subscriptionDetails);
+            }
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while subscribing ' + error));
         }
-
     }
 
     async changeEmail(req, res, next){
-        const {newEmail} = req.body;
+        try {
+            const {newEmail} = req.body;
+
+            const validationEmailError = this._validateEmailFormat(newEmail);
+            if (validationEmailError){
+                return next(validationEmailError);
+            }
+
+            if (await this._checkIfSameEmail(req.user.id, newEmail)) {
+                return res.json({ message: 'Email updated successfully' });
+            }
+
+            if (await userService.isEmailExist(newEmail)){
+                return next(ApiError.badRequest('User with this email already exists'))
+            }
+
+            const user = await User.findOne({where: {id: req.user.id}});
+            user.email = newEmail;
+
+            const response = await userService.applyUserChanges(user);
+            return res.status(200).json(response);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while changing email ' + error));
+        }
+    }
+
+    _validateEmailFormat(newEmail) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(newEmail)){
-            return next(ApiError.badRequest('Please enter correct email address'));
+        if (!emailRegex.test(newEmail)) {
+            return ApiError.badRequest('Please enter a correct email address');
         }
-        const candidate = await User.findOne({where: {email: newEmail}});
-
-        if (candidate){
-            return next(ApiError.badRequest('User with this email already exists'))
-        }
-
-        const user = await User.findOne({where: {id: req.user.id}});
-        user.email = newEmail;
-
-        const response = await applyUserChanges(user);
-
-        return res.json(response);
+    }
+    async _checkIfSameEmail(userId, newEmail) {
+        const user = await User.findOne({ where: { id: userId } });
+        return user.email === newEmail;
     }
 
     async changePhoneNumber(req, res, next){
-        const {newPhoneNumber} = req.body;
+        try {
+            const {newPhoneNumber} = req.body;
+            const phoneValidationError = this._validatePhoneNumberFormat(newPhoneNumber);
+            if (phoneValidationError){
+                return next(phoneValidationError);
+            }
+            if (userService.isNumberExist(newPhoneNumber)){
+                return next(ApiError.badRequest('User with this phone number already exists'))
+            }
+            const user = await User.findOne({where: {id: req.user.id}});
+            user.phone_number = newPhoneNumber;
+            const response = await userService.applyUserChanges(user);
+            return res.status(200).json(response);
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while changing phone number ' + error));
+        }
+    }
+
+    _validatePhoneNumberFormat(newPhoneNumber) {
         const phoneRegex = /^\+\d{7,15}$/;
-        if (!phoneRegex.test(newPhoneNumber)){
-            return next(ApiError.badRequest('Please enter correct phone number'));
+        if (!phoneRegex.test(newPhoneNumber)) {
+            return ApiError.badRequest('Please enter a correct phone number');
         }
-        const candidate = await User.findOne({where: {phone_number: newPhoneNumber}})
-        if (candidate){
-            return next(ApiError.badRequest('User with this phone number already exists'))
-        }
-
-        const user = await User.findOne({where: {id: req.user.id}});
-
-        user.phone_number = newPhoneNumber;
-
-        const response = await applyUserChanges(user);
-
-        return res.json(response);
     }
 
     async sendConfirmationCode(req, res, next){
-        const {email} = req.body;
-        const candidate = await User.findOne({where: {email: email}});
-        if (!candidate){
-            return next(ApiError.badRequest(`There no user with email: ${candidate}`));
-        }
-        const confirmationCode = generateConfirmationCode();
-        const mailOptions = {
-            from: 'petshelter04@ukr.net',
-            to: `${email}`,
-            subject: 'Запит на зміну паролю',
-            text: `Вітаємо,
-Ви отримали це повідомлення, оскільки нам надійшла заявка на сміну пароля для вашого облікового запису.
-Код підтвердження для сміни пароля: ${confirmationCode}
-Будь ласка, введіть цей код на веб-сайті для завершення процесу сміни пароля.
-Цей код дійсний протягом 15 хвилин.
-Якщо ви не робили заявку на сміну пароля, проігноруйте це повідомлення. Ваш пароль залишиться незмінним.
-Дякуємо за користування нашим сервісом.
-З повагою,
-Команда підтримки користувачів
-PetShelter`
-        };
-
-        await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error while sending email: ' + error);
-                return next(ApiError.internal('Error while sending email'))
+        try {
+            const {email} = req.body;
+            const targetUser = await User.findOne({where: {email: email}});
+            if (!targetUser){
+                return next(ApiError.badRequest(`There no user with email: ${targetUser}`));
             }
-        });
-        const expirationTime = 15 * 60 * 1000;
-        const expiresAt = new Date(Date.now() + expirationTime);
-
-        await ConfirmationCode.create({code: confirmationCode, expiresAt, userId: candidate.id});
-        return res.status(200).json({message: 'Confirmation code was sent'});
+            const confirmationCode = generateConfirmationCode();
+            const emailSubject = 'Запит на зміну паролю'
+            const emailText = `Вітаємо,\n`
+                + `Ви отримали це повідомлення, оскільки нам надійшла заявка на сміну пароля для вашого облікового запису.\n`
+                + `Код підтвердження для сміни пароля: ${confirmationCode}\n`
+                + `Будь ласка, введіть цей код на веб-сайті для завершення процесу сміни пароля.\n`
+                + `Цей код дійсний протягом 15 хвилин.\n`
+                + `Якщо ви не робили заявку на сміну пароля, проігноруйте це повідомлення. Ваш пароль залишиться незмінним.\n`
+                + `Дякуємо за користування нашим сервісом.\n`
+                + `З повагою,\n`
+                + `Команда підтримки користувачів\n`
+                + `PetShelter`;
+            await nodemailer.sendEmail(email, emailSubject, emailText);
+            await conformationCode.createConformationCode(confirmationCode, targetUser.id);
+            return res.status(200).json({message: 'Confirmation code was sent'});
+        } catch (error) {
+            console.log(error);
+            return next(ApiError.internal('Internal server error while sending code ' + error));
+        }
     }
 
     async checkConfirmationCode(req, res, next){
         const {confirmationCode, email} = req.body;
         const candidate = await ConfirmationCode.findOne({where: {code: confirmationCode}});
         const changingPasswordUser = await User.findOne({where: {id: candidate.userId}});
-        if (!candidate || changingPasswordUser.email != email){
+        if (!candidate || changingPasswordUser.email !== email){
             return next(ApiError.badRequest('You entered wrong code'));
         }
         if (candidate.expiresAt < Date.now()){
@@ -338,7 +282,7 @@ PetShelter`
         return res.status(200).json({token: newToken});
     }
 
-    async changeUserImage(req, res, next){
+    async changeUserImage(req, res){
         const {newUserImage} = req.files;
         const changingImageUser = await User.findOne({where: {id: req.user.id}});
 
@@ -352,6 +296,111 @@ PetShelter`
         changingImageUser.save();
         const newToken = await applyUserChanges(changingImageUser);
         return res.status(200).json({newToken});
+    }
+
+    async getProfileInfoByToken(req, res){
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: {id: userId},
+            attributes: {exclude: ['hashed_password']},
+            include: {model: Role}
+        });
+        return res.status(200).json(user);
+    }
+
+    async getProfileInfoByUserId(req, res, next){
+        const {userId} = req.params;
+        const user = await User.findOne({
+           where: {id: userId},
+           attributes: {exclude: ['hashed_password']},
+           include: {model: Role}
+        });
+        if (!user){
+            return next(ApiError.notFound(`There are no user with ID: ${userId}`));
+        }
+        return res.status(200).json(user);
+    }
+
+    async getUsers(req, res, next){
+        let {
+            limit,
+            page,
+            login
+        } = req.query;
+
+        if (login){
+            const user = await User.findOne({
+                where: {login},
+                attributes: {exclude: ['hashed_password']},
+                include: {model: Role}
+            });
+            return res.status(200).json(user);
+        } else if (!login) {
+            limit = limit || 9;
+            page = page || 1;
+            let offset = page * limit - limit;
+            const users = await User.findAll({
+                attributes: {exclude: ['hashed_password']},
+                include: {model: Role}
+            });
+            const usersCount = users.length;
+            let totalPages = Math.ceil(usersCount / limit);
+            let paginatedUsers = users.slice(offset, offset + limit);
+
+            return res.status(200).json({
+                users: paginatedUsers,
+                pagination: {
+                    totalItems: usersCount,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    itemsPerPage: limit,
+                }
+            });
+        }
+        return next(ApiError.internal('Internal server error while getting users'));
+
+    }
+
+    async deleteUser(req, res, next){
+        const {userId} = req.params;
+
+        if (userId === req.user.id){
+            return next(ApiError.badRequest('You can\'t delete yourself'));
+        }
+
+        const user = await User.findOne({
+           where: {id: userId}
+        });
+        if (!user){
+            return next(ApiError.notFound(`There no user with ID: ${userId}`));
+        }
+        const deletedUserRoles = await getUserRole(user);
+        if (deletedUserRoles.includes('systemAdmin')){
+            return next(ApiError.forbidden('You can\'t delete other system administrator'));
+        }
+        if (deletedUserRoles.includes('subscriber') && user.shelters !== null){
+            const deleteShelterResponse = await deleteShelter(user.id);
+            if (deleteShelterResponse instanceof ApiError){
+                return next(deleteShelterResponse);
+            }
+        }
+        await user.destroy();
+        return res.status(200).json({message: `User with ID: ${userId} was deleted`});
+    }
+
+    async deleteUserByToken(req, res, next){
+        const user = await User.findOne({
+            where: {id: req.user.id}
+        });
+        const deletedUserRoles = await getUserRole(user);
+        if (deletedUserRoles.includes('subscriber') && user.shelters !== null){
+            const deleteShelterResponse = await deleteShelter(user.id);
+            if (deleteShelterResponse instanceof ApiError){
+                return next(deleteShelterResponse);
+            }
+        }
+        await user.destroy();
+        return res.status(200).json({message: `User with ID: ${user.id} was deleted`});
     }
 
 }

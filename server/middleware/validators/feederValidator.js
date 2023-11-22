@@ -8,11 +8,11 @@ function feederValidator(req, res, next){
             .withMessage('Please enter correct capacity of the feeder'),
         body('designedFor')
             .trim()
-            .isString()
+            .notEmpty()
             .withMessage('Please enter the type of animal for which the feeder is intended'),
         body('feederColour')
             .trim()
-            .isString()
+            .notEmpty()
             .withMessage('Please enter correct colour of your feeder')
     ];
 }
