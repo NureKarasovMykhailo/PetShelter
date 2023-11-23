@@ -19,7 +19,7 @@ router.post(
 );
 
 router.get(
-    'one/:shelterId',
+    '/one/:shelterId',
     checkAuthMiddleware,
     shelterController.getShelterById
 );

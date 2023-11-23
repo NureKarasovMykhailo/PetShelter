@@ -1,5 +1,5 @@
 const ApiError = require('../error/ApiError');
-const {CollarInfo} = require('../models/models');
+const {CollarInfo, Collar, Pet} = require('../models/models');
 
 class CollarInfoController {
 
@@ -8,15 +8,53 @@ class CollarInfoController {
             const {
                 temperature,
                 pulse,
-                inSafeRadius
+                inSafeRadius,
             } = req.body;
             const {collarId} = req.params;
             const createdCollarInfo = await CollarInfo.create({
                 temperature,
                 pulse,
                 in_safe_radius: inSafeRadius,
-                collarId
+                collarId,
             });
+
+            const collar = await Collar.findOne({
+                where: {id: collarId}
+            });
+            let message = '';
+            let isPetProblemExist = false;
+            if (!inSafeRadius){
+                isPetProblemExist = true;
+                message += 'Animal not at save radius';
+            }
+            if (temperature > collar.max_temperature || temperature < collar.min_temperature) {
+                isPetProblemExist = true;
+                message += ' Animal temperature isn\'t normal';
+            }
+
+            if (pulse > collar.max_temperature || pulse < collar.min_temperature) {
+                isPetProblemExist = true;
+                message += ' Animal pulse isn\'t normal';
+            }
+
+            if (isPetProblemExist){
+                createdCollarInfo.message = message;
+                await createdCollarInfo.save();
+                const problemPet = await Pet.findOne({
+                    where: {collarId}
+                });
+                problemPet.is_status_normal = false;
+                await problemPet.save();
+            } else {
+                createdCollarInfo.message = 'normal';
+                await createdCollarInfo.save();
+                const pet = await Pet.find({
+                    where: {collarId}
+                });
+                pet.is_status_normal = true;
+                await pet.save();
+            }
+
             return res.status(200).json(createdCollarInfo);
         } catch (error) {
             console.log(error);

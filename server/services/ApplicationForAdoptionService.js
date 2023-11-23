@@ -11,7 +11,7 @@ class ApplicationForAdoptionService {
             where: {
                 [Sequelize.Op.and]: [
                     {userId: userId},
-                    {adoptionAnnouncementId: adoptionOfferId},
+                    {adoptionOfferId: adoptionOfferId},
                 ]
             }
         });
@@ -25,7 +25,7 @@ class ApplicationForAdoptionService {
         return await ApplicationForAdoption.create(
             {
                 application_address: applicationAddress,
-                adoptionAnnouncementId: adoptionOfferId,
+                adoptionOfferId: adoptionOfferId,
                 is_application_approved: false,
                 userId: userId
             }
@@ -42,20 +42,21 @@ class ApplicationForAdoptionService {
     }
 
     async isAdoptionApplicationBelongToShelter (user, adoptionApplication){
-        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionApplication.adoptionAnnouncementId}});
+        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionApplication.adoptionOfferId}});
+        console.log(adoptionOffer)
         const pet = await Pet.findOne({where: {id: adoptionOffer.petId}});
         return pet.shelterId === user.shelterId;
     }
 
     async filterApplicationsByName(adoptionOfferId, adopterName) {
         return await ApplicationForAdoption.findAll({
-            where: { adoptionAnnouncementId: adoptionOfferId, application_name: adopterName },
+            where: { adoptionOfferId: adoptionOfferId, application_name: adopterName },
         });
     }
 
     async getAllApplications(adoptionOfferId) {
         return await ApplicationForAdoption.findAll({
-            where: { adoptionAnnouncementId: adoptionOfferId },
+            where: { adoptionOfferId: adoptionOfferId },
         });
     }
 
@@ -68,18 +69,21 @@ class ApplicationForAdoptionService {
     }
 
     async destroyAllOtherApplicationForAdoption (applicationForAdoption){
+        console.log(applicationForAdoption.adoptionOfferId)
         await ApplicationForAdoption.destroy({
-            where: {adoptionAnnouncementId: applicationForAdoption.adoptionAnnouncementId, is_application_approved: false}
+            where: {adoptionOfferId: applicationForAdoption.adoptionOfferId, is_application_approved: false}
         });
+        console.log(applicationForAdoption)
     }
 
     async getAdoptedPetInfo(adoptionAnnouncement){
-        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionAnnouncement.id}});
+        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: adoptionAnnouncement.adoptionOfferId}});
+        console.log(adoptionOffer);
         return await Pet.findOne({where: {id: adoptionOffer.petId}})
     }
 
     async getShelterInfo (applicationForAdoption){
-        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: applicationForAdoption.adoptionAnnouncementId}});
+        const adoptionOffer = await AdoptionAnnouncement.findOne({where: {id: applicationForAdoption.adoptionOfferId}});
         const pet = await Pet.findOne({where: {id: adoptionOffer.petId}});
         return await Shelter.findOne({where: {id: pet.shelterId}});
     }
@@ -94,7 +98,7 @@ class ApplicationForAdoptionService {
         });
         await Promise.all(adoptionOffers.map(async adoptionOffer => {
             await models.ApplicationForAdoption.destroy({
-                where: {adoptionAnnouncementId: adoptionOffer.id}
+                where: {adoptionOfferId: adoptionOffer.id}
             })
         }));
     }

@@ -10,6 +10,7 @@ const feederRouter = require('./feederRoute');
 const employeeRouter = require('./employeeRoute');
 const feederInfoRouter = require('./feederInfoRoute');
 const collarRouter = require('./collarRoute');
+const collarInfoRouter = require('./collarInfoRoute');
 
 router.use('/user', userRouter);
 router.use('/shelter', shelterRouter);
@@ -21,5 +22,6 @@ router.use('/feeder', feederRouter);
 router.use('/employee', employeeRouter);
 router.use('/feeder-info', feederInfoRouter);
 router.use('/collar', collarRouter);
+router.use('/collar-info', collarInfoRouter);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const {FeederInfo} = require('../models/models');
+const {FeederInfo, Pet, Feeder} = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class FeederInfoController {
@@ -8,14 +8,48 @@ class FeederInfoController {
             const {
                 amountOfFood,
                 feedingTime,
+                createdAt
             } = req.body;
             const {feederId} = req.params;
+
+            const lastFeedingInfo = await FeederInfo.findOne({
+                where: {
+                    feederId: feederId
+                },
+                order: [
+                    ['createdAt', 'DESC']
+                ]
+            });
+
+
 
             const feederInfo = await FeederInfo.create({
                 amount_of_food: amountOfFood,
                 feeding_time: feedingTime,
-                feeder_id: feederId
+                feederId: feederId,
             });
+
+
+            if (lastFeedingInfo) {
+                const timeBetweenFeeding = feederInfo.createdAt - lastFeedingInfo.createdAt;
+                const oneDayInMinutes = 24 * 60;
+
+                if (timeBetweenFeeding >= oneDayInMinutes) {
+                    feederInfo.message = 'The animal has not eaten for a day';
+                    const problemPet = await Pet.findOne({
+                        where: {feederId}
+                    });
+                    problemPet.is_status_normal = false;
+                    await problemPet.save();
+                } else {
+                    feederInfo.message = 'normal';
+                    const pet = await Pet.findOne({
+                        where: {feederId}
+                    });
+                    pet.is_status_normal = true;
+                    await pet.save();
+                }
+            }
 
             return res.status(200).json(feederInfo);
         } catch (error) {

@@ -45,7 +45,8 @@ const Pet = dbClass.db.define('pet', {
     pet_age: {type: DataTypes.INTEGER},
     pet_gender: {type: DataTypes.STRING},
     cell_number: {type: DataTypes.STRING},
-    pet_kind: {type: DataTypes.STRING}
+    pet_kind: {type: DataTypes.STRING},
+    is_status_normal: {type: DataTypes.BOOLEAN, default: true}
 });
 
 const PetCharacteristic = dbClass.db.define('pet_characteristic', {
@@ -58,13 +59,14 @@ const Feeder = dbClass.db.define('feeder', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     capacity: {type: DataTypes.DOUBLE},
     designed_for: {type: DataTypes.STRING},
-    feeder_colour: {type: DataTypes.STRING}
+    feeder_colour: {type: DataTypes.STRING},
 });
 
 const FeederInfo = dbClass.db.define('feeder_info', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     amount_of_food: {type: DataTypes.DOUBLE},
-    feeding_time: {type: DataTypes.DATE}
+    feeding_time: {type: DataTypes.DATE},
+    message: {type: DataTypes.STRING},
 });
 
 const AdoptionOffer = dbClass.db.define('adoption_offer', {
@@ -103,7 +105,8 @@ const CollarInfo = dbClass.db.define('collar_info', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     temperature: {type: DataTypes.DOUBLE},
     pulse: {type: DataTypes.DOUBLE},
-    in_safe_radius: {type: DataTypes.BOOLEAN, default: true}
+    in_safe_radius: {type: DataTypes.BOOLEAN, default: true},
+    message: {type: DataTypes.STRING}
 });
 
 Shelter.hasMany(WorkOffer);

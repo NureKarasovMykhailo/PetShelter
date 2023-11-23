@@ -201,7 +201,7 @@ class UserController {
             if (phoneValidationError){
                 return next(phoneValidationError);
             }
-            if (userService.isNumberExist(newPhoneNumber)){
+            if (await userService.isNumberExist(newPhoneNumber)){
                 return next(ApiError.badRequest('User with this phone number already exists'))
             }
             const user = await User.findOne({where: {id: req.user.id}});
@@ -278,7 +278,7 @@ class UserController {
         console.log(newPassword);
         changingPasswordUser.hashed_password = bcrypt.hashSync(newPassword, 7);
         await changingPasswordUser.save();
-        const newToken = await applyUserChanges(changingPasswordUser);
+        const newToken = await userService.applyUserChanges(changingPasswordUser);
         return res.status(200).json({token: newToken});
     }
 
@@ -294,7 +294,7 @@ class UserController {
         await newUserImage.mv(path.resolve(__dirname, '..', 'static', newUserImageName));
         changingImageUser.user_image = newUserImageName;
         changingImageUser.save();
-        const newToken = await applyUserChanges(changingImageUser);
+        const newToken = await userService.applyUserChanges(changingImageUser);
         return res.status(200).json({newToken});
     }
 
