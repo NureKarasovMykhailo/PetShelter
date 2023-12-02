@@ -24,4 +24,5 @@ router.use('/feeder-info', feederInfoRouter);
 router.use('/collar', collarRouter);
 router.use('/collar-info', collarInfoRouter);
 
+
 module.exports = router;

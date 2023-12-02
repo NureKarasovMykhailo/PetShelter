@@ -1,0 +1,86 @@
+.NavBarContainer {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.NavBarAuthRow{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.NavBarHeader{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.NavBarLogo {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.NavBarHeadersTexts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+.NavBarHeadersTexts p {
+    margin: 5px;
+    line-height: 1;
+}
+
+.NavBarRightSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.NavBarLanguageContainer{
+    margin-right: 10px;
+}
+
+.NavBarLanguageSelector {
+    max-width: 100%;
+    max-height: 35px;
+    font-size: 24px;
+}
+
+.NavBarRoutesContainer{
+    margin-top: 5px;
+    padding: 5px;
+    height: 100px;
+    width: 100%;
+    background-color: #03DE75;
+    border-radius: 2px;
+}
+
+.NavBarRoutesContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.NavBarLinkContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.NavBarLink {
+    max-height: 50px;
+    min-width: 50px;
+    margin-right: 10px;
+}

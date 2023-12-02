@@ -23,6 +23,8 @@ router.get('/profile/:userId', checkUserRoleMiddleware(['systemAdmin']), userCon
 router.delete('/:userId', checkUserRoleMiddleware(['systemAdmin']), userController.deleteUser);
 router.delete('/', checkAuthMiddleware, userController.deleteUserByToken);
 
-
+router.get('/subscribe/succeed', (req, res, next) => {
+    return res.status(200).json({message: 'Successfully payment'})
+});
 
 module.exports = router;

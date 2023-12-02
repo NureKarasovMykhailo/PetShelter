@@ -11,7 +11,6 @@ class FeederInfoController {
                 createdAt
             } = req.body;
             const {feederId} = req.params;
-
             const lastFeedingInfo = await FeederInfo.findOne({
                 where: {
                     feederId: feederId
@@ -20,22 +19,19 @@ class FeederInfoController {
                     ['createdAt', 'DESC']
                 ]
             });
-
-
-
-            const feederInfo = await FeederInfo.create({
+            const feederInfo =
+                await FeederInfo.create({
                 amount_of_food: amountOfFood,
                 feeding_time: feedingTime,
                 feederId: feederId,
             });
-
-
             if (lastFeedingInfo) {
-                const timeBetweenFeeding = feederInfo.createdAt - lastFeedingInfo.createdAt;
+                const timeBetweenFeeding =
+                    feederInfo.createdAt - lastFeedingInfo.createdAt;
                 const oneDayInMinutes = 24 * 60;
-
                 if (timeBetweenFeeding >= oneDayInMinutes) {
-                    feederInfo.message = 'The animal has not eaten for a day';
+                    feederInfo.message =
+                        'The animal has not eaten for a day';
                     const problemPet = await Pet.findOne({
                         where: {feederId}
                     });
@@ -50,7 +46,6 @@ class FeederInfoController {
                     await pet.save();
                 }
             }
-
             return res.status(200).json(feederInfo);
         } catch (error) {
             console.log(error);
