@@ -1,6 +1,7 @@
+import Header from "./components/header/Header"
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./components/AppRouter";
-import Header from "./components/Header/Header";
+import Footer from "./components/footer/Footer"
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <BrowserRouter>
         <AppRouter />
       </BrowserRouter>
+      <Footer />
     </div>
   );
 }

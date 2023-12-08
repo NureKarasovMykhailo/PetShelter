@@ -10,4 +10,7 @@ export const IMAGES = {
     PET_ADOPTION: "/assets/img/dog.png",
     SUBSCRIBE: "/assets/img/save-money.png",
     ABILITY: "/assets/img/information.png",
+    CONTACTS_ICON: "/assets/img/contact.png",
+    ABOUT_ICON: "/assets/img/group.png",
+    TOGETHER_ICON: "/assets/img/idea.png"
 };

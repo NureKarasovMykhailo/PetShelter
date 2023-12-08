@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./Header.module.css";
-import Button from "../../UI/button/Button";
-import Select from "../../UI/select/Select";
-import Link from "../../UI/link/Link";
+import Button from "../UI/button/Button";
+import Select from "../UI/select/Select";
+import Link from "../UI/link/Link";
 import {IMAGES} from "../../utils/const";
 
 const Header = () => {
