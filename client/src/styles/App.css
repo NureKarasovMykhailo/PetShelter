@@ -1,0 +1,10 @@
+.mainContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирование контента по центру страницы */
+    min-height: 100vh;
+    margin: 15px 15%;
+  }
+  
+  

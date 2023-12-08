@@ -1,0 +1,50 @@
+.mainPageContainer{
+    width: 100%;
+    height: 100%;   
+}
+.adoptionOfferContainer{
+    display: flex;
+    flex-direction: column;
+}
+.adoptionOfferHeader{
+    width: 100%;
+    text-align: center;
+}
+.adoptionOfferLinksContainer{
+    display: flex;
+    flex-direction: row;
+}
+.adoptionOfferBtn{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.workOfferContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding-top: 30px;
+}
+.workOfferImageContainer{
+    width: 50%;
+}
+.workOfferImage{
+    width: 100%;
+    height: 500px;
+}
+.workOffer{
+    width: 50%;
+    padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    line-height: 2;
+}
+.workOfferDetail{
+    font-size: 18px;
+}
+.mainImage{
+    padding-top: 15px;
+}

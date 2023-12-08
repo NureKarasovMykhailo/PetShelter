@@ -78,3 +78,12 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  width: 100%;
+}
+

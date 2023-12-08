@@ -12,5 +12,10 @@ export const IMAGES = {
     ABILITY: "/assets/img/information.png",
     CONTACTS_ICON: "/assets/img/contact.png",
     ABOUT_ICON: "/assets/img/group.png",
-    TOGETHER_ICON: "/assets/img/idea.png"
+    TOGETHER_ICON: "/assets/img/idea.png",
+    CAT_IMAGE: "/assets/img/cat-offer.jpg",
+    DOG_IMAGE: "/assets/img/dog-offer.jpg",
+    DOG_AND_CAT_IMAGE: "/assets/img/cat-and-dog.jpg",
+    WORK_OFFER_IMAGE: "/assets/img/work-offer-image.jpg",
+    MAIN_PAGE_IMAGE: "/assets/img/main-page-image.jpg"
 };
