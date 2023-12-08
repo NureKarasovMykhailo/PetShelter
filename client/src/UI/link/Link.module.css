@@ -1,0 +1,15 @@
+.linkContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.linkIcon{
+    max-width: 50px;
+    max-height: 50px;
+}
+.linkText{
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-left: 5px;
+}
