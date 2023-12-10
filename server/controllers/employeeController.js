@@ -6,6 +6,7 @@ const nodemailer = require('../classes/Nodemailer');
 const getUserRoles = require('../middleware/getUserRoles');
 const pagination = require("../classes/Pagination");
 const employeeService = require("../services/EmployeeService");
+const i18n = require('i18n');
 
 const DEFAULT_USER_IMAGE_NAME = 'default-user-image.jpg';
 
@@ -42,7 +43,7 @@ class EmployeeController {
             } = req.body;
 
             if (await employeeService.isEmployeeExist(login, email, domainEmail)){
-                return next(ApiError.conflict('Employee with such data already exist'));
+                return next(ApiError.conflict(i18n.__('employeeWithSuchDataExist')));
             }
 
 
@@ -63,11 +64,11 @@ class EmployeeController {
 
             await employeeService.createEmployeeRole(createdEmployee.id, ROLES.EMPLOYEE);
 
-            const emailSubject = 'Інформація про аккаунт';
-            const emailText = `На даний адрес email був зареєстрований новий аккаунт у додатку PetShelter.\n`
-                + `Логін: ${createdEmployee.login}\n`
-                + `Пароль: ${password}\n`
-                + `Після входу у застосунок змініть пароль, та нікому його не кажіть`;
+            const emailSubject = i18n.__('employeeCreatingHeader');
+            const emailText = i18n.__('employeeCreatingInfo') + '\n'
+                + i18n.__("employeeCreatingInfoLogin") + createdEmployee.login + '\n'
+                + i18n.__('employeeCreatingPassword') + password + '\n'
+                + i18n.__("employeeCreatingEmailEnd");
 
 
             await nodemailer.sendEmail(createdEmployee.email, emailSubject, emailText);
@@ -150,11 +151,11 @@ class EmployeeController {
                 where: { id: employeeId },
             });
             if (!targetEmployee) {
-                return next(ApiError.badRequest(`No user found with id: ${employeeId}`));
+                return next(ApiError.badRequest(i18n.__('noUserFound') + employeeId));
             }
 
             if (targetEmployee.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             const userWithRoles = await this._addRolesToEmployee(targetEmployee);
@@ -178,18 +179,18 @@ class EmployeeController {
             const targetEmployee = await User.findOne({where: {id: employeeId}});
 
             if (!targetEmployee) {
-                return next(ApiError.badRequest(`There is not user with id:${employeeId}`));
+                return next(ApiError.badRequest(i18n.__('noUserFound') + employeeId));
             }
 
             if (targetEmployee.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             if (await employeeService.isSubscriber(targetEmployee)) {
-                return next(ApiError.forbidden('You can not delete the owner of the shelter'));
+                return next(ApiError.forbidden(i18n.__("youCannotDeleteOwnerOfTheShelter")));
             }
             await targetEmployee.destroy();
-            return res.status(200).json({message: `Employee ${targetEmployee.login} was deleted`})
+            return res.status(200).json({message: targetEmployee.login + i18n.__('employeeWasDeleted')})
         } catch (error){
             console.log(error);
             return next(ApiError.internal(error));
@@ -202,10 +203,10 @@ class EmployeeController {
             const { employeeId } = req.params;
 
             const targetEmployee = await employeeService.getUserById(employeeId);
-            this._checkUserExistence(targetEmployee, `There is no user with ID: ${employeeId}`, next);
+            this._checkUserExistence(targetEmployee, i18n.__('noUserFound') + employeeId, next);
 
             if (targetEmployee.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             this._checkInvalidRole(roles, ROLES.SUBSCRIBER, next);
@@ -215,7 +216,7 @@ class EmployeeController {
 
             await employeeService.createEmployeeRole(employeeId, rolesToAdd);
 
-            return res.status(200).json({ message: 'Roles were added' });
+            return res.status(200).json({ message: i18n.__('roleWasAdded') });
         } catch (error) {
             console.error(error);
             return next(ApiError.internal(error));
@@ -231,22 +232,22 @@ class EmployeeController {
             const targetEmployee = await employeeService.getUserById(employeeId);
 
             if (targetEmployee.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
-            this._checkUserExistence(targetEmployee, `There is no user with ID: ${employeeId}`, next);
+            this._checkUserExistence(targetEmployee, i18n.__('noUserFound') + employeeId, next);
             this._checkInvalidRole(roles, ROLES.SUBSCRIBER, next);
             this._checkInvalidRole(roles, ROLES.EMPLOYEE, next);
 
             const existingRoles = await getUserRoles(targetEmployee);
 
             if (existingRoles.includes(ROLES.SUBSCRIBER)) {
-                 return next(ApiError.forbidden('You can\'t change subscriber account'));
+                 return next(ApiError.forbidden(i18n.__('youCannotChangeSubscriberAccount')));
             }
 
             await employeeService.deleteEmployeeRole(employeeId, roles);
 
-            return res.status(200).json({ message: 'Roles were successfully deleted' });
+            return res.status(200).json({ message: i18n.__('roleWereDeleted') });
         } catch (error) {
             console.error(error);
             return next(ApiError.internal(error));
@@ -260,7 +261,7 @@ class EmployeeController {
 
     _checkInvalidRole(roles, invalidRole, next) {
         if (roles.includes(invalidRole)) {
-            next(ApiError.badRequest(`You can't add role ${invalidRole} for the user`));
+            next(ApiError.badRequest(i18n.__('youCantAddRole') + invalidRole));
         }
     }
 

@@ -1,24 +1,25 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require('i18n');
 
-function petAdoptionValidator(req, res, next){
+function petAdoptionValidator(req, res, next) {
     return [
         body('adoptionPrice')
             .trim()
             .isDecimal()
-            .withMessage('Please enter correct price for pet adoption'),
+            .withMessage(i18n.__('adoptionPriceError')),
         body('adoptionTelephone')
             .trim()
             .matches(/^\+\d{12}$/)
-            .withMessage('Please enter correct phone number'),
+            .withMessage(i18n.__('adoptionTelephoneError')),
         body('adoptionEmail')
             .trim()
             .isEmail()
-            .withMessage('Please enter correct email address'),
+            .withMessage(i18n.__('adoptionEmailError')),
         body('adoptionInfo')
             .trim()
             .notEmpty()
-            .withMessage('Please enter information about pet adoption')
+            .withMessage(i18n.__('adoptionInfoError'))
     ];
 }
 
-module.exports = petAdoptionValidator();
+module.exports = petAdoptionValidator;

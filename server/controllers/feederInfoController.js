@@ -1,5 +1,6 @@
 const {FeederInfo, Pet, Feeder} = require('../models/models');
 const ApiError = require('../error/ApiError');
+const i18n = require('i18n');
 
 class FeederInfoController {
 
@@ -31,14 +32,14 @@ class FeederInfoController {
                 const oneDayInMinutes = 24 * 60;
                 if (timeBetweenFeeding >= oneDayInMinutes) {
                     feederInfo.message =
-                        'The animal has not eaten for a day';
+                        i18n.__('feederInfoAnimalHasNotEaten');
                     const problemPet = await Pet.findOne({
                         where: {feederId}
                     });
                     problemPet.is_status_normal = false;
                     await problemPet.save();
                 } else {
-                    feederInfo.message = 'normal';
+                    feederInfo.message = i18n.__('collarInfoNormal');
                     const pet = await Pet.findOne({
                         where: {feederId}
                     });
@@ -49,7 +50,7 @@ class FeederInfoController {
             return res.status(200).json(feederInfo);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating feeder info ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -62,7 +63,7 @@ class FeederInfoController {
             return res.status(200).json(feederInfos);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting feeder info ' + error));
+            return next(ApiError.internal( i18n.__('serverErrorText') + error));
         }
     }
 
@@ -72,10 +73,10 @@ class FeederInfoController {
             await FeederInfo.destroy({
                 where: {feeder_id: feederId}
             });
-            return res.status(200).json({message: `Feeder infos for feeder ID: ${feederId} were cleared`});
+            return res.status(200).json({message: feederId + i18n.__('feederInfoForThisFeederWereCleared')});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while clearing feeder info ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -85,10 +86,10 @@ class FeederInfoController {
             await FeederInfo.destroy({
                 where: {id: feederInfoId}
             });
-            return res.status(200).json(`Feeder info with ID: ${feederInfoId} was deleted`);
+            return res.status(200).json(feederInfoId + i18n.__('feederInfoWithThisIdWasDeleted'));
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting feeder info ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 

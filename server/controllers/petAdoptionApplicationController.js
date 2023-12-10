@@ -6,6 +6,7 @@ const petAdoptionOfferService = require('../services/PetAdoptionOfferService');
 const applicationForAdoptionService = require('../services/ApplicationForAdoptionService');
 const pagination = require('../classes/Pagination');
 const nodemailer = require('../classes/Nodemailer');
+const i18n = require('i18n');
 
 class PetAdoptionApplicationController{
     async createApplicationForAdoption(req, res, next){
@@ -21,17 +22,17 @@ class PetAdoptionApplicationController{
             const adoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(adoptionOfferId);
 
             if (!adoptionOffer){
-                return next(ApiError.badRequest(`There are no adoption offer with ID: ${adoptionOfferId}`));
+                return next(ApiError.badRequest(i18n.__('thereAreNoAdoptionOfferWithId') + adoptionOfferId));
             }
 
             const existedAdoptionApplication = await applicationForAdoptionService.findApplicationForAdoption(req.user.id, adoptionOfferId);
 
             if (existedAdoptionApplication){
-                return next(ApiError.forbidden('You have already one application for adoption'));
+                return next(ApiError.forbidden(i18n.__('youHaveAlreadyOnApplicationForAdoption')));
             }
 
             if (existedAdoptionApplication){
-                return next(ApiError.forbidden('You already have application of adoption'));
+                return next(ApiError.forbidden(i18n.__('youAlreadyHaveApplicationOfAdoption')));
             }
 
             const applicationForAdoption = await applicationForAdoptionService.createApplicationForAdoption({
@@ -42,7 +43,7 @@ class PetAdoptionApplicationController{
             return res.status(200).json(applicationForAdoption);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating application for adoption ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -51,11 +52,11 @@ class PetAdoptionApplicationController{
             const {applicationForAdoptionId} = req.params;
             const adoptionApplication = await ApplicationForAdoption.findOne({where: {id: applicationForAdoptionId}});
             if (!adoptionApplication){
-                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
+                return next(ApiError.badRequest(i18n.__('thereNoApplicationForAdoptionWithId') + applicationForAdoptionId));
             }
             if (adoptionApplication.userId === req.user.id){
                 await adoptionApplication.destroy();
-                return res.json({message: `Application for adoption with ID: ${applicationForAdoptionId} was deleted`});
+                return res.json({message: i18n.__('applicationForAdoptionWasDeleted') + applicationForAdoptionId});
             }
             const roles = await getUserRoles(req.user);
 
@@ -69,10 +70,10 @@ class PetAdoptionApplicationController{
                 return next(error);
             }
             await adoptionApplication.destroy();
-            return res.status(200).json({message: `Application for adoption with ID: ${applicationForAdoptionId} was deleted`});
+            return res.status(200).json({message: i18n.__('applicationForAdoptionWasDeleted') + applicationForAdoptionId});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting application for adoption ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -82,7 +83,7 @@ class PetAdoptionApplicationController{
             const adoptionApplication = await applicationForAdoptionService.findApplicationForAdoption(applicationForAdoptionId);
 
             if (!adoptionApplication){
-                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
+                return next(ApiError.badRequest(i18n.__('thereIsNoApplicationForAdoptionWithId') + applicationForAdoptionId));
             }
 
             if (adoptionApplication.userId === req.user.id){
@@ -102,7 +103,7 @@ class PetAdoptionApplicationController{
             return res.status(200).json(adoptionApplication);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting one application for adoption ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -124,11 +125,11 @@ class PetAdoptionApplicationController{
             const adoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(adoptionOfferId);
 
             if (!adoptionOffer){
-                return next(ApiError.badRequest(`There are no offer of adoption with ID: ${adoptionOfferId}`));
+                return next(ApiError.badRequest(i18n.__('thereAreNoAdoptionOfferWithId') + adoptionOfferId));
             }
             console.log(adoptionOffer);
             if (!await petAdoptionOfferService.isAdoptionOfferBelongToShelter(req.user.shelterId, adoptionOffer)){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
             let applicationForAdoption = [];
             if (adopterName){
@@ -151,7 +152,7 @@ class PetAdoptionApplicationController{
             });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting application for one offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -161,19 +162,19 @@ class PetAdoptionApplicationController{
             const applicationForAdoption = await applicationForAdoptionService.findApplicationForAdoption(applicationForAdoptionId);
 
             if (!applicationForAdoption){
-                return next(ApiError.badRequest(`There no application for adoption with ID: ${applicationForAdoptionId}`));
+                return next(ApiError.badRequest(i18n.__('thereNoApplicationForAdoptionWithId') + applicationForAdoptionId));
             }
             if (!await applicationForAdoptionService.isAdoptionApplicationBelongToShelter(req.user, applicationForAdoption)){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             if (applicationForAdoption.is_application_approved){
-                return next(ApiError.badRequest(`Application for adoption with ID: ${applicationForAdoptionId} is already approved`));
+                return next(ApiError.badRequest(i18n.__('applicationForAdoptionIsAlreadyApproved') + applicationForAdoptionId));
             }
 
             const adopter = await User.findOne({where: {id: applicationForAdoption.userId}});
             if (!adopter){
-                return next(ApiError.badRequest(`Invalid user ID: ${applicationForAdoption.userId}`));
+                return next(ApiError.badRequest(i18n.__('invalidUserId') + applicationForAdoption.userId));
             }
 
             applicationForAdoption.is_application_approved = true;
@@ -183,33 +184,33 @@ class PetAdoptionApplicationController{
             const shelterInfo = await applicationForAdoptionService.getShelterInfo(applicationForAdoption);
             const petInfo = await applicationForAdoptionService.getAdoptedPetInfo(applicationForAdoption);
 
-            const mailSubject = 'Підтвердження заявки';
-            const mailText = `Шановний/шановна ${adopter.full_name}\n`
+            const mailSubject = i18n.__('applicationHeader');
+            const mailText = i18n.__('dear') + adopter.full_name + '\n'
                 + `\n`
-                + `З радістю повідомляємо, що ваша заявка на усиновлення тепер одобрена!\n`
+                + i18n.__('applicationEmail') + '\n'
                 + `\n`
-                + `Інформація про притулок:`
-                + `Назва приюту: ${shelterInfo.shelter_name}`
-                + `Адреса: ${shelterInfo.shelter_address}`
+                + i18n.__('applicationShelterInfo')
+                + i18n.__('applicationShelterName') + shelterInfo.shelter_name
+                + i18n.__('applicationAddress') + shelterInfo.shelter_address
 
-                + `Ваш новий чотирилапий друг:\n`
-                + `Ім'я тварини: ${petInfo.pet_name}\n`
-                + `Вік: ${petInfo.pet_age}\n`
-                + `Вид: ${petInfo.pet_kind}\n`
-                + `Стать:  ${petInfo.pet_gender}\n`
+                + i18n.__('applicationFriend') + '\n'
+                + i18n.__('applicationName') + petInfo.pet_name + '\n'
+                + i18n.__('applicationAge') + petInfo.pet_age + '\n'
+                + i18n.__('applicationKind') + petInfo.pet_kind + '\n'
+                + i18n.__('applicationGender') + petInfo.pet_gender + '\n'
                 + `\n`
-                + `Нехай цей момент стане початком довгого та щасливого спільного життя! `
-                + `Будь ласка, звертайтеся до нас, якщо у вас є які-небудь питання чи потреба у допомозі.`
+                + i18n.__('applicationMoment')
+                + i18n.__('applicationContact')
                 + `\n`
-                + `З найкращими побажаннями,\n`
-                + `Команда ${shelterInfo.shelter_name}`;
+                + i18n.__('applicationRegards') + '\n'
+                + i18n.__('applicationTeam') + shelterInfo.shelter_name;
 
             await nodemailer.sendEmail(adopter.email, mailSubject, mailText);
 
             return res.status(200).json(applicationForAdoption);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while approving application for adoption ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
 
     }

@@ -1,35 +1,37 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require('i18n');
+
 function shelterUpdatingValidation(req, res, next) {
     return [
         body('newShelterName')
             .trim()
             .notEmpty()
-            .withMessage('Please enter name of your shelter')
-            .isLength({min: 5, max: 100})
-            .withMessage('Name of shelter must be from 5 to 100 symbols'),
+            .withMessage(i18n.__('newShelterNameError'))
+            .isLength({ min: 5, max: 100 })
+            .withMessage(i18n.__('newShelterNameLengthError')),
         body('newShelterCountry')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('newShelterCountryError')),
         body('newShelterCity')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('newShelterCityError')),
         body('newShelterStreet')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('newShelterStreetError')),
         body('newShelterHouse')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('newShelterHouseError')),
         body('newShelterDomain')
             .trim()
             .notEmpty()
-            .withMessage('Please enter domain of your shelter')
+            .withMessage(i18n.__('newShelterDomainError'))
             .matches(/^@[a-zA-Z0-9.-]+\.[a-z]+$/)
-            .withMessage('Your domain should be something like: @example.com'),
+            .withMessage(i18n.__('newShelterDomainFormatError')),
     ];
 }
 
-module.exports = shelterUpdatingValidation();
+module.exports = shelterUpdatingValidation;

@@ -1,54 +1,46 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require("i18n");
 
-function subscriberRegistrationValidation(req, res, next) {
+function subscriberRegistrationValidation() {
     return [
         body('login')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter the login')
-            .isLength({min: 4, max: 35})
-            .withMessage('Login must be from 4 to 35 letters')
-            .matches(/^[a-zA-Z0-9]+$/)
-            .withMessage('Login must contain only Latin symbols'),
+            .notEmpty().withMessage(i18n.__('loginIsNotExistError'))
+            .isLength({ min: 4, max: 35 }).withMessage(i18n.__('loginLengthError'))
+            .matches(/^[a-zA-Z0-9]+$/).withMessage(i18n.__('loginSymbolsError')),
+
         body('email')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter your email')
-            .isEmail()
-            .withMessage('Please enter a correct email'),
+            .notEmpty().withMessage(i18n.__('emailIsNotExistError'))
+            .isEmail().withMessage(i18n.__('emailIsNotCorrectError')),
+
         body('fullName')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter your full name')
-            .matches(/\s/)
-            .withMessage('Your name must consist of two words'),
+            .notEmpty().withMessage(i18n.__('fullNameIsNotExistError'))
+            .matches(/\s/).withMessage(i18n.__('fullNameIsNotCorrectError')),
+
         body('birthday')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter your birthday'),
-            // .matches(/^\+\d{12}$/)
-            // .withMessage('Please enter a valid birthday'),
+            .notEmpty().withMessage(i18n.__('birthDayIsNotExistError')),
+
         body('phoneNumber')
             .trim()
-            .isInt()
-            .withMessage('Please enter your phone number')
-            .isLength({min: 7, max: 15})
-            .withMessage('Phone number must be from 7 to 15 symbols'),
+            .isInt().withMessage(i18n.__('phoneNumberIsNotExistError'))
+            .isLength({ min: 7, max: 15 }).withMessage(i18n.__('phoneNumberIsNotCorrectError')),
+
         body('password')
             .trim()
-            .notEmpty()
-            .withMessage('Please enter password')
-            .matches(/^(?=.*[A-Z])(?=.*[\W_]).{8,}$/)
-            .withMessage('Password must contain at least 8 symbols,' +
-                ' 1 upper case symbol and 1 special symbol'),
+            .notEmpty().withMessage(i18n.__('passwordIsEmptyError'))
+            .matches(/^(?=.*[A-Z])(?=.*[\W_]).{8,}$/).withMessage(i18n.__('passwordIsNotCorrectError')),
+
         body('passwordConfirm')
-            .custom((value, {req}) => {
+            .custom((value, { req }) => {
                 if (value !== req.body.password) {
-                    throw new Error('Password not equal to confirm password')
+                    throw new Error(i18n.__('passwordIsNotTheSameError'));
                 }
-                return true
-            })
+                return true;
+            }).withMessage(i18n.__('passwordIsNotTheSameError'))
     ];
 }
 
-module.exports = subscriberRegistrationValidation();
+module.exports = subscriberRegistrationValidation;

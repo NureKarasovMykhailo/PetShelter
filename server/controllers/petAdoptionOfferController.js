@@ -3,6 +3,7 @@ const {validationResult} = require('express-validator');
 const petAdoptionOfferService = require('../services/PetAdoptionOfferService');
 const petService = require('../services/PetService');
 const pagination = require('../classes/Pagination');
+const i18n = require('i18n');
 
 const filterByShelter = (adoptionOffers, filteredShelters) => {
     const filteredAdoptionOffer = [];
@@ -36,7 +37,7 @@ class petAdoptionOfferController {
             }
 
             if (!await petService.isPetBelongToShelter(petId, req.user.shelterId)) {
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
 
@@ -50,7 +51,7 @@ class petAdoptionOfferController {
             return res.status(200).json(createdPetAdoptionOffer);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating pet adoption offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -67,10 +68,10 @@ class petAdoptionOfferController {
             const targetPetAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
 
             if (!targetPetAdoptionOffer){
-                return next(ApiError.badRequest(`There is no pet adoption offer with ID: ${offerId}`));
+                return next(ApiError.badRequest(i18n.__('thereAreNoAdoptionOfferWithId') + offerId));
             }
             if (!await petService.isPetBelongToShelter(targetPetAdoptionOffer.petId, req.user.shelterId)){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             const errors = validationResult(req);
@@ -88,7 +89,7 @@ class petAdoptionOfferController {
             return res.status(200).json(updatedPetAdoptionOffer);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating pet adoption offer' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
 
     }
@@ -99,18 +100,18 @@ class petAdoptionOfferController {
             const targetAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
 
             if (!targetAdoptionOffer){
-                return next(ApiError.badRequest(`There are no pet adoption offer with ID: ${offerId}`));
+                return next(ApiError.badRequest(i18n.__('thereAreNoAdoptionOfferWithId') + offerId));
             }
 
             if (!await petService.isPetBelongToShelter(targetAdoptionOffer.petId, req.user.shelterId)){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             await targetAdoptionOffer.destroy();
-            return res.json({message: `Pet adoption offer with ID: ${offerId} was deleted`});
+            return res.json({message: i18n.__('adoptionOfferWasDeleted') + offerId});
         } catch (error){
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting pet adoption offer' + error))
+            return next(ApiError.internal(i18n.__('serverErrorText') + error))
         }
     }
 
@@ -119,13 +120,13 @@ class petAdoptionOfferController {
             const {offerId} = req.params;
             const petAdoptionOffer = await petAdoptionOfferService.getPetAdoptionOfferById(offerId);
             if (!petAdoptionOffer){
-                return next(ApiError.badRequest(`There are no pet adoption offer with ID: ${offerId}`));
+                return next(ApiError.badRequest(i18n.__('thereAreNoAdoptionOfferWithId') + offerId));
             }
             return res.status(200).json(petAdoptionOffer);
 
         } catch (error) {
             console.log(error)
-            return next(ApiError.internal('Internal server error while getting one pet adoption offer' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 

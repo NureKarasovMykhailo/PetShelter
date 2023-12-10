@@ -3,13 +3,14 @@ const {Feeder, Pet} = require('../models/models');
 const {validationResult} = require('express-validator');
 const feederService = require('../services/FeederService');
 const pagination = require('../classes/Pagination');
+const i18n = require('i18n');
 
 const isFeederExistAndBelongToShelter = (feeder, feederId, shelterId) => {
     if (!feeder){
-        return ApiError.badRequest(`There are no feeder with ID: ${feederId}`)
+        return ApiError.badRequest( i18n.__('thereNoFeederWithId') + feederId)
     }
     if (feeder.shelterId !== shelterId){
-        return ApiError.forbidden('You don\'t have an access to information about this shelter');
+        return ApiError.forbidden( i18n.__('youDontHaveAccessToThisInformation') );
     }
 }
 
@@ -33,7 +34,7 @@ class FeederController {
             return res.status(200).json(feeder);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating feeder ' + error));
+            return next(ApiError.internal( i18n.__('serverErrorText') + error));
         }
     }
 
@@ -63,7 +64,7 @@ class FeederController {
             return res.status(200).json(updatedFeeder);
         } catch (error){
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating feeder ' + error));
+            return next(ApiError.internal( i18n.__('serverErrorText') + error));
         }
     }
 
@@ -78,10 +79,10 @@ class FeederController {
             }
 
             await feeder.destroy();
-            return res.status(200).json({message: `Feeder with ID: ${feederId} was deleted`});
+            return res.status(200).json({message: i18n.__('feederWasDeleted') + feederId});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting feeder ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -113,7 +114,7 @@ class FeederController {
             });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting feeders ' + error));
+            return next(ApiError.internal( i18n.__('serverErrorText') + error));
         }
 
     }
@@ -133,15 +134,15 @@ class FeederController {
             const targetPet = await Pet.findOne({where: {id: petId}});
 
             if (!targetPet){
-                return next(ApiError.badRequest(`There are no pet with ID: ${petId}`));
+                return next(ApiError.badRequest( i18n.__('petIsNotFound') + petId));
             }
 
             if (targetPet.shelterId !== req.user.shelterId){
-                return next(ApiError.badRequest('You don\'t have an access to information about this shelter'));
+                return next(ApiError.badRequest(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             if (await feederService.isFeederOccupied(feederId)){
-                return next(ApiError.forbidden(`Feeder with ID: ${feederId} is already occupied`));
+                return next(ApiError.forbidden(feederId + i18n.__('feederWithThisIdIsOccupied')));
             }
 
             const updatedFeeder = await feederService.setFeederToPet(feederId, petId);
@@ -149,7 +150,7 @@ class FeederController {
             return res.status(200).json(updatedFeeder);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating feeder ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -165,7 +166,7 @@ class FeederController {
         const pet = await Pet.findOne({where: {feederId: feederId}});
         if (pet){
             if (pet.shelterId !== req.user.shelterId){
-                return next(ApiError.badRequest('You don\'t have an access to information about this shelter'));
+                return next(ApiError.badRequest(i18n.__('youDontHaveAccessToThisInformation')));
             }
             pet.feederId = null;
             await pet.save();

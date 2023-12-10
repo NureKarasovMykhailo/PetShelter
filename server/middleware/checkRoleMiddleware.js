@@ -1,5 +1,6 @@
 const ApiError = require('../error/ApiError');
 const getToken = require('./getToken');
+const i18n = require('i18n');
 
 module.exports = function (roles) {
     return  (req, res, next) => {
@@ -18,7 +19,7 @@ module.exports = function (roles) {
             if (hasAccess){
                 return next();
             }
-            return next(ApiError.forbidden('Access dined'));
+            return next(ApiError.forbidden(i18n.__('accessDenied')));
         } else {
             next();
         }

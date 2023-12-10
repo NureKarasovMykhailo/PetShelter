@@ -2,7 +2,7 @@ const {ApplicationForAdoption, AdoptionAnnouncement, Pet, Shelter} = require("..
 const {Sequelize} = require("sequelize");
 const ApiError = require("../error/ApiError");
 const models = require("../models/models");
-
+const i18n = require('i18n');
 
 class ApplicationForAdoptionService {
 
@@ -34,10 +34,10 @@ class ApplicationForAdoptionService {
 
     async checkUserPermissionToApplicationForAdoption (roles, user, adoptionApplication) {
         if (!(roles.includes('subscriber') || roles.includes('adoptionAdmin'))){
-            return ApiError.forbidden('Access denied');
+            return ApiError.forbidden(i18n.__('accessDenied'));
         }
         if (! await this.isAdoptionApplicationBelongToShelter(user, adoptionApplication)){
-            return ApiError.forbidden('You don\'t have an access to information about this shelter');
+            return ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation'));
         }
     }
 

@@ -16,6 +16,7 @@ const petService = require("../services/PetService");
 const workOfferService = require("../services/WorkOfferService");
 const collarsService = require("../services/CollarService");
 const collarsInfoService = require("../services/CollarInfoService");
+const i18n = require('i18n');
 
 class ShelterService {
     async isShelterExistChecking(shelterName, shelterDomain){
@@ -101,7 +102,7 @@ class ShelterService {
             const shelterOwner = await User.findOne({where: {id: shelterOwnerId}});
             const shelter = await Shelter.findOne({where: {id: shelterOwner.shelterId}});
             if (shelterOwner.shelterId !== shelter.id) {
-                return ApiError.forbidden('You do not have access to this shelter');
+                return ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation'));
             }
             if (shelter.shelter_image !== 'default-shelter-image.jpg') {
                 fs.unlink(
@@ -142,7 +143,7 @@ class ShelterService {
             );
         } catch (error) {
             console.log(error);
-            return ApiError.internal('Server error while deleting shelter ' + error);
+            return ApiError.internal(i18n.__('serverErrorText') + error);
         }
 
     }

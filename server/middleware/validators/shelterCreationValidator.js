@@ -1,39 +1,41 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require('i18n');
+
 function shelterCreatingValidation(req, res, next) {
     return [
         body('shelterName')
             .trim()
             .notEmpty()
-            .withMessage('Please enter name of your shelter')
-            .isLength({min: 5, max: 100})
-            .withMessage('Name of shelter must be from 5 to 100 symbols'),
+            .withMessage(i18n.__('shelterNameError'))
+            .isLength({ min: 5, max: 100 })
+            .withMessage(i18n.__('shelterNameLengthError')),
         body('shelterCity')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('shelterCityError')),
         body('shelterStreet')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter'),
+            .withMessage(i18n.__('shelterStreetError')),
         body('shelterHouse')
             .trim()
             .notEmpty()
-            .withMessage('Please enter the address of your shelter')
+            .withMessage(i18n.__('shelterHouseError'))
             .matches(/^[\dA-Za-z\s/-]+$/)
-            .withMessage('Please enter correct address of your shelter'),
+            .withMessage(i18n.__('shelterHouseFormatError')),
         body('shelterDomain')
             .trim()
             .notEmpty()
-            .withMessage('Please enter domain of your shelter')
+            .withMessage(i18n.__('shelterDomainError'))
             .matches(/^@[a-zA-Z0-9.-]+\.[a-z]+$/)
-            .withMessage('Your domain should be something like: @example.com'),
+            .withMessage(i18n.__('shelterDomainFormatError')),
         body('subscriberDomainEmail')
             .trim()
             .notEmpty()
-            .withMessage('Please enter your domain email')
+            .withMessage(i18n.__('subscriberDomainEmailError'))
             .matches(/^[a-zA-Z]+$/)
-            .withMessage('Please enter correct domain email')
+            .withMessage(i18n.__('subscriberDomainEmailFormatError'))
     ];
 }
 
-module.exports = shelterCreatingValidation();
+module.exports = shelterCreatingValidation;

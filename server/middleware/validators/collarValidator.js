@@ -1,32 +1,33 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require("i18n");
 
-function collarCreatingValidator(req, res, next) {
+function collarCreatingValidator() {
     return [
         body('maxTemperature')
             .trim()
             .notEmpty()
-            .withMessage('Please enter max allow temperature')
+            .withMessage(i18n.__('collarMaxTempIsNotDefined'))
             .isDecimal()
-            .withMessage('Please enter max allow temperature'),
+            .withMessage(i18n.__('collarMaxTempIsNotDecimal')),
         body('minTemperature')
             .trim()
             .notEmpty()
-            .withMessage('Please enter min allow temperature')
+            .withMessage(i18n.__('collarMinTempIsNotDefined'))
             .isDecimal()
-            .withMessage('Please enter min allow temperature'),
+            .withMessage(i18n.__('collarMinTempIsNotDecimal')),
         body('maxPulse')
             .trim()
             .notEmpty()
-            .withMessage('Please enter max allow pulse')
+            .withMessage(i18n.__('collarMaxPulseIsNotDefined'))
             .isDecimal()
-            .withMessage('Please enter max allow pulse'),
+            .withMessage(i18n.__('collarMaxPulseIsNotDecimal')),
         body('minTemperature')
             .trim()
             .notEmpty()
-            .withMessage('Please enter min allow temperature')
+            .withMessage(i18n.__('collarMinTempIsNotDefined'))
             .isDecimal()
-            .withMessage('Please enter min allow temperature'),
-    ]
+            .withMessage(i18n.__('collarMinTempIsNotDecimal')),
+    ];
 }
 
-module.exports = collarCreatingValidator();
+module.exports = collarCreatingValidator;

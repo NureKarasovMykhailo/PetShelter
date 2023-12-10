@@ -1,36 +1,37 @@
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+const i18n = require('i18n');
 
 function userCreatingValidation(req, res, next) {
     return [
         body('login')
             .trim()
             .notEmpty()
-            .withMessage('Please enter login')
+            .withMessage(i18n.__('loginIsNotExistError'))
             .isLength({ min: 4, max: 35 })
-            .withMessage('Login must be from 4 to 35 letters')
+            .withMessage(i18n.__('loginLengthError'))
             .matches(/^[a-zA-Z0-9]+$/)
-            .withMessage('Login must contain only Latin symbols'),
+            .withMessage(i18n.__('loginSymbolsError')),
         body('email')
             .trim()
             .notEmpty()
-            .withMessage('Please enter your email')
+            .withMessage(i18n.__('emailIsNotExistError'))
             .isEmail()
-            .withMessage('Please enter a correct email'),
+            .withMessage(i18n.__('emailIsNotCorrectError')),
         body('fullName')
             .trim()
             .notEmpty()
-            .withMessage('Please enter your full name')
+            .withMessage(i18n.__('fullNameIsNotExistError'))
             .matches(/\s/)
-            .withMessage('Your name must consist of two words'),
+            .withMessage(i18n.__('fullNameIsNotCorrectError')),
         body('birthday')
             .trim()
             .notEmpty()
-            .withMessage('Please enter your birthday'),
+            .withMessage(i18n.__('birthDayIsNotExistError')),
         body('domainEmail')
             .trim()
             .isEmail()
-            .withMessage('Please enter domain email')
+            .withMessage(i18n.__('domainEmailIsNotCorrectError'))
     ];
 }
 
-module.exports = userCreatingValidation();
+module.exports = userCreatingValidation;

@@ -1,5 +1,6 @@
 const ApiError = require('../error/ApiError');
 const {CollarInfo, Collar, Pet} = require('../models/models');
+const i18n = require('i18n');
 
 class CollarInfoController {
 
@@ -25,16 +26,16 @@ class CollarInfoController {
             let isPetProblemExist = false;
             if (!inSafeRadius){
                 isPetProblemExist = true;
-                message += 'Animal not at save radius';
+                message += i18n.__('collarInfoAnimalNotInSaveRadius');
             }
             if (temperature > collar.max_temperature || temperature < collar.min_temperature) {
                 isPetProblemExist = true;
-                message += ' Animal temperature isn\'t normal';
+                message += i18n.__('collarInfoAnimalTempIsNotRight');
             }
 
             if (pulse > collar.max_temperature || pulse < collar.min_temperature) {
                 isPetProblemExist = true;
-                message += ' Animal pulse isn\'t normal';
+                message += i18n.__('collarInfoAnimalPulseIsNotRight');
             }
 
             if (isPetProblemExist){
@@ -46,7 +47,7 @@ class CollarInfoController {
                 problemPet.is_status_normal = false;
                 await problemPet.save();
             } else {
-                createdCollarInfo.message = 'normal';
+                createdCollarInfo.message = i18n.__('collarInfoNormal');
                 await createdCollarInfo.save();
                 const pet = await Pet.find({
                     where: {collarId}
@@ -58,7 +59,7 @@ class CollarInfoController {
             return res.status(200).json(createdCollarInfo);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating collar info ') + error);
+            return next(ApiError.internal(i18n.__('serverErrorText')) + error);
         }
     }
 
@@ -71,7 +72,7 @@ class CollarInfoController {
             return res.status(200).json(collarInfos);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating collar info ') + error);
+            return next(ApiError.internal(i18n.__('serverErrorText')) + error);
         }
     }
 
@@ -81,10 +82,10 @@ class CollarInfoController {
             await CollarInfo.destroy({
                 where: {id: collarInfoId}
             });
-            return res.status(200).json({message: `Collars info with ID: ${collarInfoId} was deleted`});
+            return res.status(200).json({message: i18n.__('collarInfoWasDeleted') + collarInfoId });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating collar info ') + error);
+            return next(ApiError.internal(i18n.__('serverErrorText')) + error);
         }
     }
 
@@ -94,10 +95,10 @@ class CollarInfoController {
             await CollarInfo.destroy({
                 where: {collarId}
             });
-            return res.status(200).json({message: `Collars info for collar ID: ${collarId} were deleted`});
+            return res.status(200).json({message: i18n.__('collarInfoForCollarWasDeleted') + collarId});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating collar info ') + error);
+            return next(ApiError.internal(i18n.__('serverErrorText')) + error);
         }
     }
 

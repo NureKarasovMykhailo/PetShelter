@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const path = require('node:path');
 const petService = require('../services/PetService');
 const pagination = require('../classes/Pagination');
+const i18n = require('i18n');
 
 class PetController {
 
@@ -42,7 +43,7 @@ class PetController {
             return res.status(200).json(createdPet);
         } catch (error){
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating pet: ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -87,7 +88,7 @@ class PetController {
            });
        } catch (error){
            console.log(error);
-           return next(ApiError.internal('Internal server error while getting all pets' + error))
+           return next(ApiError.internal(i18n.__('serverErrorText') + error))
        }
     }
 
@@ -97,15 +98,15 @@ class PetController {
             const targetPet = await petService.getPetByIdWithCharacteristics(petId);
 
             if (!targetPet) {
-                return next(ApiError.badRequest(`There is no pet with id: ${petId}`));
+                return next(ApiError.badRequest(i18n.__('petIsNotFound') + petId));
             }
             if (targetPet.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
             return res.status(200).json({pets: targetPet});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting one pet ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -125,11 +126,11 @@ class PetController {
             const targetPet = await petService.getPetById(petId);
 
             if (!targetPet) {
-                return next(ApiError.notFound(`There is no pet with id: ${petId}`));
+                return next(ApiError.notFound(i18n.__('petIsNotFound') + petId));
             }
 
             if (targetPet.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You do not have access to information of this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             if (req.files !== null) {
@@ -154,7 +155,7 @@ class PetController {
             return res.status(200).json(updatedPet);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating pet ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -164,19 +165,19 @@ class PetController {
             const targetPet = await petService.getPetById(petId);
 
             if (!targetPet) {
-                next(ApiError.badRequest(`There is no pet with id: ${petId}`));
+                next(ApiError.badRequest(i18n.__('petIsNotFound') + petId));
             }
             if (targetPet.shelterId !== req.user.shelterId) {
-                next(ApiError.forbidden('You do not have access to information of this shelter'));
+                next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             await petService.deletePetImage(targetPet.pet_image);
             await petService.destroyPet(targetPet);
 
-            return res.status(200).json({message: `Pet with id: ${petId} was deleted`});
+            return res.status(200).json({message: i18n.__('petWithIdWasDeleted') + petId });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting pet ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 }

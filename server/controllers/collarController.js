@@ -5,7 +5,7 @@ const collarService = require('../services/CollarService');
 const collarInfOService = require('../services/CollarInfoService');
 const feederService = require("../services/FeederService");
 const pagination = require("../classes/Pagination");
-
+const i18n = require("i18n");
 
 class CollarController {
 
@@ -18,6 +18,7 @@ class CollarController {
                 maxPulse
             } = req.body;
 
+            
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return next(ApiError.badRequest(errors));
@@ -34,7 +35,7 @@ class CollarController {
 
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating collar ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + "" + error));
         }
     }
 
@@ -55,10 +56,10 @@ class CollarController {
 
             const targetCollar = await collarService.getCollarById(collarId);
             if (!targetCollar) {
-                return next(ApiError.notFound(`There is no collar with ID: ${collarId}`));
+                return next(ApiError.notFound(i18n.__("collarIsNotFound") + " " + collarId));
             }
             if (targetCollar.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
             const updatedCollar = await collarService.updateCollar(targetCollar, {
                 newMaxTemperature,
@@ -69,7 +70,7 @@ class CollarController {
             return res.status(200).json(updatedCollar);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating collar ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + " " + error));
         }
     }
 
@@ -78,17 +79,17 @@ class CollarController {
             const {collarId} = req.params;
             const targetCollar = await collarService.getCollarById(collarId);
             if (!targetCollar){
-                return next(ApiError.notFound(`There is no collar with ID: ${collarId}`));
+                return next(ApiError.notFound( i18n.__("collarIsNotFound") + collarId));
             }
             if (targetCollar.shelterId !== req.user.shelterId){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__("youDontHaveAccessToThisInformation")));
             }
             await collarInfOService.deleteCollarInfoByCollarId(targetCollar.id);
             await targetCollar.destroy();
-            return res.status(200).json({message: `Collar with ID: ${collarId} was deleted`});
+            return res.status(200).json({message: collarId + i18n.__("collarWasDeleted")});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting collar ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + ' ' + error));
         }
     }
 
@@ -115,7 +116,7 @@ class CollarController {
             });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting collars ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -133,15 +134,15 @@ class CollarController {
             const targetPet = await Pet.findOne({where: {id: petId}});
 
             if (!targetPet){
-                return next(ApiError.badRequest(`There are no pet with ID: ${petId}`));
+                return next(ApiError.badRequest( i18n.__('There are no pet with ID: ') + petId));
             }
 
             if (targetPet.shelterId !== req.user.shelterId){
-                return next(ApiError.badRequest('You don\'t have an access to information about this shelter'));
+                return next(ApiError.badRequest(i18n.__('youDontHaveAccessToThisInformation')));
             }
             console.log('start')
             if (await collarService.isCollarOccupied(collarId)){
-                return next(ApiError.forbidden(`Collar with ID: ${collarId} is already occupied`));
+                return next(ApiError.forbidden( i18n.__('collarIsOccupied') + collarId));
             }
 
             const updatedCollar = await collarService.setCollarToPet(collarId, petId);
@@ -149,7 +150,7 @@ class CollarController {
             return res.status(200).json(updatedCollar);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating collar ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -165,7 +166,7 @@ class CollarController {
         const pet = await Pet.findOne({where: {feederId: collarId}});
         if (pet){
             if (pet.shelterId !== req.user.shelterId){
-                return next(ApiError.badRequest('You don\'t have an access to information about this shelter'));
+                return next(ApiError.badRequest(i18n.__('youDontHaveAccessToThisInformation')));
             }
             pet.feederId = null;
             await pet.save();

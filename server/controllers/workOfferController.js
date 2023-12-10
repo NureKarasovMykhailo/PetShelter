@@ -3,7 +3,7 @@ const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
 const workOfferService = require('../services/WorkOfferService');
 const pagination = require('../classes/Pagination');
-
+const i18n = require('i18n');
 
 class WorkOfferController {
 
@@ -32,7 +32,7 @@ class WorkOfferController {
             return res.status(200).json(createdWorkOffer);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while creating work offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -41,7 +41,7 @@ class WorkOfferController {
             const {workOfferId} = req.params;
 
             if (workOfferId === null) {
-                return next(ApiError.badRequest('Invalid work offer ID'));
+                return next(ApiError.badRequest(i18n.__('invalidWorkOfferId')));
             }
             const {
                 workTitle,
@@ -53,12 +53,12 @@ class WorkOfferController {
             const workOffer = await workOfferService.getWorkOfferById(workOfferId);
 
             if (!workOffer) {
-                return next(ApiError.badRequest('Invalid work offer ID'));
+                return next(ApiError.badRequest(i18n.__('invalidWorkOfferId')));
             }
 
             const workOfferOwnerUser = await User.findOne({where: {id: req.user.id}});
             if (workOfferOwnerUser.shelterId !== req.user.shelterId) {
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             const updatedWorkOffer = await workOfferService.updateWorkOffer(workOffer, {
@@ -71,7 +71,7 @@ class WorkOfferController {
             return res.status(200).json(updatedWorkOffer);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while updating work offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -81,18 +81,18 @@ class WorkOfferController {
             const workOffer = await workOfferService.getWorkOfferById(workOfferId);
 
             if (!workOffer) {
-                return next(ApiError.badRequest('Invalid work offer ID'));
+                return next(ApiError.badRequest(i18n.__('invalidWorkOfferId')));
             }
 
             if (workOffer.shelterId !== req.user.shelterId){
-                return next(ApiError.forbidden('You don\'t have an access to information about this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
             await workOffer.destroy();
-            return res.status(200).json({message: `Work offer with ID ${workOfferId} successfully deleted`});
+            return res.status(200).json({message: i18n.__('workOfferWasDelete') + workOfferId });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while deleting work offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -101,12 +101,12 @@ class WorkOfferController {
             const {workOfferId} = req.params;
             const workOffer = await workOfferService.getWorkOfferById(workOfferId);
             if (!workOffer){
-                return next(ApiError.badRequest(`There no shelter with ID: ${workOfferId}`));
+                return next(ApiError.badRequest(i18n.__('invalidWorkOfferId') + workOfferId ));
             }
             return res.status(200).json({message: workOffer});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting one work offer ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -139,7 +139,7 @@ class WorkOfferController {
             });
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting all work offers' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 }

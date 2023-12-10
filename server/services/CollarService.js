@@ -1,5 +1,6 @@
 const {Collar, Pet} = require('../models/models');
 const ApiError = require("../error/ApiError");
+const i18n = require('i18n');
 
 class CollarService {
 
@@ -47,10 +48,10 @@ class CollarService {
 
     async isCollarExistAndBelongToShelter (collar, collarId, shelterId)  {
         if (!collar){
-            return ApiError.badRequest(`There are no feeder with ID: ${collarId}`)
+            return ApiError.badRequest(i18n.__('collarIsNotFound') + collarId)
         }
         if (collar.shelterId !== shelterId){
-            return ApiError.forbidden('You don\'t have an access to information about this shelter');
+            return ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation'));
         }
     }
 

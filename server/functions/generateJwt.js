@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const ApiError = require("../error/ApiError");
+const i18n = require('i18n');
+
 module.exports = generateJwt = async (
     id,
     login,
@@ -32,6 +34,6 @@ module.exports = generateJwt = async (
             {expiresIn: '24h'}
         );
     } catch (e) {
-        return ApiError.internal('Server error while generating JWT token');
+        return ApiError.internal(i18n.__('serverErrorText'));
     }
 }

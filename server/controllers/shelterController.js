@@ -8,6 +8,7 @@ const getUserRoles = require('../middleware/getUserRoles');
 const shelterService = require('../services/ShelterService');
 const userService = require('../services/UserService');
 const pagination = require('../classes/Pagination');
+const i18n = require('i18n');
 
 class ShelterController {
 
@@ -32,7 +33,7 @@ class ShelterController {
             let isShelterExist = await shelterService.isShelterExistChecking(shelterName, shelterDomain);
 
             if (isShelterExist) {
-                return next(ApiError.badRequest('Shelter with this data already exists'));
+                return next(ApiError.badRequest(i18n.__('shelterWithThisDataExist')));
             }
 
             const errors = validationResult(req);
@@ -73,7 +74,7 @@ class ShelterController {
 
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Server error while creating new shelter' + error));
+            return next(ApiError.internal(i18n.__("serverErrorText") + error));
         }
     }
 
@@ -102,15 +103,15 @@ class ShelterController {
             const {shelterId} = req.params;
             const targetShelter = await shelterService.getShelterById(shelterId);
             if (!targetShelter) {
-                return next(ApiError.notFound(`There is no shelter with ID: ${shelterId}`));
+                return next(ApiError.notFound(i18n.__('thereIsNoShelterWithId') + shelterId));
             }
             if (req.user.shelterId !== targetShelter.id) {
-                return next(ApiError.forbidden('You do not have access to this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
             return res.status(200).json(targetShelter);
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Server error while getting shelter\'s info ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -133,12 +134,12 @@ class ShelterController {
 
             let targetShelter = await shelterService.getShelterById(shelterId);
             if (!targetShelter) {
-                return next(ApiError.notFound(`There is no shelter with ID: ${shelterId}`));
+                return next(ApiError.notFound(i18n.__('thereIsNoShelterWithId') + shelterId));
             }
             let requestedUser = await User.findOne({where: {id: req.user.id}});
 
             if (req.user.shelterId !== targetShelter.id) {
-                return next(ApiError.forbidden('You do not have access to this shelter'));
+                return next(ApiError.forbidden(i18n.__('youDontHaveAccessToThisInformation')));
             }
 
 
@@ -149,12 +150,12 @@ class ShelterController {
 
             if (newShelterName !== targetShelter.shelter_name) {
                 if (!await shelterService.isShelterNameExist(newShelterName)) {
-                    return next(ApiError.badRequest('Shelter with this data already exists'));
+                    return next(ApiError.badRequest(i18n.__('shelterWithThisDataExist')));
                 }
             }
             if (newShelterDomain !== targetShelter.shelter_domain) {
                 if (!await shelterService.isShelterDomainExist(newShelterDomain)) {
-                    return next(ApiError.badRequest('Shelter with this data already exists'));
+                    return next(ApiError.badRequest(i18n.__('shelterWithThisDataExist')));
                 }
             }
 
@@ -187,7 +188,7 @@ class ShelterController {
             return res.json({shelter: updatedShelter, token: newToken});
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Server error while updating shelter ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 
@@ -197,7 +198,7 @@ class ShelterController {
             return next(deleteShelterResponse);
         }
         return res.status(200).json({
-            message: `Shelter was deleted`,
+            message: i18n.__('shelterWasDeleted'),
             token: deleteShelterResponse
         });
     }
@@ -210,7 +211,7 @@ class ShelterController {
             return next(deleteShelterResponse);
         }
         return res.status(200).json({
-            message: `Shelter was deleted`,
+            message: i18n.__('shelterWasDeleted'),
             token: deleteShelterResponse
         });
     }
@@ -246,7 +247,7 @@ class ShelterController {
             }
         } catch (error) {
             console.log(error);
-            return next(ApiError.internal('Internal server error while getting all shelters ' + error));
+            return next(ApiError.internal(i18n.__('serverErrorText') + error));
         }
     }
 }
