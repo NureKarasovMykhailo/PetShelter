@@ -9,6 +9,7 @@ const path = require('node:path');
 const {static} = require("express");
 const models = require('./models/models');
 const i18n = require('i18n');
+const localizationMiddleware = require('./middleware/localizationMiddleware');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -18,15 +19,15 @@ i18n.configure({
     directory: path.resolve(__dirname, 'config', 'locale'),
     defaultLocale: 'uk',
     queryParameter: 'lang',
-
-  })
-
+    objectNotation: true,
+  });
 
 app.use(cors());
-app.use(i18n.init);
+app.use(i18n.init)
 app.use(express.json());
 app.use(express.static(path.resolve(__dirname, 'static')));
 app.use(fileUpload({}));
+app.use(localizationMiddleware)
 app.use('/api', router);
 
 // last middleware

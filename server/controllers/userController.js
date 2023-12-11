@@ -50,7 +50,11 @@ class UserController {
           const errors = validationResult(req);
     
           if (!errors.isEmpty()) {
-            return next(ApiError.badRequest(errors));
+              const errorArray = errors.array();
+              errorArray.forEach(error => {
+                  error.msg = i18n.__(error.msg);
+              });
+              return next(ApiError.badRequest(errorArray));
           }
     
           const hashedPassword = bcrypt.hashSync(password, 7);

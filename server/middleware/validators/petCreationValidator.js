@@ -1,31 +1,30 @@
 const { body } = require('express-validator');
-const i18n = require('i18n');
 
 function petCreationValidator(req, res, next) {
     return [
         body('petName')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('petNameError')),
+            .withMessage('petNameError'),
         body('petAge')
             .trim()
             .isInt()
-            .withMessage(i18n.__('petAgeError')),
+            .withMessage('petAgeError'),
         body('petGender')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('petGenderError'))
+            .withMessage('petGenderError')
             .custom((value) => {
                 if (value !== 'male' && value !== 'female' && value != 'самець' && value != 'самка') {
-                    throw new Error(i18n.__('petGenderInvalidError'));
+                    throw new Error('petGenderInvalidError');
                 }
                 return true;
             }),
         body('cellNumber')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('petCellNumberError'))
+            .withMessage('petCellNumberError')
     ];
 }
 
-module.exports = petCreationValidator;
+module.exports = petCreationValidator();

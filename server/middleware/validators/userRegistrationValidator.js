@@ -1,46 +1,47 @@
 const { body } = require('express-validator');
-const i18n = require("i18n");
 
-function subscriberRegistrationValidation() {
+function userRegistrationValidator(req, res, next) {
     return [
         body('login')
             .trim()
-            .notEmpty().withMessage(i18n.__('loginIsNotExistError'))
-            .isLength({ min: 4, max: 35 }).withMessage(i18n.__('loginLengthError'))
-            .matches(/^[a-zA-Z0-9]+$/).withMessage(i18n.__('loginSymbolsError')),
+            .notEmpty().withMessage('loginIsNotExistError')
+            .isLength({ min: 4, max: 35 }).withMessage('loginLengthError')
+            .matches(/^[a-zA-Z0-9]+$/).withMessage('loginSymbolsError'),
 
         body('email')
             .trim()
-            .notEmpty().withMessage(i18n.__('emailIsNotExistError'))
-            .isEmail().withMessage(i18n.__('emailIsNotCorrectError')),
+            .notEmpty().withMessage('emailIsNotExistError')
+            .isEmail().withMessage('emailIsNotCorrectError'),
 
         body('fullName')
             .trim()
-            .notEmpty().withMessage(i18n.__('fullNameIsNotExistError'))
-            .matches(/\s/).withMessage(i18n.__('fullNameIsNotCorrectError')),
+            .notEmpty().withMessage('fullNameIsNotExistError')
+            .matches(/\s/).withMessage('fullNameIsNotCorrectError'),
 
         body('birthday')
             .trim()
-            .notEmpty().withMessage(i18n.__('birthDayIsNotExistError')),
+            .notEmpty().withMessage('birthDayIsNotExistError'),
 
         body('phoneNumber')
             .trim()
-            .isInt().withMessage(i18n.__('phoneNumberIsNotExistError'))
-            .isLength({ min: 7, max: 15 }).withMessage(i18n.__('phoneNumberIsNotCorrectError')),
+            .isInt().withMessage('phoneNumberIsNotExistError')
+            .isLength({ min: 7, max: 15 }).withMessage('phoneNumberIsNotCorrectError'),
 
         body('password')
             .trim()
-            .notEmpty().withMessage(i18n.__('passwordIsEmptyError'))
-            .matches(/^(?=.*[A-Z])(?=.*[\W_]).{8,}$/).withMessage(i18n.__('passwordIsNotCorrectError')),
+            .notEmpty().withMessage('passwordIsEmptyError')
+            .matches(/^(?=.*[A-Z])(?=.*[\W_]).{8,}$/).withMessage('passwordIsNotCorrectError'),
 
         body('passwordConfirm')
             .custom((value, { req }) => {
                 if (value !== req.body.password) {
-                    throw new Error(i18n.__('passwordIsNotTheSameError'));
+                    throw new Error('passwordIsNotTheSameError');
                 }
                 return true;
-            }).withMessage(i18n.__('passwordIsNotTheSameError'))
-    ];
+            }).withMessage('passwordIsNotTheSameError')
+    ]
 }
 
-module.exports = subscriberRegistrationValidation;
+module.exports = userRegistrationValidator();
+
+

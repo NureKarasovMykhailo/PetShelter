@@ -1,21 +1,20 @@
 const { body } = require('express-validator');
-const i18n = require('i18n');
 
 function feederValidator(req, res, next) {
     return [
         body('capacity')
             .trim()
             .isDecimal()
-            .withMessage(i18n.__('feederCapacityError')),
+            .withMessage('feederCapacityError'),
         body('designedFor')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('feederDesignedForError')),
+            .withMessage('feederDesignedForError'),
         body('feederColour')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('feederColourError'))
+            .withMessage('feederColourError')
     ];
 }
 
-module.exports = feederValidator;
+module.exports = feederValidator();

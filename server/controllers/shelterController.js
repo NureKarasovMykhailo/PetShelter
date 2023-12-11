@@ -38,7 +38,11 @@ class ShelterController {
 
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(ApiError.badRequest(errors));
+                const errorArray = errors.array();
+                errorArray.forEach(error => {
+                    error.msg = i18n.__(error.msg);
+                });
+                return next(ApiError.badRequest(errorArray));
             }
 
             const shelterFullAddress = `${shelterCountry} ${shelterCity} ${shelterStreet} ${shelterHouse}`;
@@ -145,7 +149,11 @@ class ShelterController {
 
             const errors = validationResult(req);
             if (!errors.isEmpty()){
-                return next(ApiError.badRequest(errors));
+                const errorArray = errors.array();
+                errorArray.forEach(error => {
+                    error.msg = i18n.__(error.msg);
+                });
+                return next(ApiError.badRequest(errorArray));
             }
 
             if (newShelterName !== targetShelter.shelter_name) {

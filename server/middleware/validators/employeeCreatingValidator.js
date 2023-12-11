@@ -1,37 +1,36 @@
 const { body } = require('express-validator');
-const i18n = require('i18n');
 
-function userCreatingValidation(req, res, next) {
+ function userCreatingValidation(req, res, next) {
     return [
         body('login')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('loginIsNotExistError'))
+            .withMessage('loginIsNotExistError')
             .isLength({ min: 4, max: 35 })
-            .withMessage(i18n.__('loginLengthError'))
+            .withMessage('loginLengthError')
             .matches(/^[a-zA-Z0-9]+$/)
-            .withMessage(i18n.__('loginSymbolsError')),
+            .withMessage('loginSymbolsError'),
         body('email')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('emailIsNotExistError'))
+            .withMessage('emailIsNotExistError')
             .isEmail()
-            .withMessage(i18n.__('emailIsNotCorrectError')),
+            .withMessage('emailIsNotCorrectError'),
         body('fullName')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('fullNameIsNotExistError'))
+            .withMessage('fullNameIsNotExistError')
             .matches(/\s/)
-            .withMessage(i18n.__('fullNameIsNotCorrectError')),
+            .withMessage('fullNameIsNotCorrectError'),
         body('birthday')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('birthDayIsNotExistError')),
+            .withMessage('birthDayIsNotExistError'),
         body('domainEmail')
             .trim()
             .isEmail()
-            .withMessage(i18n.__('domainEmailIsNotCorrectError'))
+            .withMessage('domainEmailIsNotCorrectError')
     ];
 }
 
-module.exports = userCreatingValidation;
+module.exports = userCreatingValidation();

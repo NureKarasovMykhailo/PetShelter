@@ -1,37 +1,36 @@
 const { body } = require('express-validator');
-const i18n = require('i18n');
 
 function shelterUpdatingValidation(req, res, next) {
     return [
         body('newShelterName')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterNameError'))
+            .withMessage('newShelterNameError')
             .isLength({ min: 5, max: 100 })
-            .withMessage(i18n.__('newShelterNameLengthError')),
+            .withMessage('newShelterNameLengthError'),
         body('newShelterCountry')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterCountryError')),
+            .withMessage('newShelterCountryError'),
         body('newShelterCity')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterCityError')),
+            .withMessage('newShelterCityError'),
         body('newShelterStreet')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterStreetError')),
+            .withMessage('newShelterStreetError'),
         body('newShelterHouse')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterHouseError')),
+            .withMessage('newShelterHouseError'),
         body('newShelterDomain')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('newShelterDomainError'))
+            .withMessage('newShelterDomainError')
             .matches(/^@[a-zA-Z0-9.-]+\.[a-z]+$/)
-            .withMessage(i18n.__('newShelterDomainFormatError')),
+            .withMessage('newShelterDomainFormatError'),
     ];
 }
 
-module.exports = shelterUpdatingValidation;
+module.exports = shelterUpdatingValidation();

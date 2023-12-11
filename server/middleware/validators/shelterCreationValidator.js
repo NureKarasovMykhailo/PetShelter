@@ -1,41 +1,40 @@
 const { body } = require('express-validator');
-const i18n = require('i18n');
 
 function shelterCreatingValidation(req, res, next) {
     return [
         body('shelterName')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('shelterNameError'))
+            .withMessage('shelterNameError')
             .isLength({ min: 5, max: 100 })
-            .withMessage(i18n.__('shelterNameLengthError')),
+            .withMessage('shelterNameLengthError'),
         body('shelterCity')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('shelterCityError')),
+            .withMessage('shelterCityError'),
         body('shelterStreet')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('shelterStreetError')),
+            .withMessage('shelterStreetError'),
         body('shelterHouse')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('shelterHouseError'))
+            .withMessage('shelterHouseError')
             .matches(/^[\dA-Za-z\s/-]+$/)
-            .withMessage(i18n.__('shelterHouseFormatError')),
+            .withMessage('shelterHouseFormatError'),
         body('shelterDomain')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('shelterDomainError'))
+            .withMessage('shelterDomainError')
             .matches(/^@[a-zA-Z0-9.-]+\.[a-z]+$/)
-            .withMessage(i18n.__('shelterDomainFormatError')),
+            .withMessage('shelterDomainFormatError'),
         body('subscriberDomainEmail')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('subscriberDomainEmailError'))
+            .withMessage('subscriberDomainEmailError')
             .matches(/^[a-zA-Z]+$/)
-            .withMessage(i18n.__('subscriberDomainEmailFormatError'))
+            .withMessage('subscriberDomainEmailFormatError')
     ];
 }
 
-module.exports = shelterCreatingValidation;
+module.exports = shelterCreatingValidation();

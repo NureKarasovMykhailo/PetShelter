@@ -22,7 +22,11 @@ class PetController {
 
             const errors = validationResult(req);
             if(!errors.isEmpty()){
-                return next(ApiError.badRequest(errors));
+                const errorArray = errors.array();
+                errorArray.forEach(error => {
+                    error.msg = i18n.__(error.msg);
+                });
+                return next(ApiError.badRequest(errorArray));
             }
 
             const petImageName = uuid.v4() + '.jpg';
@@ -139,7 +143,11 @@ class PetController {
 
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(ApiError.badRequest(errors));
+                const errorArray = errors.array();
+                errorArray.forEach(error => {
+                    error.msg = i18n.__(error.msg);
+                });
+                return next(ApiError.badRequest(errorArray));
             }
 
             const updatedPet = await petService.updatePetData(targetPet, {

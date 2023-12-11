@@ -1,33 +1,32 @@
 const { body } = require('express-validator');
-const i18n = require("i18n");
 
 function collarCreatingValidator() {
     return [
         body('maxTemperature')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('collarMaxTempIsNotDefined'))
+            .withMessage('collarMaxTempIsNotDefined')
             .isDecimal()
-            .withMessage(i18n.__('collarMaxTempIsNotDecimal')),
+            .withMessage('collarMaxTempIsNotDecimal'),
         body('minTemperature')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('collarMinTempIsNotDefined'))
+            .withMessage('collarMinTempIsNotDefined')
             .isDecimal()
-            .withMessage(i18n.__('collarMinTempIsNotDecimal')),
+            .withMessage('collarMinTempIsNotDecimal'),
         body('maxPulse')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('collarMaxPulseIsNotDefined'))
+            .withMessage('collarMaxPulseIsNotDefined')
             .isDecimal()
-            .withMessage(i18n.__('collarMaxPulseIsNotDecimal')),
+            .withMessage('collarMaxPulseIsNotDecimal'),
         body('minTemperature')
             .trim()
             .notEmpty()
-            .withMessage(i18n.__('collarMinTempIsNotDefined'))
+            .withMessage('collarMinTempIsNotDefined')
             .isDecimal()
-            .withMessage(i18n.__('collarMinTempIsNotDecimal')),
+            .withMessage('collarMinTempIsNotDecimal'),
     ];
 }
 
-module.exports = collarCreatingValidator;
+module.exports = collarCreatingValidator();
