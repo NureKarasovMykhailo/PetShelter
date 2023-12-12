@@ -1,0 +1,17 @@
+.authContainer{
+    padding: 15px;
+}
+.authForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.authHeader{
+    padding: 5px;
+}
+
+.authLink{
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+}

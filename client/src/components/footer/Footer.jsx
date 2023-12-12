@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./Footer.module.css";
-import Link from "../UI/link/Link";
+import LinkWithIcon from "../UI/link/LinkWithIcon";
 import { IMAGES } from "../../utils/const";
 
 const Footer = () => {
-    const imgAltText = "Image not found";
+    const imgAltText = "image not found";
 
     const navLinks = [
         { text: "Контакти", imgSrc: IMAGES.CONTACTS_ICON, alt: {imgAltText}, href: "#"},
@@ -24,7 +24,7 @@ const Footer = () => {
                     </div>
                 <div className={styles.footerLinks}>
                         {navLinks.map((link, index) => (
-                            <Link
+                            <LinkWithIcon
                                 key={index}
                                 text={link.text}
                                 imgSrc={link.imgSrc}

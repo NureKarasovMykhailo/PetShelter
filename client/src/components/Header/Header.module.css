@@ -20,6 +20,15 @@
     max-width: 115px;
     max-height: 120px;
     border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+.headerLogo:hover {
+    transform: scale(1.1);
+}
+
+.headerLogo:active {
+    transform: scale(0.9);
 }
 .headerText{
     text-align: center;

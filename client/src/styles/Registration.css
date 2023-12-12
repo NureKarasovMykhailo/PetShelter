@@ -1,0 +1,28 @@
+.registrationContainer{
+    padding: 15px;
+}
+.authHeader{
+    padding: 10px;
+    text-align: center;
+}
+.registrationForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.registrationLinkContainer{
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+.registerBtnContainer{
+    padding: 10px;
+}
+.registrationErrorString{
+    color: red;
+    font-weight: 800;
+}
+.registrationErrorContainer{
+    text-align: center;
+}

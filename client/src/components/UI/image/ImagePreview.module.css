@@ -1,0 +1,10 @@
+.previewImageContainer{
+    padding: 15px 0;
+}
+.previewImage{
+    min-width: 50px;
+    min-height: 50px;
+    max-height: 200px;
+    max-width: 200px;
+    border-radius: 5px;
+}

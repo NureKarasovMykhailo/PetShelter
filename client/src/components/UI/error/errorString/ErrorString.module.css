@@ -1,0 +1,14 @@
+.errorStringContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.errorStringImg{
+    max-width: 40px;
+    max-height: 40px;
+}
+.errorStringText{
+    color: red;
+    font-weight: 800;
+}

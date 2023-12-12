@@ -17,5 +17,6 @@ export const IMAGES = {
     DOG_IMAGE: "/assets/img/dog-offer.jpg",
     DOG_AND_CAT_IMAGE: "/assets/img/cat-and-dog.jpg",
     WORK_OFFER_IMAGE: "/assets/img/work-offer-image.jpg",
-    MAIN_PAGE_IMAGE: "/assets/img/main-page-image.jpg"
+    MAIN_PAGE_IMAGE: "/assets/img/main-page-image.jpg",
+    ERROR_ICON: "/assets/img/error.png"
 };
