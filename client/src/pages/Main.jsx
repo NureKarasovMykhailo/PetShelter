@@ -2,11 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom"
 import ImageWithLink from "../components/ImageWithLink";
 import Button from "../components/UI/button/Button";
-import { AUTH_ROUTE, IMAGES } from "../utils/const";
+import { IMAGES } from "../utils/const";
 import "../styles/Main.css";
 
 const Main = () => {
-    const navigate = useNavigate();
 
     const imgAltText = "image not found";
 

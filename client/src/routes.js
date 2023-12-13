@@ -8,7 +8,6 @@ import {
     PROFILE_ROUTE,
     REGISTRATION_ROUTE,
     SUBSCRIBE_ROUTE,
-    SUBSCRIBE_SUCCEED
 } from "./utils/const";
 import Profile from "./pages/Profile";
 

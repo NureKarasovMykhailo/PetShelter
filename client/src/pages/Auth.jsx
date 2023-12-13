@@ -5,7 +5,6 @@ import "../styles/Auth.css";
 import {MAIN_ROUTE, REGISTRATION_ROUTE} from '../utils/const';
 import MyLink from "../components/UI/link/MyLink";
 import {useNavigate} from "react-router-dom";
-import {authRoutes} from "../routes";
 import {authorization} from "../API/UserService";
 import ErrorString from "../components/UI/error/errorString/ErrorString";
 import {observer} from "mobx-react-lite";

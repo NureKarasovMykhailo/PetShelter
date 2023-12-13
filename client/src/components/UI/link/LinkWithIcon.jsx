@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "./LinkWithIcon.module.css";
-import {useHref, useNavigate} from "react-router-dom";
-import {AUTH_ROUTE, SUBSCRIBE_ROUTE} from "../../../utils/const";
+import {useNavigate} from "react-router-dom";
+import {SUBSCRIBE_ROUTE} from "../../../utils/const";
 
-const LinkWithIcon = ({ imgSrc, alt, text, href }) => {
+const LinkWithIcon = ({ imgSrc, alt, text }) => {
     const navigate = useNavigate();
     const handleClick = () => {
         navigate(SUBSCRIBE_ROUTE)

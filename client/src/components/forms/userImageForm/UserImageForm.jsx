@@ -1,11 +1,9 @@
 import React, {useContext, useState} from 'react';
 import styles from './UserImageForm.module.css';
 import Button from "../../UI/button/Button";
-import {changeUserImage, checkAuth, checkAuthToken, getProfileInfo} from "../../../API/UserService";
-import {$authHost} from "../../../API/axiosConfig";
+import {changeUserImage, checkAuth} from "../../../API/UserService";
 import {Context} from "../../../index";
 import {useNavigate} from "react-router-dom";
-import {MAIN_ROUTE, PROFILE_ROUTE} from "../../../utils/const";
 import {observer} from "mobx-react-lite";
 
 const UserImageForm = observer(() => {
@@ -13,7 +11,6 @@ const UserImageForm = observer(() => {
     const [userImage, setUserImage] = useState(null);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { user } = useContext(Context);
-    const navigate = useNavigate();
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];

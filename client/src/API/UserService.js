@@ -22,8 +22,7 @@ export const registration = async ({
     formData.append('password', password);
     formData.append('passwordConfirm', passwordConfirm);
 
-    const response = await $host.post('api/user/registration', formData);
-    return response;
+    return await $host.post('api/user/registration', formData);
 }
 
 export const authorization = async (login, password) => {
@@ -38,10 +37,6 @@ export const checkAuth = async () => {
     return decodeToken(response.data.token);
 }
 
-export const checkAuthToken = async () => {
-    const response = await $authHost.get('api/user/auth');
-    return response.data.token;
-}
 
 export const subscribe = async () => {
     return await $authHost.post('api/user/subscribe');
