@@ -3,7 +3,6 @@ import styles from './UserImageForm.module.css';
 import Button from "../../UI/button/Button";
 import {changeUserImage, checkAuth} from "../../../API/UserService";
 import {Context} from "../../../index";
-import {useNavigate} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 
 const UserImageForm = observer(() => {

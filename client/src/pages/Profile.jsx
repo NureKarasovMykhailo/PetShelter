@@ -73,6 +73,7 @@ const Profile = observer(() => {
                         <img
                             className="profileImage"
                             src={process.env.REACT_APP_API_URL + user.user.user_image}
+                            alt="Image not found"
                         />
                     </div>
                     <div className="subscribeContainer">
