@@ -1,5 +1,5 @@
 import {$authHost, $host} from "./axiosConfig";
-
+import {decodeToken} from 'react-jwt';
 
 export const registration = async ({
     login,
@@ -30,10 +30,35 @@ export const authorization = async (login, password) => {
     const response =
         await $host.post('api/user/authorization', {login, password});
     localStorage.setItem('token', response.data.token);
-    return response
+    return decodeToken(response.data.token);
 }
 
 export const checkAuth = async () => {
     const response = await $authHost.get('api/user/auth');
-    return response;
+    return decodeToken(response.data.token);
+}
+
+export const checkAuthToken = async () => {
+    const response = await $authHost.get('api/user/auth');
+    return response.data.token;
+}
+
+export const subscribe = async () => {
+    return await $authHost.post('api/user/subscribe');
+}
+
+export const getProfileInfo = async () => {
+    return await $authHost.get('api/user/profile');
+}
+
+export const getSubscriptionDetail = async () => {
+    return await $authHost.get('api/user/subscribe/detail');
+}
+
+export const changeUserImage = async (newUserImage) => {
+    const formData = new FormData();
+    formData.append('newUserImage', newUserImage);
+    console.log(newUserImage)
+    return await $authHost.post('api/user/change/image', formData);
+
 }

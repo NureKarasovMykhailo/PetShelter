@@ -1,0 +1,26 @@
+.subscribeContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+.subscribeHeaders{
+    width: 100%;
+}
+.subscribeImageContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+.subscribeImage{
+    width: 500px;
+    height: 500px;
+}
+.subscribeButtonContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.subscribeDetails{
+    font-size: 18px;
+}

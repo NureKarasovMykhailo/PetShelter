@@ -43,8 +43,9 @@ const Auth = observer(() => {
     const handleAuthBtnClick = async (event) => {
         event.preventDefault()
         try {
-            const response = await authorization(authData.login, authData.password);
+            const userData = await authorization(authData.login, authData.password);
             user.setIsAuth(true);
+            user.setUser(userData);
             navigate(MAIN_ROUTE);
         } catch (error) {
             if (error.response.status === 400) {

@@ -4,7 +4,7 @@ import styles from "./Header.module.css";
 import Button from "../UI/button/Button";
 import Select from "../UI/select/Select";
 import LinkWithIcon from "../UI/link/LinkWithIcon";
-import {AUTH_ROUTE, IMAGES, MAIN_ROUTE} from "../../utils/const";
+import {AUTH_ROUTE, IMAGES, MAIN_ROUTE, PROFILE_ROUTE, SUBSCRIBE_ROUTE} from "../../utils/const";
 import {setupAxios} from "../../API/axiosConfig";
 import {Context} from "../../index";
 import {observer} from "mobx-react-lite";
@@ -22,10 +22,17 @@ const Header  = observer(() => {
         navigate(MAIN_ROUTE);
     }
 
+    const handleProfileClick = () => {
+        navigate(PROFILE_ROUTE);
+    }
+    const handleLinkClick = (route) => {
+        navigate(route);
+    }
+
     const navLinks = [
         {  text: "Волонтерьска робота", imgSrc: IMAGES.VOLUNTARY_WORK, alt: imageAltText},
         {  text: "Опекунство", imgSrc: IMAGES.PET_ADOPTION, alt: imageAltText},
-        {  text: "Підписка", imgSrc: IMAGES.SUBSCRIBE, alt: imageAltText},
+        {  text: "Підписка", imgSrc: IMAGES.SUBSCRIBE, alt: imageAltText, href: SUBSCRIBE_ROUTE},
         {  text: "Можливості", imgSrc: IMAGES.ABILITY, alt: imageAltText},
     ];
 
@@ -65,24 +72,33 @@ const Header  = observer(() => {
                     />
                     <div className={styles.headerLogIn}>
                         {user.isAuth ?
-                            <p>Аворизован</p>
+                            <div className="headerProfileInfoContainer">
+                                <p onClick={handleProfileClick} className="headerProfileLogin">{user.user.login}</p>
+                                <img
+                                    className="headerProfileImage"
+                                    src={process.env.REACT_APP_API_URL + user.user.user_image}
+                                    alt="Image not found"
+                                />
+                            </div>
                             :
-                            <Button
-                                buttonText="Вхід"
-                                onClick={handleAuthBtnClick}
-                            />
+                            <div className={styles.logInButtonContainer}>
+                                <Button
+                                    buttonText="Вхід"
+                                    onClick={handleAuthBtnClick}
+                                />
+                            </div>
                         }
                     </div>
                 </div>
             </div>
             <div className={styles.headerNavBar}>
-                {navLinks.map((link, index) => 
+                {navLinks.map((link, index) =>
                     <LinkWithIcon
-                    key={index}
+                        key={index}
                         imgSrc={link.imgSrc}
                         text={link.text}
                         alt={link.alt}
-                        href="#" 
+                        href={link.href}
                     />
                 )}
             </div>

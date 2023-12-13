@@ -1,0 +1,19 @@
+.underlineLinkContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+.underlineLinkIcon{
+    width: 30px;
+    height: 30px;
+}
+.underlineLinkText{
+    color: #0C2375;
+    font-weight: 800;
+    text-decoration: underline;
+    margin-right: 5px;
+}
+.underlineLinkText:hover{
+    opacity: 0.8;
+}

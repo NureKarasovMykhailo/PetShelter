@@ -1,0 +1,28 @@
+.form{
+
+}
+.formHeader{
+    font-size: 24px;
+    font-weight: 600;
+}
+.imagePreviewContainer{
+    display: none;
+}
+.imagePreviewContainerActive {
+    display: flex;
+}
+.image{
+    width: 150px;
+    height: 150px;
+    margin-right: 10px;
+}
+.imageRound{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+.buttonContainer{
+    display: flex;
+    width: 100%;
+    padding: 20px 25%;
+}

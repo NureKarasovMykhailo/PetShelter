@@ -1,0 +1,71 @@
+.profileContainer{
+    width: 100%;
+}
+.profileImageRow{
+    display: flex;
+    align-items: end;
+    width: 100%;
+}
+.profileImageContainer{
+    width: 50%;
+    padding: 15px;
+    display: flex;
+    justify-content:start;
+}
+.profileImage{
+    min-width: 100px;
+    min-height: 100px;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 5px;
+}
+.subscribeContainer{
+    width: 100%;
+    padding: 10px 20px;
+    line-height: 3;
+    font-size: 18px;
+}
+.subscribeLinkContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.nonSubscribeInfo{
+    margin-right: 5px;
+}
+.changeImageLinkContainer{
+    min-width: 100px;
+    width: 250px;
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+}
+.profileUserInfoContainer{
+    padding: 10px;
+}
+.profileUserFullNameContainer{
+    font-weight: 800;
+    font-size: 24px;
+}
+.profileUserFieldContainer{
+    width: 100%;
+    font-size: 22px;
+    display: flex;
+    line-height: 2;
+}
+.profileUserFieldName{
+    width: 40%;
+    text-align: end;
+    font-weight: 800;
+}
+.profileUserFieldValue{
+    width: 50%;
+    padding-left: 20px;
+}
+.profileButtonsContainer{
+    padding: 10px 20%;
+}
+.profileButtonContainer{
+    padding: 10px 0;
+    height: 100px;
+}

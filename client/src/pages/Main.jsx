@@ -36,7 +36,7 @@ const Main = () => {
                 </div>
                 <div className="adoptionOfferBtn">
                     <Button
-                        buttonText="Оформити усиновлення"
+                        buttonText="Оформити опекунство"
                         
                     />
                 </div>
