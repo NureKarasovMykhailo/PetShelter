@@ -1,36 +1,8 @@
 .authContainer{
     padding: 15px;
 }
-.authForm{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.authHeader{
-    padding: 5px;
-}
-
 .authLink{
     padding: 15px;
     display: flex;
     flex-direction: row;
-}
-.headerProfileInfoContainer{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 15px;
-}
-.headerProfileLogin{
-    font-size: 24px;
-    cursor: pointer;
-}
-.headerProfileLogin:hover{
-    opacity: 0.5;
-}
-.headerProfileImage{
-    margin-left: 10px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
 }

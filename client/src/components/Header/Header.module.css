@@ -77,3 +77,25 @@
     font-size: 18px;
     margin-left: 5px;
 }
+.logInButtonContainer{
+    height: 40px;
+}
+.headerProfileInfoContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+}
+.headerProfileLogin{
+    font-size: 24px;
+    cursor: pointer;
+}
+.headerProfileLogin:hover{
+    opacity: 0.5;
+}
+.headerProfileImage{
+    margin-left: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

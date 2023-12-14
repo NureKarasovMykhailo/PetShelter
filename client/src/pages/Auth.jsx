@@ -1,6 +1,4 @@
 import React, {useContext, useState} from 'react';
-import Button from "../components/UI/button/Button";
-import MyInput from '../components/UI/input/MyInput';
 import "../styles/Auth.css";
 import {MAIN_ROUTE, REGISTRATION_ROUTE} from '../utils/const';
 import MyLink from "../components/UI/link/MyLink";
@@ -9,6 +7,7 @@ import {authorization} from "../API/UserService";
 import ErrorString from "../components/UI/error/errorString/ErrorString";
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
+import GeneralForm from "../components/forms/generalForm/GeneralForm";
 
 const Auth = observer(() => {
     const inputs = [
@@ -55,23 +54,14 @@ const Auth = observer(() => {
 
     return (
         <div className="authContainer">
-            <form className="authForm">
-                <div className="authHeader">
-                    <h2>Авторизація</h2>
-                </div>
-                <div className="authInputContainer">
-                    {inputs.map((input, index) => 
-                        <MyInput
-                            key={index}
-                            label={input.label}
-                            id={input.id}
-                            type={input.type}
-                            name={input.name}
-                            placeholder={input.placeholder}
-                            onChange={handleAuthChange}
-                        />
-                    )}
-                </div>
+            <GeneralForm
+                header="Авторизація"
+                inputs={inputs}
+                onChange={handleAuthChange}
+                onClick={handleAuthBtnClick}
+                submitButtonText="Авторизація"
+                userData={authData}
+            >
                 <div className="authLink">
                     <p>Досі не маєте аккаунту?</p>
                     <MyLink
@@ -82,13 +72,7 @@ const Auth = observer(() => {
                 <ErrorString
                     errorText={error}
                 />
-                <div className="authBtn">
-                    <Button
-                        buttonText="Авторизуватися"
-                        onClick={handleAuthBtnClick}
-                    />
-                </div>
-            </form>
+            </GeneralForm>
         </div>
     );
 });

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Router, Routes, useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router-dom"
 import styles from "./Header.module.css";
 import Button from "../UI/button/Button";
 import Select from "../UI/select/Select";
@@ -25,10 +25,6 @@ const Header  = observer(() => {
     const handleProfileClick = () => {
         navigate(PROFILE_ROUTE);
     }
-    const handleLinkClick = (route) => {
-        navigate(route);
-    }
-
     const navLinks = [
         {  text: "Волонтерьска робота", imgSrc: IMAGES.VOLUNTARY_WORK, alt: imageAltText},
         {  text: "Опекунство", imgSrc: IMAGES.PET_ADOPTION, alt: imageAltText},
@@ -72,10 +68,10 @@ const Header  = observer(() => {
                     />
                     <div className={styles.headerLogIn}>
                         {user.isAuth ?
-                            <div className="headerProfileInfoContainer">
-                                <p onClick={handleProfileClick} className="headerProfileLogin">{user.user.login}</p>
+                            <div className={styles.headerProfileInfoContainer}>
+                                <p onClick={handleProfileClick} className={styles.headerProfileLogin}>{user.user.login}</p>
                                 <img
-                                    className="headerProfileImage"
+                                    className={styles.headerProfileImage}
                                     src={process.env.REACT_APP_API_URL + user.user.user_image}
                                     alt="Image not found"
                                 />

@@ -1,0 +1,8 @@
+.generalForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.generalFormHeader{
+    padding: 5px;
+}

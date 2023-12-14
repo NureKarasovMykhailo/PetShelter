@@ -1,14 +1,12 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import MyInput from "../components/UI/input/MyInput";
-import FormError from "../components/UI/error/formError/FormError";
-import Button from "../components/UI/button/Button";
 import MyLink from "../components/UI/link/MyLink";
 import ImagePreview from "../components/UI/image/ImagePreview";
 import { AUTH_ROUTE } from "../utils/const";
 import "../styles/Registration.css";
 import { registration } from "../API/UserService";
 import ErrorString from "../components/UI/error/errorString/ErrorString";
+import GeneralForm from "../components/forms/generalForm/GeneralForm";
 
 
 
@@ -95,41 +93,19 @@ const Registration = () => {
 
     return (
         <div className="registrationContainer">
-            <form encType="multipart/form-data" className="registrationForm">
-                <div className="authHeader">
-                    <h2>Реєстрація</h2>
-                </div>
-                <div className="registrationInputsContainer">
-                    {inputs.map((input, index) =>
-                        <div key={index}>
-                            {input.type !== 'file' ?
-                                <MyInput
-                                    label={input.label}
-                                    id={input.id}
-                                    type={input.type}
-                                    name={input.name}
-                                    placeholder={input.placeholder}
-                                    onChange={handleChange}
-                                    value={userData[input.name]}
-                                />
-                                :
-                                <MyInput
-                                    label={input.label}
-                                    id={input.id}
-                                    type={input.type}
-                                    name={input.name}
-                                    placeholder={input.placeholder}
-                                    onChange={handleChange}
-                                />
-                            }
-                            {<FormError errors={errorList.filter(error => error.path === input.name)} />}
-                        </div>
-                    )}
-                    <ImagePreview
-                        imagePreview={imagePreview}
-                        alt='User image'
-                    />
-                </div>
+            <GeneralForm
+                header="Реєстрація"
+                inputs={inputs}
+                onChange={handleChange}
+                onClick={signUp}
+                submitButtonText="Зареєструватися"
+                errorsList={errorList}
+                userData={userData}
+            >
+                <ImagePreview
+                    imagePreview={imagePreview}
+                    alt='User image'
+                />
                 <ErrorString
                     errorText={errorString}
                 />
@@ -137,13 +113,7 @@ const Registration = () => {
                     <p>Маєте аккаунт? </p>
                     <MyLink linkText="Авторизуйтесь!" onClick={handleAuthLinkClick} />
                 </div>
-                <div className="registerBtnContainer">
-                    <Button
-                        buttonText="Зареєструватися"
-                        onClick={signUp}
-                    />
-                </div>
-            </form>
+            </GeneralForm>
         </div>
     );
 };
