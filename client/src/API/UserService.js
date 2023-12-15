@@ -57,3 +57,23 @@ export const changeUserImage = async (newUserImage) => {
     return await $authHost.post('api/user/change/image', formData);
 
 }
+
+export const changeEmail = async(newEmail) => {
+    return await $authHost.post('api/user/change/email', { newEmail });
+}
+
+export const sendConfirmationCode = async (email) => {
+    return await $host.post('api/user/change/password/code', { email });
+}
+
+export const checkConfirmationCode = async (confirmationCode, email) => {
+    return await $host.post('api/user/change/password/code/check  ', {confirmationCode, email});
+}
+
+export const changePassword = async (email, newPassword, passwordConfirm) => {
+    return await $host.post('api/user/change/password/code/changing', { email, newPassword, passwordConfirm });
+}
+
+export const changePhone = async (newPhoneNumber) => {
+    return await $authHost.post('api/user/change/telephone', { newPhoneNumber });
+}

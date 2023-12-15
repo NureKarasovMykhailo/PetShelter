@@ -7,6 +7,8 @@ import "../styles/Registration.css";
 import { registration } from "../API/UserService";
 import ErrorString from "../components/UI/error/errorString/ErrorString";
 import GeneralForm from "../components/forms/generalForm/GeneralForm";
+import {PhoneInput} from "react-international-phone";
+import PasswordInput from "../components/UI/input/passwordInput/PasswordInput";
 
 
 
@@ -17,7 +19,7 @@ const Registration = () => {
         {label: "Email", id: "email", type: "email", name: "email", placeholder: "email"},
         {label: "Прізвище Ім'я", id: "fullName", type: "text", name: "fullName", placeholder: "Петренко Петро"},
         {label: "Дата народження", id: "birthday", type: "date", name: "birthday"},
-        {label: "Номер телефону", id: "phoneNumber", type: "text", name: "phoneNumber", placeholder: "+380 "},
+        {label: "Номер телефона", type: 'phoneNumber', name: 'phoneNumber', id: 'phoneNumber'},
         {label: "Пароль", id: "password", type: "password", name: "password", placeholder: "password"},
         {label: "Підтвердіть пароль", id: "passwordConfirm", type: "password", name: "passwordConfirm", placeholder: "password"},
         { label: "Зображення профілю", id: "userImage", type: "file", name: "userImage", placeholder: "Вибрати зображення" }
@@ -49,21 +51,25 @@ const Registration = () => {
 
 
     const handleChange = (e) => {
-        const { name, type } = e.target;
-        const value = type === 'file' ? e.target.files[0] : e.target.value;
+        if (e.target === undefined){
+            setUserData({ ...userData, phoneNumber: e });
+        } else {
+            const { name, type } = e.target;
+            const value = type === 'file' ? e.target.files[0] : e.target.value;
 
-        if (type === 'file') {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(e.target.files[0]);
+            if (type === 'file') {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImagePreview(reader.result);
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+
+            setUserData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
         }
-
-        setUserData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
     }
 
     const handleAuthLinkClick = () => {
@@ -100,7 +106,7 @@ const Registration = () => {
                 onClick={signUp}
                 submitButtonText="Зареєструватися"
                 errorsList={errorList}
-                userData={userData}
+                data={userData}
             >
                 <ImagePreview
                     imagePreview={imagePreview}
@@ -114,6 +120,7 @@ const Registration = () => {
                     <MyLink linkText="Авторизуйтесь!" onClick={handleAuthLinkClick} />
                 </div>
             </GeneralForm>
+
         </div>
     );
 };

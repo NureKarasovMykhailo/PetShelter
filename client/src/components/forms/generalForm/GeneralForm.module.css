@@ -2,7 +2,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+}
+.inputsContainer{
+    width: 350px;
 }
 .generalFormHeader{
     padding: 5px;
+}
+.phoneInputLabel{
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: bold;
 }

@@ -2,7 +2,13 @@
     padding: 15px;
 }
 .authLink{
-    padding: 15px;
     display: flex;
     flex-direction: row;
+}
+.auth__children{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+    line-height: 2.3;
 }

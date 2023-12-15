@@ -4,6 +4,11 @@ export const REGISTRATION_ROUTE = '/registration';
 export const SUBSCRIBE_ROUTE = '/subscribe';
 export const SUBSCRIBE_SUCCEED = '/subscription/succeed';
 export const PROFILE_ROUTE = '/profile';
+export const CHECK_AUTH_ROUTE = '/profile/check';
+export const CHANGE_EMAIL_ROUTE = '/profile/change/email';
+export const ENTER_EMAIL_PAGE = '/email';
+export const CHANGE_PASSWORD_PAGE = '/profile/change/password';
+export const CHANGE_PHONE_ROUTE = '/profile/change/phone';
 
 
 export const IMAGES = {

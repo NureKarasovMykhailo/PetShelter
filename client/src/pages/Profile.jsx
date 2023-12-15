@@ -1,20 +1,22 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {getProfileInfo, getSubscriptionDetail} from "../API/UserService";
+import {getProfileInfo, getSubscriptionDetail, sendConfirmationCode} from "../API/UserService";
 import {Context} from "../index";
 import '../styles/Profile.css';
 import Loader from "../components/UI/loader/Loader";
 import Button from "../components/UI/button/Button";
 import UnderlineLink from "../components/UI/link/underlineLink/UnderlineLink";
 import {useNavigate} from "react-router-dom";
-import {MAIN_ROUTE, SUBSCRIBE_ROUTE} from "../utils/const";
+import {CHANGE_PASSWORD_PAGE, CHECK_AUTH_ROUTE, MAIN_ROUTE, SUBSCRIBE_ROUTE} from "../utils/const";
 import Modal from "../components/UI/modal/Modal";
 import UserImageForm from "../components/forms/userImageForm/UserImageForm";
 import {observer} from "mobx-react-lite";
+import CheckAuthPage from "./CheckAuthPage";
 
 const Profile = observer(() => {
     const [modalActive, setModalActive] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useContext(Context);
+    const phone='dsadasd'
     const padWithZero = (value) => value.toString().padStart(2, '0');
 
     useEffect(() => {
@@ -43,6 +45,21 @@ const Profile = observer(() => {
     }
     const handleImageChangeClick = () => {
         setModalActive(true);
+    }
+    const handleChangePasswordClick = async () => {
+        const state = {isAuth: true};
+        await sendConfirmationCode(user.user.email);
+        navigate(CHANGE_PASSWORD_PAGE, { state });
+    }
+
+    const handleChangeEmailBtnClick = () => {
+        const state = { email: true  };
+        navigate(CHECK_AUTH_ROUTE, { state })
+    }
+
+    const handleChangePhoneBtnClick = () => {
+        const state = { phone: true };
+        navigate(CHECK_AUTH_ROUTE, { state });
     }
 
     const startTime = new Date(user.getSubscription.start_time);
@@ -129,16 +146,19 @@ const Profile = observer(() => {
                     <div className="profileButtonContainer">
                         <Button
                             buttonText="Змінити email"
+                            onClick={handleChangeEmailBtnClick}
                         />
                     </div>
                     <div className="profileButtonContainer">
                         <Button
                             buttonText="Змінити пароль"
+                            onClick={handleChangePasswordClick}
                         />
                     </div>
                     <div className="profileButtonContainer">
                         <Button
                             buttonText="Змінити телефон"
+                            onClick={handleChangePhoneBtnClick}
                         />
                     </div>
                 </div>
