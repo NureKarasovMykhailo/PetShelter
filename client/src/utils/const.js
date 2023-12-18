@@ -30,4 +30,6 @@ export const IMAGES = {
     ERROR_ICON: "/assets/img/error.png",
     SUBSCRIBE_PAGE_IMAGE: "/assets/img/subscribe-page-image.png",
     LINK_ICON: "/assets/img/link-icon.png",
+    UPDATE_ICON: "/assets/img/update.png",
+    DELETE_ICON: "/assets/img/delete.png",
 };

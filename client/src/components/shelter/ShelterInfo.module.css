@@ -1,0 +1,53 @@
+.shelterInfoContainer{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.shelterInfoLine{
+    width: 100%;
+}
+.horizontalLine{
+    width: 100%;
+}
+.shelterInfoInformationContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    width: 50%;
+}
+.shelterImage{
+    max-width: 250px;
+    max-height: 250px;
+    border-radius: 50%;
+}
+.infoContainerHeader{
+
+}
+.shelterDataContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.shelterTextData{
+    text-align: right;
+    line-height: 2;
+}
+.shelterInfoLinkContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+}
+.linkColumns{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+.linkColumn * {
+    margin: 10px;
+    height: 50px;
+}

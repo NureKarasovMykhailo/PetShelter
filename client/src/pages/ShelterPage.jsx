@@ -1,145 +1,113 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import '../styles/ShelterPage.css';
-import {BiCaretUp} from "react-icons/bi";
 import Button from "../components/UI/button/Button";
-import Modal from "../components/UI/modal/Modal";
-import GeneralForm from "../components/forms/generalForm/GeneralForm";
-import {createShelter} from "../API/ShelterService";
-import ErrorString from "../components/UI/error/errorString/ErrorString";
+import ShelterForm from "../components/shelter/ShelterForm";
+import {deleteShelter, getShelter} from "../API/ShelterService";
+import ShelterInfo from "../components/shelter/ShelterInfo";
+import Loader from "../components/UI/loader/Loader";
+import UnderlineLink from "../components/UI/link/underlineLink/UnderlineLink";
+import {IMAGES, PROFILE_ROUTE} from "../utils/const";
 import {useNavigate} from "react-router-dom";
-import {PROFILE_ROUTE} from "../utils/const";
-import ImagePreview from "../components/UI/image/ImagePreview";
+import UpdateShelterForm from "../components/shelter/UpdateShelterForm";
 
 const ShelterPage = observer(() => {
-    const addInputs = [
-        {label: 'Назва притулку', type: 'text', id: 'shelterName', name: 'shelterName'},
-        {label: 'Країна', type: 'text', id: 'shelterCountry', name: 'shelterCountry'},
-        {label: 'Місто', type: 'text', id: 'shelterCity', name: 'shelterCity'},
-        {label: 'Вулиця', type: 'text', id: 'shelterStreet', name: 'shelterStreet'},
-        {label: 'Номер будинку', type: 'text', id: 'shelterHouse', name: 'shelterHouse'},
-        {label: 'Домений адрес', type: 'text', id: 'shelterDomain', name: 'shelterDomain'},
-        {label: 'Корпоративний адрес', type: 'text', id: 'subscriberDomainEmail', name: 'subscriberDomainEmail'},
-        {label: 'Логотип притулку', type: 'file', id: 'shelterImage', name: 'shelterImage'},
-    ];
-    const [createShelterInfo, setCreatShelterInfo] = useState({
-        shelterName: '',
-        shelterCountry: '',
-        shelterCity: '',
-        shelterStreet: '',
-        shelterHouse: '',
-        shelterDomain: '',
-        subscriberDomainEmail: '',
-        shelterImage: '',
-    });
-    const [errorList, setErrorList] = useState([{
-        msg: '',
-        path: '',
-        type: '',
-        location: '',
-    }]);
-    const [imagePreview, setImagePreview] = useState('');
+
+    const { user } = useContext(Context);
+    const { shelter } = useContext(Context);
+    const [isLoading, setIsLoading] = useState(true);
+    const [shelterInfo, setShelterInfo] = useState({})
+    const [updateModalActive, setUpdateModalActive] = useState(false);
+    const [addModalActive, setAddModalActive] = useState(false);
     const navigate = useNavigate();
-    const [errorString, setErrorString] = useState('');
-    const handleCreateShelterChange = (e) => {
 
-        const { name, type } = e.target;
-        const value = type === 'file' ? e.target.files[0] : e.target.value;
-
-        if (type === 'file') {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(e.target.files[0]);
+    useEffect(() => {
+        const fetchShelterData = async () => {
+            try {
+                const response = await getShelter(user.user.shelterId);
+                return response;
+            } catch (error) {
+                console.log(error)
+            }
         }
 
-        setCreatShelterInfo((prevData) => ({
-                ...prevData,
-                [name]: value,
-        }));
-    }
+        if (user.user.shelterId) {
+            fetchShelterData().then(response => {
+               shelter.setShelter(response.data);
+               setShelterInfo(shelter.getShelter())
+               setIsLoading(false)
+            });
+        } else {
+            setIsLoading(false)
+        }
+    }, []);
 
-    const handleShelterCreatBtnClick = async (e) => {
-        e.preventDefault();
+    const handleDeleteShelterClick = async () => {
         try {
-            await createShelter(createShelterInfo);
+            setIsLoading(true)
+            const response = await deleteShelter();
+            localStorage.setItem('token', response.data.token)
             navigate(PROFILE_ROUTE);
         } catch (error) {
             console.log(error);
-            if (error.response.status === 400) {
-                setErrorList(error.response.data.message)
-            } else if (error.response.status === 409) {
-                setErrorString(error.response.data.message);
-            }
         }
     }
 
-    const { user } = useContext(Context);
-    const [addModalActive, setAddModalActive] = useState(false);
-
-    const handleAddShelterBtnClick = () => {
-        setAddModalActive(true);
-    }
 
     return (
-        <div className="shelter-wrapper">
-            {user.user.shelterId
-                ?
-                <div className="shelter-wrapper__container shelter-container">
-                    <div className="shelter-container__header">
-                        <h2>Меню притулку</h2>
-                    </div>
-                    <div className="shelter-container__information">
-                        <div className="shelter-container__information-subheader">
-                            <h3>Інформація про притулок</h3>
-                        </div>
-                        <div className="shelter-container__information-row">
-                            <div className="shelter-container__information-image">
-cd
+        isLoading ? (
+            <Loader />
+        ) : (
+            <div className="shelter-wrapper">
+                {user.user.shelterId ? (
+                    <div className="shelter-wrapper__container shelter-container">
+                        <ShelterInfo
+                            shelter={shelter.getShelter()}
+                        />
+                        <div className="shelter-container__control-button-container">
+                            <h3>Керування притулком</h3>
+                            <div className="shelter-container__control-button">
+                                <UnderlineLink
+                                    linkText={"Оновити притулок"}
+                                    imgSrc={IMAGES.UPDATE_ICON}
+                                    onClick={() => setUpdateModalActive(true)}
+                                />
+                                <UnderlineLink
+                                    linkText={"Видалити притулок"}
+                                    imgSrc={IMAGES.DELETE_ICON}
+                                    onClick={handleDeleteShelterClick}
+                                />
                             </div>
-                            <div className="shelter-container__information-container">
-                                
-                            </div>
                         </div>
-                    </div>
-                </div>
-                :
-                <div className="shelter-wrapper__container shelter-container">
-                    <div className="shelter-container__label">
-                        <p>Ви ще не створили меню свого притулку</p>
-                    </div>
-                    <div className="shelter-container__add-shelter-button">
-                        <Button
-                            buttonText={"Додати притулок"}
-                            onClick={handleAddShelterBtnClick}
+                        <UpdateShelterForm
+                            updateModalActive={updateModalActive}
+                            setUpdateModalActive={setUpdateModalActive}
+                            shelter={shelterInfo}
+                            subscriberDomain={user.user.domai_email}
                         />
                     </div>
-                </div>
-            }
-            <Modal
-                active={addModalActive}
-                setActive={setAddModalActive}
-            >
-                <GeneralForm
-                    inputs={addInputs}
-                    onChange={handleCreateShelterChange}
-                    data={createShelterInfo}
-                    submitButtonText="Створити притулок"
-                    header={"Стоворення притулку"}
-                    onClick={handleShelterCreatBtnClick}
-                    errorsList={errorList}
-                >
-                    <ImagePreview
-                        imagePreview={imagePreview}
-                        alt='User image'
-                    />
-                    <ErrorString errorText={errorString}/>
-                </GeneralForm>
-            </Modal>
-        </div>
+                ) : (
+                    <div className="shelter-wrapper__container shelter-container">
+                        <div className="shelter-container__label">
+                            <p>Ви ще не створили меню свого притулку</p>
+                        </div>
+                        <div className="shelter-container__add-shelter-button">
+                            <Button
+                                buttonText={"Додати притулок"}
+                                onClick={() => setAddModalActive(true)}
+                            />
+                        </div>
+                    </div>
+                )}
+                <ShelterForm
+                    addModalActive={addModalActive}
+                    setAddModalActive={setAddModalActive}
+                />
+            </div>
+        )
     );
+
 });
 
 export default ShelterPage;
