@@ -14,11 +14,6 @@ const ChangeEmail = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleInputChange = (e) => {
-        const { value } = e.target;
-        setNewEmail(value);
-    }
-
     const handleChangeBtnClick = async (e) => {
         e.preventDefault();
         try {
@@ -33,11 +28,11 @@ const ChangeEmail = () => {
     }
 
     return (
-        <div className="newEmail__container">
+        <div className="new-email__container">
             <GeneralForm
                 header="Зміна електроної пошти"
                 inputs={inputs}
-                onChange={handleInputChange}
+                setData={setNewEmail}
                 onClick={handleChangeBtnClick}
                 submitButtonText="Змінити email"
                 data={newEmail}

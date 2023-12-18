@@ -19,13 +19,6 @@ const CheckAuthPage = observer(() => {
     const navigation = useNavigate();
     const { user } = useContext(Context);
 
-    const handleConfirmFormChange = (e) => {
-        const {name, value} = e.target;
-        setConfirmData(prevValue => ({
-            ...prevValue,
-            [name]: value
-        }));
-    }
     const handleConfirmBtnClick = async (event) => {
         event.preventDefault();
         try {
@@ -48,10 +41,10 @@ const CheckAuthPage = observer(() => {
             <GeneralForm
                 header="Підтердження"
                 inputs={inputs}
-                onChange={handleConfirmFormChange}
                 onClick={handleConfirmBtnClick}
                 submitButtonText="Підтвердити"
                 data={confirmData}
+                setData={setConfirmData}
             >
                 <ErrorString
                     errorText={error}

@@ -9,6 +9,8 @@ export const CHANGE_EMAIL_ROUTE = '/profile/change/email';
 export const ENTER_EMAIL_PAGE = '/email';
 export const CHANGE_PASSWORD_PAGE = '/profile/change/password';
 export const CHANGE_PHONE_ROUTE = '/profile/change/phone';
+export const SHELTER_ROUTE = '/shelter';
+export const SUBSCRIBE_SUCCEED_ROUTE = '/subscription/succeed'
 
 
 export const IMAGES = {

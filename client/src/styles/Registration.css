@@ -1,29 +1,35 @@
-.registrationContainer{
+.registration-container {
     padding: 15px;
 }
-.authHeader{
+
+.auth-header {
     padding: 10px;
     text-align: center;
 }
-.registrationForm{
+
+.registration-form {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.registrationLinkContainer{
+
+.registration-link-container {
     padding: 15px;
     text-align: center;
     display: flex;
     flex-direction: row;
     font-size: 20px;
 }
-.registerBtnContainer{
+
+.register-btn-container {
     padding: 10px;
 }
-.registrationErrorString{
+
+.registration-error-string {
     color: red;
     font-weight: 800;
 }
-.registrationErrorContainer{
+
+.registration-error-container {
     text-align: center;
 }

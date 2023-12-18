@@ -27,7 +27,8 @@ dd {
 }
 
 body {
-  
+  height: 100%;
+  margin: 0;
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
@@ -64,8 +65,8 @@ select {
 #root {
   display: flex;
   flex-direction: column;
-  
   margin: 0;
+  height: 100%;
   width: 100%;
 }
 

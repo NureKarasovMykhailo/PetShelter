@@ -1,11 +1,13 @@
-.authContainer{
+.auth-container {
     padding: 15px;
 }
-.authLink{
+
+.auth-link {
     display: flex;
     flex-direction: row;
 }
-.auth__children{
+
+.auth__children {
     display: flex;
     flex-direction: column;
     align-items: center;

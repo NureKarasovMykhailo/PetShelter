@@ -27,10 +27,10 @@ const ChangePhonePage = () => {
     }
 
     return (
-        <div className="changePhone__container">
-            <form className="changePhone__form">
+        <div className="change-phone__container">
+            <form className="change-phone__form">
                 <h2>Зміна номера телефона</h2>
-                <div className="changePhone__input">
+                <div className="change-phone__input">
                     <p>Введить новий номер телефона:</p>
                     <PhoneInput
                         inputStyle={{width: '100%', fontSize: 20, padding: 5}}
@@ -38,13 +38,13 @@ const ChangePhonePage = () => {
                         value={newPhone}
                         onChange={(newPhone) => setNewPhone(newPhone)}
                     />
-                    <div className="changePhone__error">
+                    <div className="change-phone__error">
                         <ErrorString
                             errorText={error}
                         />
                     </div>
                 </div>
-                <div className="changePhone__button">
+                <div className="change-phone__button">
                     <Button
                         buttonText="Підтвердити"
                         onClick={handleChangeBtnClick}

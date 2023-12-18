@@ -37,6 +37,11 @@ export const checkAuth = async () => {
     return decodeToken(response.data.token);
 }
 
+export const getToken = async () => {
+    const response = await $authHost.get('api/user/auth');
+    return response.data.token;
+}
+
 
 export const subscribe = async () => {
     return await $authHost.post('api/user/subscribe');
@@ -58,7 +63,7 @@ export const changeUserImage = async (newUserImage) => {
 
 }
 
-export const changeEmail = async(newEmail) => {
+export const changeEmail = async({newEmail}) => {
     return await $authHost.post('api/user/change/email', { newEmail });
 }
 

@@ -11,6 +11,7 @@
     opacity: 0;
     pointer-events: none;
     transition: 0.5s;
+    overflow-y: auto;
 }
 .modal.active {
     opacity: 1;
@@ -26,4 +27,9 @@
 }
 .modal__content.active {
     transform: scale(1);
+}
+.modal__scrollable-content {
+    /* Добавляем стиль overflow для полосы прокрутки */
+    max-height: 70vh; /* Вы можете настроить это значение в зависимости от ваших потребностей */
+    overflow-y: auto;
 }

@@ -23,7 +23,9 @@ const ChangePasswordPage = observer(() => {
         {label: 'Новий пароль', id: 'newPassword', name: 'newPassword', type: 'password', placeholder: 'password'},
         {label: 'Підтвердіть пароль', id: 'passwordConfirm', name: 'passwordConfirm', type: 'password', placeholder: 'password'}
     ];
-    const [confirmationCode, setConfirmationCode] = useState('');
+    const [confirmationCode, setConfirmationCode] = useState({
+        confirmationCode: ''
+    });
     const [error, setError] = useState('');
     const [passwordInputs, setPasswordInputs] = useState({
         newPassword: '',
@@ -32,26 +34,16 @@ const ChangePasswordPage = observer(() => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate();
     const {user} = useContext(Context);
-    const handleConfirmationInputChange = (e) => {
-        const {value} = e.target;
-        setConfirmationCode(value);
-    }
-    const handlePasswordInputsChange = (e) => {
-        const {name, value} = e.target;
-        setPasswordInputs(prevState => ({
-          ...prevState,
-          [name]: value
-        }));
-    }
+
     const handleCheckConfirmationCode = async (e) => {
         e.preventDefault();
         console.log(location)
         try {
             let response;
             if (location.state.isAuth) {
-                response = await checkConfirmationCode(confirmationCode, user.user.email);
+                response = await checkConfirmationCode(confirmationCode.confirmationCode, user.user.email);
             } else {
-                response = await checkConfirmationCode(confirmationCode, location.state.email);
+                response = await checkConfirmationCode(confirmationCode.confirmationCode, location.state.email);
             }
             if (response.status === 200) {
                 setIsChecked(true);
@@ -83,15 +75,15 @@ const ChangePasswordPage = observer(() => {
         }
     }
     return (
-        <div className="changePassword__container">
+        <div className="change-password__container">
             <div
-                className={isChecked ? "changePassword__confirm" : "changePassword__confirm.active"}
+                className={isChecked ? "change-password__confirm" : "change-password__confirm.active"}
             >
                 <GeneralForm
                     inputs={confirmationCodeInput}
-                    onChange={handleConfirmationInputChange}
                     header="Підтвредження"
                     data={confirmationCode}
+                    setData={setConfirmationCode}
                     submitButtonText="Відправити"
                     onClick={handleCheckConfirmationCode}
                 >
@@ -101,12 +93,12 @@ const ChangePasswordPage = observer(() => {
                 </GeneralForm>
             </div>
             <div
-                className={isChecked ? "changePassword__password.active" : "changePassword__password"}
+                className={isChecked ? "change-password__password.active" : "change-password__password"}
             >
                 <GeneralForm
                     inputs={changePasswordInputs}
-                    onChange={handlePasswordInputsChange}
                     data={passwordInputs}
+                    setData={setPasswordInputs}
                     submitButtonText="Підтвердити"
                     header="Змінна паролю"
                     onClick={handleChangePasswordBtnClick}

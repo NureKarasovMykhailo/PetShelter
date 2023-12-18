@@ -1,26 +1,38 @@
-.subscribeContainer{
+.subscribe-container {
     display: flex;
     flex-direction: column;
     justify-content: left;
 }
-.subscribeHeaders{
+
+.subscribe-headers {
     width: 100%;
 }
-.subscribeImageContainer{
+
+.subscribe-image-container {
     width: 100%;
     display: flex;
     justify-content: center;
     padding: 20px;
 }
-.subscribeImage{
+
+.subscribe-image {
     width: 500px;
     height: 500px;
 }
-.subscribeButtonContainer{
+
+.subscribe-button-container {
     width: 100%;
     display: flex;
     justify-content: center;
 }
-.subscribeDetails{
+
+.subscribe-details {
     font-size: 18px;
+}
+
+.subscribe-error-container{
+    width: 100%;
+    text-align: center;
+    color: #03DE75;
+    font-weight: bold;
 }

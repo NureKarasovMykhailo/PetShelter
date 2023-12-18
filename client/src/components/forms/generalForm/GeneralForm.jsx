@@ -1,21 +1,47 @@
-import React from 'react';
-import MyInput from "../../UI/input/MyInput";
+import React, {useState} from 'react';
+import MyInput from "../../UI/input/MyInput/MyInput";
 import Button from "../../UI/button/Button";
 import {PhoneInput} from "react-international-phone";
 import styles from './GeneralForm.module.css';
 import FormError from "../../UI/error/formError/FormError";
 import PasswordInput from "../../UI/input/passwordInput/PasswordInput";
+import ImagePreview from "../../UI/image/ImagePreview";
 
 const GeneralForm = ({
-                         header,
-                         inputs,
-                         onChange,
-                         onClick,
-                         submitButtonText,
-                         errorsList,
-                         data,
-                         children
-                     }) => {
+    header,
+    inputs,
+    onClick,
+    submitButtonText,
+    errorsList,
+    data,
+    setData,
+    children
+}) => {
+
+    const [imagePreview, setImagePreview] = useState('')
+
+    const handleChange = (e) => {
+        if (e.target === undefined) {
+            setData({ ...data, phoneNumber: e });
+        } else {
+            const { name, type } = e.target;
+            const value = type === 'file' ? e.target.files[0] : e.target.value;
+
+            if (type === 'file') {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImagePreview(reader.result);
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+
+            setData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
+    }
+
     return (
         <form className={styles.generalForm}>
             <div className={styles.generalFormHeader}>
@@ -24,14 +50,13 @@ const GeneralForm = ({
             <div className={styles.inputsContainer}>
                 {inputs.map((input, index) => (
                     <div key={index}>
-                        {/* Используем условные операторы для выбора соответствующего компонента */}
                         {input.type === 'password' ? (
                             <PasswordInput
                                 label={input.label}
                                 id={input.id}
                                 name={input.name}
                                 placeholder={input.placeholder}
-                                onChange={onChange}
+                                onChange={handleChange}
                                 value={data[input.name]}
                             />
                         ) : input.type === 'phoneNumber' ? (
@@ -42,17 +67,23 @@ const GeneralForm = ({
                                     inputStyle={{width: '100%', fontSize: 16, padding: 5}}
                                     defaultCountry="ua"
                                     value={data[input.name]}
-                                    onChange={onChange}
+                                    onChange={handleChange}
                                 />
                             </div>
                         ) : input.type === 'file' ? (
-                            <MyInput
-                                label={input.label}
-                                id={input.id}
-                                name={input.name}
-                                onChange={onChange}
-                                type={input.type}
-                            />
+                            <div>
+                                <MyInput
+                                    label={input.label}
+                                    id={input.id}
+                                    name={input.name}
+                                    onChange={handleChange}
+                                    type={input.type}
+                                />
+                                <ImagePreview
+                                    imagePreview={imagePreview}
+                                    alt={"Image not found"}
+                                />
+                            </div>
                         ) : (
                             <MyInput
                                 label={input.label}
@@ -60,7 +91,7 @@ const GeneralForm = ({
                                 type={input.type}
                                 name={input.name}
                                 placeholder={input.placeholder}
-                                onChange={onChange}
+                                onChange={handleChange}
                                 value={data[input.name]}
                             />
                         )}
@@ -79,4 +110,3 @@ const GeneralForm = ({
 };
 
 export default GeneralForm;
-

@@ -1,12 +1,13 @@
-import Header from "./components/header/Header"
-import {BrowserRouter} from "react-router-dom";
+// App.jsx
+import React, { useEffect, useContext } from "react";
+import { BrowserRouter } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { Context } from "./index";
+import { checkAuth } from "./API/UserService";
+import Header from "./components/header/Header";
 import AppRouter from "./components/AppRouter";
-import Footer from "./components/footer/Footer"
-import "./styles/App.css"
-import {observer} from "mobx-react-lite";
-import {useContext, useEffect} from "react";
-import {Context} from "./index";
-import {checkAuth} from "./API/UserService";
+import Footer from "./components/footer/Footer";
+import "./styles/App.css";
 
 const App = observer(() => {
     const { user } = useContext(Context);
@@ -21,21 +22,21 @@ const App = observer(() => {
                 user.setUser(false);
                 user.setIsAuth(false);
             }
-            console.log(user.isAuth)
+            console.log(user.isAuth);
         };
 
-        fetchData();
+        fetchData().then();
     }, []);
 
     return (
         <BrowserRouter>
-            <Header />
-            <div className="mainContainer">
-                <AppRouter />
+            <Header className="app-header" />
+            <div className="app-main-container">
+                <AppRouter className="app-router" />
             </div>
-            <Footer />
+            <Footer className="app-footer" />
         </BrowserRouter>
-      );
-})
+    );
+});
 
 export default App;

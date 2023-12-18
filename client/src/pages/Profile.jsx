@@ -1,29 +1,29 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {getProfileInfo, getSubscriptionDetail, sendConfirmationCode} from "../API/UserService";
-import {Context} from "../index";
+import React, { useContext, useEffect, useState } from 'react';
+import { getProfileInfo, getSubscriptionDetail, sendConfirmationCode } from "../API/UserService";
+import { Context } from "../index";
 import '../styles/Profile.css';
 import Loader from "../components/UI/loader/Loader";
 import Button from "../components/UI/button/Button";
 import UnderlineLink from "../components/UI/link/underlineLink/UnderlineLink";
-import {useNavigate} from "react-router-dom";
-import {CHANGE_PASSWORD_PAGE, CHECK_AUTH_ROUTE, MAIN_ROUTE, SUBSCRIBE_ROUTE} from "../utils/const";
+import { useNavigate } from "react-router-dom";
+import { CHANGE_PASSWORD_PAGE, CHECK_AUTH_ROUTE, MAIN_ROUTE, SHELTER_ROUTE, SUBSCRIBE_ROUTE } from "../utils/const";
 import Modal from "../components/UI/modal/Modal";
 import UserImageForm from "../components/forms/userImageForm/UserImageForm";
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import CheckAuthPage from "./CheckAuthPage";
 
 const Profile = observer(() => {
     const [modalActive, setModalActive] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useContext(Context);
-    const phone='dsadasd'
+
     const padWithZero = (value) => value.toString().padStart(2, '0');
 
     useEffect(() => {
         const fetchUserData = async () => {
             const userData = await getProfileInfo();
             const subscribeData = await getSubscriptionDetail();
-            return {userData, subscribeData};
+            return { userData, subscribeData };
         }
         fetchUserData().then(response => {
             user.setUser(response.userData.data);
@@ -47,19 +47,23 @@ const Profile = observer(() => {
         setModalActive(true);
     }
     const handleChangePasswordClick = async () => {
-        const state = {isAuth: true};
+        const state = { isAuth: true };
         await sendConfirmationCode(user.user.email);
         navigate(CHANGE_PASSWORD_PAGE, { state });
     }
 
     const handleChangeEmailBtnClick = () => {
-        const state = { email: true  };
+        const state = { email: true };
         navigate(CHECK_AUTH_ROUTE, { state })
     }
 
     const handleChangePhoneBtnClick = () => {
         const state = { phone: true };
         navigate(CHECK_AUTH_ROUTE, { state });
+    }
+
+    const handleShelterBtnClick = () => {
+        navigate(SHELTER_ROUTE);
     }
 
     const startTime = new Date(user.getSubscription.start_time);
@@ -72,41 +76,37 @@ const Profile = observer(() => {
     const formattedBirthday = `${padWithZero(birthday.getDate())}.${padWithZero(birthday.getMonth() + 1)}.${birthday.getFullYear()}`;
 
     let userFields = [
-        {name: 'Логін:', value: user.user.login},
-        {name: 'Email:', value: user.user.email},
-        {name: 'Корпоративний адрес:', value: user.user.domain_email},
-        {name: 'Дата народження:', value: formattedBirthday},
-        {name: 'Номер телефона:', value: user.user.phone_number},
+        { name: 'Логін:', value: user.user.login },
+        { name: 'Email:', value: user.user.email },
+        { name: 'Корпоративний адрес:', value: user.user.domain_email },
+        { name: 'Дата народження:', value: formattedBirthday },
+        { name: 'Номер телефона:', value: user.user.phone_number },
     ];
     userFields = userFields.filter(userField => userField.value !== null);
 
-
     return (
         isLoading
-            ?
-            <div className="profileContainer">
-                <div className="profileImageRow">
-                    <div className="profileImageContainer">
+            ? <div className="profile-container">
+                <div className="profile-image-row">
+                    <div className="profile-image-container">
                         <img
-                            className="profileImage"
+                            className="profile-image"
                             src={process.env.REACT_APP_API_URL + user.user.user_image}
                             alt="Image not found"
                         />
                     </div>
-                    <div className="subscribeContainer">
-                        {user.getSubscription.status === 'ACTIVE'
-                            ?
-                            <p><b>Підписка: </b>Активна з <b>{formattedStartTime}</b> до <b>{formattedEndTime}</b></p>
-                            :
-                            <div className="subscribeLinkContainer">
-                                <p className="nonSubscribeInfo"><b>Підписка: </b>Не активна</p>
+                    <div className="subscribe-container">
+                        {user.getSubscription.status === 'ACTIVE' || user.getSubscription.status === 'APPROVAL_PENDING'
+                            ? <p><b>Підписка: </b>Активна з <b>{formattedStartTime}</b> до <b>{formattedEndTime}</b></p>
+                            : <div className="subscribe-link-container">
+                                <p className="non-subscribe-info"><b>Підписка: </b>Не активна</p>
                                 <UnderlineLink
                                     linkText="Оформити підписку"
                                     onClick={handleSubscribeLinkClick}
                                 />
                             </div>
                         }
-                        <div className="profileLogOutBtnContainer">
+                        <div className="profile-log-out-btn-container">
                             <Button
                                 buttonText="Вихід"
                                 onClick={handleLogOutBtnClick}
@@ -114,48 +114,50 @@ const Profile = observer(() => {
                         </div>
                     </div>
                 </div>
-                <div className="changeImageLinkContainer">
+                <div className="change-image-link-container">
                     <UnderlineLink
                         linkText="Змінити зображення"
                         onClick={handleImageChangeClick}
                     />
                 </div>
-                <div className="profileUserInfoContainer">
-                    <div className="profileUserFullNameContainer">
+                <div className="profile-user-info-container">
+                    <div className="profile-user-full-name-container">
                         <p>{user.user.full_name}</p>
                     </div>
-                    <div className="profileUserFieldsContainer">
+                    <div className="profile-user-fields-container">
                         {userFields.map((userField, index) =>
-                            <div key={index} className="profileUserFieldContainer">
-                                <div className="profileUserFieldName">
+                            <div key={index} className="profile-user-field-container">
+                                <div className="profile-user-field-name">
                                     {userField.name}
                                 </div>
-                                <div className="profileUserFieldValue">
+                                <div className="profile-user-field-value">
                                     {userField.value}
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
-                <div className="profileButtonsContainer">
-                    <div className="profileButtonContainer">
+                <div className="profile-buttons-container">
+                    <div className="profile-button-container">
                         <Button
                             buttonText="Притулок"
+                            onClick={handleShelterBtnClick}
+                            isDisable={user.getSubscription.status !== 'ACTIVE' && user.getSubscription.status !== 'APPROVAL_PENDING'}
                         />
                     </div>
-                    <div className="profileButtonContainer">
+                    <div className="profile-button-container">
                         <Button
                             buttonText="Змінити email"
                             onClick={handleChangeEmailBtnClick}
                         />
                     </div>
-                    <div className="profileButtonContainer">
+                    <div className="profile-button-container">
                         <Button
                             buttonText="Змінити пароль"
                             onClick={handleChangePasswordClick}
                         />
                     </div>
-                    <div className="profileButtonContainer">
+                    <div className="profile-button-container">
                         <Button
                             buttonText="Змінити телефон"
                             onClick={handleChangePhoneBtnClick}
@@ -166,9 +168,7 @@ const Profile = observer(() => {
                     <UserImageForm />
                 </Modal>
             </div>
-            :
-            <Loader />
-
+            : <Loader />
     );
 });
 

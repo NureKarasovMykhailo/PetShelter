@@ -15,10 +15,7 @@ const AppRouter = observer(() => {
             {user.isAuth === true && authRoutes.map(({path, Element}) =>
                 <Route key={path} path={path} element={<Element />} />
             )}
-            <Route
-                path="*"
-                element={<Navigate to={MAIN_ROUTE} />}
-            />
+
         </Routes>
     );
 })

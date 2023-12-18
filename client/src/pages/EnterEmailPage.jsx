@@ -11,19 +11,17 @@ const EnterEmailPage = () => {
     const inputs = [
         {label: 'Введить свій email', type: 'email', placeholder: "email@email.com", id: 'email', name: 'email'}
     ];
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState({
+        email: '',
+    });
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const onInputChange = (e) => {
-        const { value } = e.target;
-        setEmail(value);
-    }
     const onClick = async (e) => {
         e.preventDefault();
         try {
-            const response = await sendConfirmationCode(email);
+            const response = await sendConfirmationCode(email.email);
             if (response.status === 200) {
-                const state = { email: email }
+                const state = { email: email.email }
                 navigate(CHANGE_PASSWORD_PAGE, { state });
             }
         } catch (error) {
@@ -35,7 +33,7 @@ const EnterEmailPage = () => {
             <GeneralForm
                 header="Змінна паролю"
                 inputs={inputs}
-                onChange={onInputChange}
+                setData={setEmail}
                 data={email}
                 onClick={onClick}
                 submitButtonText="Відправити"
