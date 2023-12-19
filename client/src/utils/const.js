@@ -11,6 +11,7 @@ export const CHANGE_PASSWORD_PAGE = '/profile/change/password';
 export const CHANGE_PHONE_ROUTE = '/profile/change/phone';
 export const SHELTER_ROUTE = '/shelter';
 export const SUBSCRIBE_SUCCEED_ROUTE = '/subscription/succeed'
+export const EMPLOYEES_ROUTE = '/shelter/employee'
 
 
 export const IMAGES = {

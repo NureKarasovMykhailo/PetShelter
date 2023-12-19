@@ -3,11 +3,19 @@ import Main from "./pages/Main";
 import Subscribe from "./pages/Subscribe";
 import Registration from "./pages/Registration";
 import {
-    AUTH_ROUTE, CHANGE_EMAIL_ROUTE, CHANGE_PASSWORD_PAGE, CHANGE_PHONE_ROUTE, CHECK_AUTH_ROUTE, ENTER_EMAIL_PAGE,
+    AUTH_ROUTE,
+    CHANGE_EMAIL_ROUTE,
+    CHANGE_PASSWORD_PAGE,
+    CHANGE_PHONE_ROUTE,
+    CHECK_AUTH_ROUTE,
+    EMPLOYEES_ROUTE,
+    ENTER_EMAIL_PAGE,
     MAIN_ROUTE,
     PROFILE_ROUTE,
-    REGISTRATION_ROUTE, SHELTER_ROUTE,
-    SUBSCRIBE_ROUTE, SUBSCRIBE_SUCCEED_ROUTE,
+    REGISTRATION_ROUTE,
+    SHELTER_ROUTE,
+    SUBSCRIBE_ROUTE,
+    SUBSCRIBE_SUCCEED_ROUTE,
 } from "./utils/const";
 import Profile from "./pages/Profile";
 import CheckAuthPage from "./pages/CheckAuthPage";
@@ -17,6 +25,7 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ChangePhonePage from "./pages/ChangePhonePage";
 import ShelterPage from "./pages/ShelterPage";
 import SubscribeSucceed from "./pages/SubscribeSucceed";
+import EmployeesPage from "./pages/EmployeesPage";
 
 export const authRoutes = [
     {
@@ -39,16 +48,20 @@ export const authRoutes = [
         path: CHANGE_PHONE_ROUTE,
         Element: ChangePhonePage
     },
+
     {
-      path: SHELTER_ROUTE,
-      Element: ShelterPage
-    },
-    {
-        path: SUBSCRIBE_SUCCEED_ROUTE,
-        Element: SubscribeSucceed
+        path: SHELTER_ROUTE,
+        Element: ShelterPage
     },
 
 ];
+
+export const shelterRoutes = [
+    {
+        path: EMPLOYEES_ROUTE,
+        Element: EmployeesPage
+    },
+]
 
 export const publicRoutes = [
     {

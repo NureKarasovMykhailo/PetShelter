@@ -5,6 +5,7 @@ import  './styles/global.css';
 import UserStore from './store/UserStore';
 import LanguageStore from "./store/LanguageStore";
 import ShelterStore from "./store/ShelterStore";
+import EmployeesStore from "./store/EmployeesStore";
 
 export const Context = createContext(null);
 
@@ -14,6 +15,7 @@ root.render(
       user: new UserStore(),
       selectedLanguage: new LanguageStore(),
       shelter: new ShelterStore(),
+      employees: new EmployeesStore(),
   }}>
        <App />
   </Context.Provider>

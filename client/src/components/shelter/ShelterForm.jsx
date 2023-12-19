@@ -55,6 +55,8 @@ const ShelterForm = ({addModalActive, setAddModalActive, isUpdate}) => {
                 setErrorList(error.response.data.message)
             } else if (error.response.status === 409) {
                 setErrorString(error.response.data.message);
+            } else if (error.response.status === 403) {
+                setErrorString("Оформіть підписку для створення свого притулку")
             }
             setIsLoading(false);
         }

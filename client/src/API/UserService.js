@@ -82,3 +82,8 @@ export const changePassword = async (email, newPassword, passwordConfirm) => {
 export const changePhone = async (newPhoneNumber) => {
     return await $authHost.post('api/user/change/telephone', { newPhoneNumber });
 }
+
+export const fetchRoles = async () => {
+    const {data} = await $authHost.get('api/user/roles')
+    return data.message;
+}

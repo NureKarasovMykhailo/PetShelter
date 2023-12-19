@@ -1,0 +1,27 @@
+.pagination {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.page {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.active {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    opacity: 0.8;
+
+}
+.ellipsis {
+    margin: 0 5px;
+    font-size: 20px;
+}

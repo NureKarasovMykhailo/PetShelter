@@ -142,7 +142,6 @@ const Profile = observer(() => {
                         <Button
                             buttonText="Притулок"
                             onClick={handleShelterBtnClick}
-                            isDisable={user.getSubscription.status == 'ACTIVE' && user.getSubscription.status == 'APPROVAL_PENDING' || !user.user.shelterId}
                         />
                     </div>
                     <div className="profile-button-container">
