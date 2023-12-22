@@ -1,0 +1,11 @@
+.container{
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+.container * {
+    margin-right: 5px;
+}
+.deleteBtn{
+    margin-top: 15px;
+}

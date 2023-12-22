@@ -1,0 +1,16 @@
+.collar-page__wrapper{
+    width: 100%;
+}
+
+.collar-page__list{
+    width: 100%;
+    min-height: 100%;
+}
+.collar-page__add{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.collar-page__add-button{
+    width: 20%;
+}

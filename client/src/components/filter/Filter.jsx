@@ -25,7 +25,7 @@ const Filter = ( {filters, data, setData} ) => {
         <div className={styles.filterContainer}>
             <h3>Фільтер</h3>
             {filters.map((filter) =>
-                <div className={styles.filterFields}>
+                <div key={filter.name} className={styles.filterFields}>
                     <div className={styles.filterFieldsLabel}>
                         <p>{filter.label}</p>
                     </div>

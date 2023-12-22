@@ -7,10 +7,10 @@ import {
     CHANGE_EMAIL_ROUTE,
     CHANGE_PASSWORD_PAGE,
     CHANGE_PHONE_ROUTE,
-    CHECK_AUTH_ROUTE,
+    CHECK_AUTH_ROUTE, COLLAR_ROUTE,
     EMPLOYEES_ROUTE,
-    ENTER_EMAIL_PAGE,
-    MAIN_ROUTE,
+    ENTER_EMAIL_PAGE, FEEDER_ROUTE,
+    MAIN_ROUTE, ONE_PET_ROUTE, PET_ROUTE,
     PROFILE_ROUTE,
     REGISTRATION_ROUTE,
     SHELTER_ROUTE,
@@ -26,6 +26,10 @@ import ChangePhonePage from "./pages/ChangePhonePage";
 import ShelterPage from "./pages/ShelterPage";
 import SubscribeSucceed from "./pages/SubscribeSucceed";
 import EmployeesPage from "./pages/EmployeesPage";
+import FeederPage from "./pages/FeederPage";
+import PetPage from "./pages/PetPage";
+import OnePetInfoPage from "./pages/OnePetInfoPage";
+import CollarPage from "./pages/CollarPage";
 
 export const authRoutes = [
     {
@@ -60,6 +64,22 @@ export const shelterRoutes = [
     {
         path: EMPLOYEES_ROUTE,
         Element: EmployeesPage
+    },
+    {
+        path: FEEDER_ROUTE,
+        Element: FeederPage
+    },
+    {
+        path: PET_ROUTE,
+        Element: PetPage
+    },
+    {
+        path: ONE_PET_ROUTE,
+        Element: OnePetInfoPage
+    },
+    {
+        path: COLLAR_ROUTE,
+        Element: CollarPage
     },
 ]
 

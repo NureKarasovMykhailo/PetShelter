@@ -18,7 +18,13 @@ export const createEmployee = async ({
     return await $authHost.post('api/employee/', formData);
 }
 
-export const fetchEmployee = async (limit = 6, page = 1, roleTitle = '', sortBy = '', domainEmail = '' ) => {
+export const fetchEmployee = async (
+    limit = 6,
+    page = 1,
+    roleTitle = '',
+    sortBy = '',
+    domainEmail = ''
+) => {
 
     const { data } = await $authHost.get('api/employee', {
         params: {

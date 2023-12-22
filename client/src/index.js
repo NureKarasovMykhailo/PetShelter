@@ -6,6 +6,9 @@ import UserStore from './store/UserStore';
 import LanguageStore from "./store/LanguageStore";
 import ShelterStore from "./store/ShelterStore";
 import EmployeesStore from "./store/EmployeesStore";
+import FeederStore from "./store/FeederStore";
+import PetsStore from "./store/PetsStore";
+import FeederInfoStore from "./store/FeederInfoStore";
 
 export const Context = createContext(null);
 
@@ -16,6 +19,9 @@ root.render(
       selectedLanguage: new LanguageStore(),
       shelter: new ShelterStore(),
       employees: new EmployeesStore(),
+      feeder: new FeederStore(),
+      pets: new PetsStore(),
+      feederInfo: new FeederInfoStore()
   }}>
        <App />
   </Context.Provider>

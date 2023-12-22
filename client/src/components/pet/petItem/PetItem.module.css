@@ -1,0 +1,24 @@
+.petItemContainer{
+    padding: 15px;
+    margin: 20px;
+    border-top: black solid 1px;
+    border-bottom: black solid 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+}
+.petItemImageContainer{
+    margin-right: 10px;
+}
+.petItemImage{
+    width: 150px;
+    height: 150px;
+    border-radius: 3px;
+}
+.petItemCharacteristics{
+    font-size: 18px;
+}
+.petItemButton{
+    padding: 10px;
+}

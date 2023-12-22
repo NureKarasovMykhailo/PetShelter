@@ -11,7 +11,14 @@ export const CHANGE_PASSWORD_PAGE = '/profile/change/password';
 export const CHANGE_PHONE_ROUTE = '/profile/change/phone';
 export const SHELTER_ROUTE = '/shelter';
 export const SUBSCRIBE_SUCCEED_ROUTE = '/subscription/succeed'
-export const EMPLOYEES_ROUTE = '/shelter/employee'
+export const EMPLOYEES_ROUTE = '/shelter/employee';
+
+export const FEEDER_ROUTE = '/shelter/feeder';
+
+export const PET_ROUTE = '/shelter/pet';
+export const ONE_PET_ROUTE = '/shelter/pet/info/:id';
+
+export const COLLAR_ROUTE = '/shelter/collar';
 
 
 export const IMAGES = {

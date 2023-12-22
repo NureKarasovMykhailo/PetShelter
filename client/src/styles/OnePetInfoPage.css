@@ -1,0 +1,60 @@
+.one-pet{
+
+}
+.one-pet__first-block{
+    display: flex;
+    flex-direction: row;
+}
+.one-pet__image-container{
+    width: 50%;
+}
+.one-pet__image{
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 4px;
+}
+.one-pet__buttons-container{
+    padding: 15px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.one-pet__button-container{
+    padding: 20px;
+}
+.one-pet__second-block{
+    width: 100%;
+    font-size: 24px;
+    padding: 20px;
+}
+.one-pet__third-block{
+    display: flex;
+    padding: 20px;
+    font-size: 18px;
+}
+.one-pet__information-container{
+    width: 50%;
+}
+.one-pet__characteristic{
+    display: flex;
+
+}
+.one-pet__characteristic-title{
+    margin-right: 10px;
+}
+.one-pet__firth-block{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.one-pet__edit-button{
+    width: 20%;
+}
+.one-pet__feeder-control{
+    display: flex;
+}
+.one-pet__feeder-control * {
+    margin: 5px ;
+}

@@ -1,0 +1,54 @@
+.feederSelectContainer{
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.feederSelectHeader{
+    width: 100%;
+    text-align: center;
+}
+.selectFeeder{
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+}
+.selectFeederBtnContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.selectFeederButton{
+    width: 40%;
+}
+/* Стилі для таблиці */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+/* Стилі для заголовків таблиці */
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.feederInfoRow:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.feederInfoRow:hover {
+    background-color: #e6f7ff;
+}
+
+.feederInfoTable {
+    margin-top: 20px;
+}

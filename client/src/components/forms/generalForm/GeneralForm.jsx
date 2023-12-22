@@ -15,6 +15,7 @@ const GeneralForm = ({
     errorsList,
     data,
     setData,
+    isDisabled = false,
     children
 }) => {
 
@@ -103,7 +104,7 @@ const GeneralForm = ({
             </div>
             {children}
             <div>
-                <Button buttonText={submitButtonText} onClick={onClick} />
+                <Button buttonText={submitButtonText} onClick={onClick} isDisable={isDisabled}/>
             </div>
         </form>
     );

@@ -67,6 +67,9 @@ const EmployeesPage = observer (() => {
             setTotalCount(data.pagination.totalItems)
             setTotalPages(data.pagination.totalPages)
             setIsLoading(false);
+            setAddFormSuccess(false);
+            setDeleteSuccess(false);
+            setRoleSuccess(false);
         });
     }, [page, selectedFilter, selectedSort, addFormSuccess, deleteSuccess, roleSuccess]);
 
