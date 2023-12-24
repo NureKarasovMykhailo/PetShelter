@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import ImageWithLink from "../components/ImageWithLink";
 import Button from "../components/UI/button/Button";
-import {ALL_ADOPTION_OFFER_ROUTE, IMAGES} from "../utils/const";
+import {ALL_ADOPTION_OFFER_ROUTE, IMAGES, PUBLIC_WORK_OFFER_ROUTE} from "../utils/const";
 import "../styles/Main.css";
 import {checkAuth, getToken} from "../API/UserService";
 import {useNavigate} from "react-router-dom";
@@ -54,7 +54,10 @@ const Main = () => {
                         <p className="new-work-offer-detail">Приєднуйся до волонтерського колективу у своєму регіоні.</p>
                     </div>
                     <div className="new-work-offer-btn">
-                        <Button buttonText="Волонтерьска робота у твоєму регіоні" />
+                        <Button
+                            buttonText="Волонтерьска робота у твоєму регіоні"
+                            onClick={() => navigate(PUBLIC_WORK_OFFER_ROUTE)}
+                        />
                     </div>
                 </div>
             </div>

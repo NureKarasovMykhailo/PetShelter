@@ -29,6 +29,13 @@ export const GENERAL_ADOPTION_OFFER_ROUTE = '/adoption-offer/:id';
 
 export const APPLICATION_FOR_ADOPTION_PAGE = '/shelter/adoption-offer/:id/application-for-adoption';
 
+export const SHELTER_WORK_OFFER_ROUTE = '/shelter/work-offer';
+
+export const SHELTER_ONE_WORK_OFFER_ROUTE = `/shelter/work-offer/:id`;
+
+export const PUBLIC_WORK_OFFER_ROUTE = '/work-offer';
+
+export const PUBLIC_ONE_WORK_OFFER_ROUTE = '/work-offer/:id';
 
 export const IMAGES = {
     HEADER_LOGO: "/assets/img/header-logo.jpg",

@@ -1,0 +1,13 @@
+.shelter-work__wrapper{
+    width: 100%;
+    min-height: 51.6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.shelter-work__button-container{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}

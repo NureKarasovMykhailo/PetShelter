@@ -1,0 +1,39 @@
+.work-offers__wrapper{
+    width: 100%;
+    min-height: 51.6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.work-offer__search-container{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.work-offer__search{
+    display: flex;
+    align-items: center;
+}
+.work-offer__search p {
+    margin-right: 10px;
+    font-size: 18px;
+}
+.work-offer__empty{
+    width: 100%;
+    min-height: 51.6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+.work-offer__add-container{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.work-offer__list{
+    width: 100%;
+}

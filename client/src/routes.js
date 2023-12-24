@@ -3,7 +3,7 @@ import Main from "./pages/Main";
 import Subscribe from "./pages/Subscribe";
 import Registration from "./pages/Registration";
 import {
-    ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE, APPLICATION_FOR_ADOPTION_PAGE,
+    ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE, ALL_WORK_OFFER_ROUTE, APPLICATION_FOR_ADOPTION_PAGE,
     AUTH_ROUTE,
     CHANGE_EMAIL_ROUTE,
     CHANGE_PASSWORD_PAGE,
@@ -12,9 +12,9 @@ import {
     EMPLOYEES_ROUTE,
     ENTER_EMAIL_PAGE, FEEDER_ROUTE, GENERAL_ADOPTION_OFFER_ROUTE,
     MAIN_ROUTE, ONE_ADOPTION_OFFER_ROUTE, ONE_PET_ROUTE, PET_ROUTE,
-    PROFILE_ROUTE,
-    REGISTRATION_ROUTE,
-    SHELTER_ROUTE,
+    PROFILE_ROUTE, PUBLIC_ONE_WORK_OFFER_ROUTE, PUBLIC_WORK_OFFER_ROUTE,
+    REGISTRATION_ROUTE, SHELTER_ONE_WORK_OFFER_ROUTE,
+    SHELTER_ROUTE, SHELTER_WORK_OFFER_ROUTE,
     SUBSCRIBE_ROUTE,
     SUBSCRIBE_SUCCEED_ROUTE,
 } from "./utils/const";
@@ -36,6 +36,10 @@ import OneAdoptionOfferPage from "./pages/OneAdoptionOfferPage";
 import AllAdoptionOfferPage from "./pages/AllAdoptionOfferPage";
 import GeneralAdoptionOfferPage from "./pages/GeneralAdoptionOfferPage";
 import ApplicationForAdoptionPage from "./pages/ApplicationForAdoptionPage";
+import ShelterWorkOffersPage from "./pages/ShelterWorkOffersPage";
+import ShelterOneWorkOfferPage from "./pages/ShelterOneWorkOfferPage";
+import PublicWorkOfferPage from "./pages/PublicWorkOfferPage";
+import singleWorkOfferPage from "./pages/SingleWorkOfferPage";
 
 export const authRoutes = [
     {
@@ -71,7 +75,14 @@ export const authRoutes = [
         path: GENERAL_ADOPTION_OFFER_ROUTE,
         Element: GeneralAdoptionOfferPage,
     },
-
+    {
+        path: PUBLIC_WORK_OFFER_ROUTE,
+        Element: PublicWorkOfferPage
+    },
+    {
+        path: PUBLIC_ONE_WORK_OFFER_ROUTE,
+        Element: singleWorkOfferPage
+    }
 ];
 
 export const shelterRoutes = [
@@ -107,6 +118,14 @@ export const shelterRoutes = [
         path: APPLICATION_FOR_ADOPTION_PAGE,
         Element: ApplicationForAdoptionPage,
     },
+    {
+        path: SHELTER_WORK_OFFER_ROUTE,
+        Element: ShelterWorkOffersPage,
+    },
+    {
+        path: SHELTER_ONE_WORK_OFFER_ROUTE,
+        Element: ShelterOneWorkOfferPage,
+    },
 ]
 
 export const publicRoutes = [
@@ -130,4 +149,5 @@ export const publicRoutes = [
         path: CHANGE_PASSWORD_PAGE,
         Element: ChangePasswordPage
     },
+
 ];

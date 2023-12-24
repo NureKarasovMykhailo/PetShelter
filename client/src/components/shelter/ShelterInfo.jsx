@@ -2,7 +2,14 @@ import React from 'react';
 import styles from './ShelterInfo.module.css';
 import Button from "../UI/button/Button";
 import {useNavigate} from "react-router-dom";
-import {ADOPTION_OFFER_ROUTE, COLLAR_ROUTE, EMPLOYEES_ROUTE, FEEDER_ROUTE, PET_ROUTE} from "../../utils/const";
+import {
+    ADOPTION_OFFER_ROUTE,
+    COLLAR_ROUTE,
+    EMPLOYEES_ROUTE,
+    FEEDER_ROUTE,
+    PET_ROUTE,
+    SHELTER_WORK_OFFER_ROUTE
+} from "../../utils/const";
 
 const ShelterInfo = ({ shelter }) => {
 
@@ -60,6 +67,7 @@ const ShelterInfo = ({ shelter }) => {
                     <div className={styles.linkColumn}>
                         <Button
                             buttonText={"Оголошення про работу"}
+                            onClick={() => navigate(SHELTER_WORK_OFFER_ROUTE)}
 
                         />
                         <Button

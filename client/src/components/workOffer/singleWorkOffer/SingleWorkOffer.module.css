@@ -1,0 +1,24 @@
+.workOfferContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px;
+}
+.additionalInfoContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.workOfferInfoContainer{
+
+}
+.workOfferTitleContainer{
+    margin: 20px 0;
+    font-size: 24px;
+}
+.workDescription{
+    font-size: 20px;
+}
