@@ -1,0 +1,27 @@
+.adoptionOfferItem{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    margin: 20px;
+}
+.adoptionOfferImageContainer{
+    padding: 10px;
+}
+.adoptionOfferImage{
+    max-width: 300px;
+    min-width: 300px;
+    border-radius: 5px;
+}
+.adoptionOfferInfoContainer{
+    font-size: 18px;
+    line-height: 1.8;
+}
+.adoptionOfferButtonContainer{
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}

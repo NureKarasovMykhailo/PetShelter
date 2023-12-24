@@ -4,7 +4,14 @@ import styles from "./Header.module.css";
 import Button from "../UI/button/Button";
 import Select from "../UI/select/Select";
 import LinkWithIcon from "../UI/link/LinkWithIcon";
-import {AUTH_ROUTE, IMAGES, MAIN_ROUTE, PROFILE_ROUTE, SUBSCRIBE_ROUTE} from "../../utils/const";
+import {
+    ALL_ADOPTION_OFFER_ROUTE,
+    AUTH_ROUTE,
+    IMAGES,
+    MAIN_ROUTE,
+    PROFILE_ROUTE,
+    SUBSCRIBE_ROUTE
+} from "../../utils/const";
 import {setupAxios} from "../../API/axiosConfig";
 import {Context} from "../../index";
 import {observer} from "mobx-react-lite";
@@ -27,7 +34,7 @@ const Header  = observer(() => {
     }
     const navLinks = [
         {  text: "Волонтерьска робота", imgSrc: IMAGES.VOLUNTARY_WORK, alt: imageAltText},
-        {  text: "Опекунство", imgSrc: IMAGES.PET_ADOPTION, alt: imageAltText},
+        {  text: "Опекунство", imgSrc: IMAGES.PET_ADOPTION, alt: imageAltText, href: ALL_ADOPTION_OFFER_ROUTE},
         {  text: "Підписка", imgSrc: IMAGES.SUBSCRIBE, alt: imageAltText, href: SUBSCRIBE_ROUTE},
         {  text: "Можливості", imgSrc: IMAGES.ABILITY, alt: imageAltText},
     ];

@@ -20,6 +20,15 @@ export const ONE_PET_ROUTE = '/shelter/pet/info/:id';
 
 export const COLLAR_ROUTE = '/shelter/collar';
 
+export const ADOPTION_OFFER_ROUTE = '/shelter/adoption-offer';
+export const ONE_ADOPTION_OFFER_ROUTE = '/shelter/adoption-offer/:id';
+
+export const ALL_ADOPTION_OFFER_ROUTE = '/adoption-offer';
+
+export const GENERAL_ADOPTION_OFFER_ROUTE = '/adoption-offer/:id';
+
+export const APPLICATION_FOR_ADOPTION_PAGE = '/shelter/adoption-offer/:id/application-for-adoption';
+
 
 export const IMAGES = {
     HEADER_LOGO: "/assets/img/header-logo.jpg",

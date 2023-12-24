@@ -1,14 +1,16 @@
 import React, {useEffect} from "react";
 import ImageWithLink from "../components/ImageWithLink";
 import Button from "../components/UI/button/Button";
-import { IMAGES } from "../utils/const";
+import {ALL_ADOPTION_OFFER_ROUTE, IMAGES} from "../utils/const";
 import "../styles/Main.css";
 import {checkAuth, getToken} from "../API/UserService";
+import {useNavigate} from "react-router-dom";
 
 const Main = () => {
 
     const imgAltText = "image not found";
 
+    const navigate = useNavigate();
     const adoptionLinks = [
         {imgSrc: IMAGES.CAT_IMAGE, linkText: "Коти", href: "#", alt: imgAltText},
         {imgSrc: IMAGES.DOG_IMAGE, linkText: "Собаки", href: "#", alt: imgAltText},
@@ -35,7 +37,10 @@ const Main = () => {
                     ))}
                 </div>
                 <div className="new-adoption-offer-btn">
-                    <Button buttonText="Оформити опекунство" />
+                    <Button
+                        buttonText="Оформити опекунство"
+                        onClick={() => navigate(ALL_ADOPTION_OFFER_ROUTE)}
+                    />
                 </div>
             </div>
 

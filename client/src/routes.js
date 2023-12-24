@@ -3,14 +3,15 @@ import Main from "./pages/Main";
 import Subscribe from "./pages/Subscribe";
 import Registration from "./pages/Registration";
 import {
+    ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE, APPLICATION_FOR_ADOPTION_PAGE,
     AUTH_ROUTE,
     CHANGE_EMAIL_ROUTE,
     CHANGE_PASSWORD_PAGE,
     CHANGE_PHONE_ROUTE,
     CHECK_AUTH_ROUTE, COLLAR_ROUTE,
     EMPLOYEES_ROUTE,
-    ENTER_EMAIL_PAGE, FEEDER_ROUTE,
-    MAIN_ROUTE, ONE_PET_ROUTE, PET_ROUTE,
+    ENTER_EMAIL_PAGE, FEEDER_ROUTE, GENERAL_ADOPTION_OFFER_ROUTE,
+    MAIN_ROUTE, ONE_ADOPTION_OFFER_ROUTE, ONE_PET_ROUTE, PET_ROUTE,
     PROFILE_ROUTE,
     REGISTRATION_ROUTE,
     SHELTER_ROUTE,
@@ -30,6 +31,11 @@ import FeederPage from "./pages/FeederPage";
 import PetPage from "./pages/PetPage";
 import OnePetInfoPage from "./pages/OnePetInfoPage";
 import CollarPage from "./pages/CollarPage";
+import AdoptionOfferPage from "./pages/AdoptionOfferPage";
+import OneAdoptionOfferPage from "./pages/OneAdoptionOfferPage";
+import AllAdoptionOfferPage from "./pages/AllAdoptionOfferPage";
+import GeneralAdoptionOfferPage from "./pages/GeneralAdoptionOfferPage";
+import ApplicationForAdoptionPage from "./pages/ApplicationForAdoptionPage";
 
 export const authRoutes = [
     {
@@ -57,6 +63,14 @@ export const authRoutes = [
         path: SHELTER_ROUTE,
         Element: ShelterPage
     },
+    {
+        path: ALL_ADOPTION_OFFER_ROUTE,
+        Element: AllAdoptionOfferPage,
+    },
+    {
+        path: GENERAL_ADOPTION_OFFER_ROUTE,
+        Element: GeneralAdoptionOfferPage,
+    },
 
 ];
 
@@ -80,6 +94,18 @@ export const shelterRoutes = [
     {
         path: COLLAR_ROUTE,
         Element: CollarPage
+    },
+    {
+        path: ADOPTION_OFFER_ROUTE,
+        Element: AdoptionOfferPage
+    },
+    {
+        path: ONE_ADOPTION_OFFER_ROUTE,
+        Element: OneAdoptionOfferPage,
+    },
+    {
+        path: APPLICATION_FOR_ADOPTION_PAGE,
+        Element: ApplicationForAdoptionPage,
     },
 ]
 

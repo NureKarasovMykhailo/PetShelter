@@ -1,0 +1,22 @@
+.all-adoption{
+    width: 100%;
+    min-height: 51.6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.all-adoption__search-container{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+.all-adoption__search{
+    display: flex;
+    align-items: center;
+    margin: 10px;
+}
+.all-adoption__search p {
+    font-size: 18px;
+    margin-right: 5px;
+}

@@ -1,12 +1,10 @@
-/* SelectInput.module.css */
 
 .selectInput {
     position: relative;
 }
 
 .selectContainer {
-    width: 200px;
-    margin: 10px;
+    width: 100%;
 }
 
 .select {

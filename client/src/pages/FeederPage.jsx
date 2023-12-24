@@ -38,8 +38,8 @@ const FeederPage = observer(() => {
             feeder.setFeeder(data.feeders)
             setTotalCount(data.pagination.totalItems)
             setTotalPages(data.pagination.totalPages)
+            setIsLoading(false)
         })
-        setIsLoading(false)
         setAddFeederSucceed(false);
         setSuccessDelete(false);
         setSuccessUpdate(false);

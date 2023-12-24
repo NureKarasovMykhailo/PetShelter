@@ -1,0 +1,12 @@
+.adoptionTelephone{
+    width: 48%;
+}
+.adoptionPet{
+    width: 48%;
+    margin-bottom: 10px;
+}
+.adoptionPet p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
