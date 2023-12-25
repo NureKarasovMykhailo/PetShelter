@@ -1,19 +1,22 @@
-import React, {useState} from 'react';
-import GeneralForm from "../../forms/generalForm/GeneralForm";
-import Button from "../../UI/button/Button";
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import GeneralForm from '../../forms/generalForm/GeneralForm';
+import Button from '../../UI/button/Button';
 import stl from './addPetForm.module.css';
-import AddFeature from "../addFeature/AddFeature";
-import {addPet} from "../../../API/PetService";
-import ValidationError from "../../../class/ValidationError";
+import AddFeature from '../addFeature/AddFeature';
+import { addPet } from '../../../API/PetService';
+import ValidationError from '../../../class/ValidationError';
 
 const AddPetForm = ({ onAddSuccess }) => {
+    const { t } = useTranslation();
+
     const inputs = [
-        {label: 'Кличка тварини', name: 'petName', id: 'petName', placeholder: 'Мурзік', type: 'text'},
-        {label: 'Вік', name: 'petAge', id: 'petAge', type: 'number'},
-        {label: 'Стать', name: 'petGender', id: 'petGender', type: 'text'},
-        {label: 'Кліка', name: 'cellNumber', id: 'cellNumber', type: 'text', placeholder: '54F'},
-        {label: 'Фото', name: 'petImage', id: 'petImage', type: 'file'},
-        {label: 'Вид', name: 'petKind', id: 'petKind', type: 'text', placeholder: 'Кішка'}
+        { label: t('petName'), name: 'petName', id: 'petName', placeholder: t('petName'), type: 'text' },
+        { label: t('age'), name: 'petAge', id: 'petAge', type: 'number' },
+        { label: t('gender'), name: 'petGender', id: 'petGender', type: 'text' },
+        { label: t('cellNumber'), name: 'cellNumber', id: 'cellNumber', type: 'text', placeholder: '54F' },
+        { label: t('photo'), name: 'petImage', id: 'petImage', type: 'file' },
+        { label: t('kind'), name: 'petKind', id: 'petKind', type: 'text', placeholder: t('kind') },
     ];
 
     const [info, setInfo] = useState([]);
@@ -26,26 +29,26 @@ const AddPetForm = ({ onAddSuccess }) => {
         cellNumber: '',
         petImage: null,
         petKind: '',
-        info: info
+        info: info,
     });
 
     const addInfo = (e) => {
         e.preventDefault();
-        setInfo([...info, {title: '', description: '', number: Date.now()}])
-    }
+        setInfo([...info, { title: '', description: '', number: Date.now() }]);
+    };
 
     const handleAddPet = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
             const response = await addPet(petData);
             onAddSuccess(true);
         } catch (error) {
             if (error.response.status === 400) {
-                console.log(error)
+                console.log(error);
                 setErrorList(error.response.data.message);
             }
         }
-    }
+    };
 
     const isDisabled = petData.petImage === null;
 
@@ -55,8 +58,8 @@ const AddPetForm = ({ onAddSuccess }) => {
                 inputs={inputs}
                 data={petData}
                 setData={setPetData}
-                submitButtonText={"Додати"}
-                header={"Додавання тварини"}
+                submitButtonText={t('addPet')}
+                header={t('addPet')}
                 onClick={handleAddPet}
                 isDisabled={isDisabled}
                 errorsList={errorList}
@@ -64,23 +67,18 @@ const AddPetForm = ({ onAddSuccess }) => {
                 <hr />
                 <div className={stl.addFeatureContainer}>
                     <div className={stl.addFeatureBtn}>
-                        <Button
-                            buttonText={"Додати характеристику"}
-                            onClick={addInfo}
-                        />
+                        <Button buttonText={t('addFeature')} onClick={addInfo} />
                     </div>
-                    {
-                        info.map(i =>
-                            <AddFeature
-                                key={i.number}
-                                info={i}
-                                data={info}
-                                setData={setInfo}
-                                petData={petData}
-                                setPetData={setPetData}
-                            />
-                        )
-                    }
+                    {info.map((i) => (
+                        <AddFeature
+                            key={i.number}
+                            info={i}
+                            data={info}
+                            setData={setInfo}
+                            petData={petData}
+                            setPetData={setPetData}
+                        />
+                    ))}
                 </div>
             </GeneralForm>
         </div>

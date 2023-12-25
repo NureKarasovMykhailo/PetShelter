@@ -1,17 +1,19 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {fetchShelterWorkOffers} from "../API/WorkOfferService";
+import React, { useContext, useEffect, useState } from 'react';
+import { fetchShelterWorkOffers } from "../API/WorkOfferService";
+import { useTranslation } from 'react-i18next';
 import Loader from "../components/UI/loader/Loader";
 import Pagination from "../components/UI/pagination/Pagination";
-import {getPagesArray} from "../utils/pagination";
+import { getPagesArray } from "../utils/pagination";
 import '../styles/ShelterWorkOffesPage.css';
 import WorkOfferList from "../components/workOffer/workOfferList/WorkOfferList";
 import SearchInput from "../components/UI/input/searchInput/SearchInput";
-import {Context} from "../index";
+import { Context } from "../index";
 import Button from "../components/UI/button/Button";
 import Modal from "../components/UI/modal/Modal";
 import AddWorkOfferForm from "../components/workOffer/addWorkOfferForm/AddWorkOfferForm";
 
 const ShelterWorkOffersPage = () => {
+    const { t } = useTranslation();
     const { user } = useContext(Context);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -25,12 +27,12 @@ const ShelterWorkOffersPage = () => {
 
     useEffect(() => {
         fetchShelterWorkOffers(limit, page).then(data => {
-           setWorkOffers(data.workOffers);
-           setPage(data.pagination.currentPage);
-           setTotalPages(data.pagination.totalPages);
-           setIsLoading(false);
-           setAddModalActive(false);
-           setRefresh(false);
+            setWorkOffers(data.workOffers);
+            setPage(data.pagination.currentPage);
+            setTotalPages(data.pagination.totalPages);
+            setIsLoading(false);
+            setAddModalActive(false);
+            setRefresh(false);
         });
     }, [page, refresh]);
 
@@ -59,19 +61,19 @@ const ShelterWorkOffersPage = () => {
             <div className={"work-offers__wrapper"}>
                 <div className="work-offer__search-container">
                     <div className="work-offer__search">
-                        <p>Назва роботи: </p>
+                        <p>{t("jobTitle")}: </p>
                         <SearchInput
-                            placeholder={"Очистка вольерів"}
+                            placeholder={t("jobTitlePlaceholder")}
                             data={search}
                             onChange={setSearch}
                             onClick={handleSearch}
                         />
                     </div>
                 </div>
-                { workOffers.length === 0
+                {workOffers.length === 0
                     ?
                     <div className={"work-offer__empty"}>
-                        <p>Оголошень про работу не знайдено</p>
+                        <p>{t("noJobOffers")}</p>
                     </div>
                     :
                     <div className="work-offer__list">
@@ -82,12 +84,12 @@ const ShelterWorkOffersPage = () => {
                     </div>
 
                 }
-                { (user.user.roles.includes('subscriber') || user.user.roles.includes('workAdmin'))
+                {(user.user.roles.includes('subscriber') || user.user.roles.includes('workAdmin'))
                     &&
                     <div className={"work-offer__add-container"}>
                         <div className="work-offer__button">
                             <Button
-                                buttonText={"Додати оголошення"}
+                                buttonText={t("addJobOffer")}
                                 onClick={() => setAddModalActive(true)}
                             />
                         </div>

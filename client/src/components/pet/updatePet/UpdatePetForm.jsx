@@ -7,15 +7,17 @@ import MyInput from "../../UI/input/MyInput/MyInput";
 import DeleteButton from "../../UI/button/DeleteButton";
 import {useParams} from "react-router-dom";
 import {fetchOnePet, updatePet} from "../../../API/PetService";
+import {useTranslation} from "react-i18next";
 
 const UpdatePetForm = ({ setOnUpdateSuccess }) => {
+    const { t } = useTranslation();
     const inputs = [
-        {label: "Кличка", name: 'petName', id: 'petName', type: 'text'},
-        {label: "Вік тварини", name: 'petAge', id: 'petAge', type: 'number'},
-        {label: "Стать", name: 'petGender', id: 'petGender', type: 'text'},
-        {label: "Номер клітки", name: 'cellNumber', id: 'cellNumber', type: 'text'},
-        {label: "Фото тварини", name: 'petImage', id: 'petImage', type: 'file'},
-        {label: "Вид тварини", name: 'petKind', id: 'petKind', type: 'text'},
+        { label: t("petName"), name: 'petName', id: 'petName', type: 'text' },
+        { label: t("petAge"), name: 'petAge', id: 'petAge', type: 'number' },
+        { label: t("petGender"), name: 'petGender', id: 'petGender', type: 'text' },
+        { label: t("cellNumber"), name: 'cellNumber', id: 'cellNumber', type: 'text' },
+        { label: t("petImage"), name: 'petImage', id: 'petImage', type: 'file' },
+        { label: t("petKind"), name: 'petKind', id: 'petKind', type: 'text' },
     ];
     const {id} = useParams();
 

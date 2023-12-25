@@ -1,13 +1,16 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
+import { useTranslation } from 'react-i18next';
 import '../styles/SubscribePage.css';
 import { IMAGES } from "../utils/const";
 import Button from "../components/UI/button/Button";
 import { subscribe } from "../API/UserService";
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
 
 const Subscribe = observer(() => {
+    const { t } = useTranslation();
     const { user } = useContext(Context);
+
     const handleSubscribeButtonClick = async () => {
         try {
             const response = await subscribe();
@@ -21,7 +24,7 @@ const Subscribe = observer(() => {
     return (
         <div className="subscribe-container">
             <div className="subscribe-headers">
-                <h2>Оформлення підписки</h2>
+                <h2>{t('subscribePage.subscriptionTitle')}</h2>
             </div>
             <div className="subscribe-image-container">
                 <img
@@ -31,24 +34,24 @@ const Subscribe = observer(() => {
                 />
             </div>
             <div className="subscribe-details">
-                <h3>Що ми пропануємо:</h3>
+                <h3>{t('subscribePage.offeringTitle')}</h3>
                 <ul>
-                    <li>Створення власного корпоративного домену для вашого притулку;</li>
-                    <li>Введення обліку тварин та вашого притулку;</li>
-                    <li>Зручний спосіб відстежування стану ваших тварин;</li>
-                    <li>Зручний механізм створень оголошень про оформлення опікунства над тваринами;</li>
+                    <li>{t('subscribePage.offering1')}</li>
+                    <li>{t('subscribePage.offering2')}</li>
+                    <li>{t('subscribePage.offering3')}</li>
+                    <li>{t('subscribePage.offering4')}</li>
                 </ul>
             </div>
             <div className="subscribe-button-container">
                 <Button
-                    buttonText="Оформити підписку 9,99$ / 31 день"
+                    buttonText={t('subscribePage.subscribeButtonText')}
                     onClick={handleSubscribeButtonClick}
                     isDisable={user.getSubscription.status === 'ACTIVE' || user.getSubscription.status === 'APPROVAL_PENDING'}
                 />
             </div>
             <div className="subscribe-error-container">
                 {user.getSubscription.status === 'ACTIVE' || user.getSubscription.status === 'APPROVAL_PENDING' ?
-                    <p>У вас вже присутня активна підписка</p>
+                    <p>{t('subscribePage.alreadySubscribed')}</p>
                     :
                     <p></p>
                 }

@@ -3,6 +3,7 @@ import Main from "./pages/Main";
 import Subscribe from "./pages/Subscribe";
 import Registration from "./pages/Registration";
 import {
+    ADMIN_PANEL,
     ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE, ALL_WORK_OFFER_ROUTE, APPLICATION_FOR_ADOPTION_PAGE,
     AUTH_ROUTE,
     CHANGE_EMAIL_ROUTE,
@@ -40,6 +41,7 @@ import ShelterWorkOffersPage from "./pages/ShelterWorkOffersPage";
 import ShelterOneWorkOfferPage from "./pages/ShelterOneWorkOfferPage";
 import PublicWorkOfferPage from "./pages/PublicWorkOfferPage";
 import singleWorkOfferPage from "./pages/SingleWorkOfferPage";
+import AdminPanel from "./pages/AdminPanel";
 
 export const authRoutes = [
     {
@@ -149,5 +151,11 @@ export const publicRoutes = [
         path: CHANGE_PASSWORD_PAGE,
         Element: ChangePasswordPage
     },
-
 ];
+
+export const adminRoutes = [
+    {
+        path: ADMIN_PANEL,
+        Element: AdminPanel,
+    },
+]

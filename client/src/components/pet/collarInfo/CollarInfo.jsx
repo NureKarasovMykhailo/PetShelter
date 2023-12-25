@@ -1,23 +1,23 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import stl from './CollarInfo.module.css';
-import SelectInput from "../../UI/input/selectInput/SelectInput";
-import Button from "../../UI/button/Button";
-import {useParams} from "react-router-dom";
-import {setFeeder} from "../../../API/FeederService";
-import {setCollar} from "../../../API/CollarService";
-import DeleteButton from "../../UI/button/DeleteButton";
-import {clearCollarInfo, deleteCollarInfo} from "../../../API/CollarInfoService";
-import {clearFeederInfo} from "../../../API/FeederInfoService";
+import SelectInput from '../../UI/input/selectInput/SelectInput';
+import Button from '../../UI/button/Button';
+import { useParams } from 'react-router-dom';
+import { setCollar } from '../../../API/CollarService';
+import DeleteButton from '../../UI/button/DeleteButton';
+import { clearCollarInfo, deleteCollarInfo } from '../../../API/CollarInfoService';
+import {useTranslation} from "react-i18next";
 
-const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
+const CollarInfo = ({ pet, collars, collarInfo, setSuccessSet }) => {
     const [selectedCollar, setSelectedCollar] = useState('');
     const [isUpdate, setIsUpdate] = useState(false);
     const options = [];
     const { id } = useParams();
+    const { t } = useTranslation();
 
     collars.map(collar => {
         if (collar.petId === null) {
-            options.push({value: collar.id, name: collar.id})
+            options.push({ value: collar.id, name: collar.id })
         }
     });
 
@@ -52,20 +52,20 @@ const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
         pet.collarId === null ?
             <div className={stl.collarSelectContainer}>
                 <div className={stl.collarSelectHeader}>
-                    <h3>Оберіть нашийник</h3>
+                    <h3>{t('selectCollarHeader')}</h3>
                 </div>
                 <div className={stl.selectCollar}>
                     <SelectInput
                         options={options}
                         value={selectedCollar}
                         setValue={setSelectedCollar}
-                        defaultValue={"ID нашийника"}
+                        defaultValue={t('selectCollar')}
                     />
                 </div>
                 <div className={stl.selectCollarBtnContainer}>
                     <div className={stl.selectCollarButton}>
                         <Button
-                            buttonText={"Закріпити нашийник"}
+                            buttonText={t('selectCollarButton')}
                             onClick={handleSetCollar}
                             isDisable={selectedCollar === ''}
                         />
@@ -75,7 +75,7 @@ const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
             :
             <div className={stl.feederInfoContainer}>
                 <div className={stl.feederInfoHeader}>
-                    <h3>Інформаці про стан тварини</h3>
+                    <h3>{t('infoHeader')}</h3>
                 </div>
                 <div className={stl.feederInfoItemsContainer}>
                     {collarInfo.length !== 0 ?
@@ -88,6 +88,7 @@ const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
                                     <th>Пульс (ударів/хвилина)</th>
                                     <th>Чи знаходиться в заданому радіусі</th>
                                     <th>Повідомлення</th>
+                                    <th>{t('deleteButton')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -96,11 +97,11 @@ const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
                                         <td>{new Date(info.createdAt).toLocaleString()}</td>
                                         <td>{info.temperature}</td>
                                         <td>{info.pulse}</td>
-                                        <td>{info.in_safe_radius ? "У безпеці" : "За межамі"}</td>
+                                        <td>{info.in_safe_radius ? "У безпеці" : "За межами"}</td>
                                         <td>{info.message}</td>
                                         <td>
                                             <DeleteButton
-                                                buttonText={"Видалити"}
+                                                buttonText={t('deleteButton')}
                                                 onClick={() => handleDeleteOneInfo(info.id)}
                                             />
                                         </td>
@@ -110,17 +111,16 @@ const CollarInfo = ({pet, collars, collarInfo, setSuccessSet}) => {
                             </table>
                             <div className={stl.feederInfoClearBtn}>
                                 <DeleteButton
-                                    buttonText={"Очистити інформаці"}
+                                    buttonText={t('clearInfoButton')}
                                     onClick={handleClearInfo}
                                 />
                             </div>
                         </div>
                         :
                         <div>
-                            Інформація про годування відсутня
+                            {t('noInfoMessage')}
                         </div>
                     }
-
                 </div>
             </div>
     );

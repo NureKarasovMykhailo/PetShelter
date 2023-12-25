@@ -9,6 +9,7 @@ import EmployeesStore from "./store/EmployeesStore";
 import FeederStore from "./store/FeederStore";
 import PetsStore from "./store/PetsStore";
 import FeederInfoStore from "./store/FeederInfoStore";
+import i18n from './i18n';
 
 export const Context = createContext(null);
 

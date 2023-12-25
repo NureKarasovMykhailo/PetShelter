@@ -1,15 +1,18 @@
-import React, {useState} from 'react';
-import ValidationError from "../../../class/ValidationError";
-import GeneralForm from "../../forms/generalForm/GeneralForm";
-import TextArea from "../../UI/input/textArea/TextArea";
-import stl from "../addWorkOfferForm/AddWorkOfferForm.module.css";
-import PhoneNumberInput from "../../UI/input/phoneNumberInput/PhoneNumberInput";
-import {updateWorkOffer} from "../../../API/WorkOfferService";
+import React, { useState } from 'react';
+import ValidationError from '../../../class/ValidationError';
+import GeneralForm from '../../forms/generalForm/GeneralForm';
+import TextArea from '../../UI/input/textArea/TextArea';
+import stl from '../addWorkOfferForm/AddWorkOfferForm.module.css';
+import PhoneNumberInput from '../../UI/input/phoneNumberInput/PhoneNumberInput';
+import { updateWorkOffer } from '../../../API/WorkOfferService';
+import { useTranslation } from 'react-i18next';
 
 const UpdateWorkOfferForm = ({ workOffer, setRefresh }) => {
+    const { t } = useTranslation();
+
     const inputs = [
-        {label: "Назва роботи", name: "workTitle", id: "workTitle", type: "text"},
-        {label: "Контактний email", name: "workEmail", id: "workEmail", type: "email"},
+        { label: t('workTitle'), name: 'workTitle', id: 'workTitle', type: 'text' },
+        { label: t('workEmail'), name: 'workEmail', id: 'workEmail', type: 'email' },
     ];
     const [workOfferData, setWorkOfferData] = useState({
         workTitle: workOffer.work_title,
@@ -37,26 +40,22 @@ const UpdateWorkOfferForm = ({ workOffer, setRefresh }) => {
                 }
             }
         }
-    }
+    };
 
     return (
         <GeneralForm
             inputs={inputs}
             data={workOfferData}
             setData={setWorkOfferData}
-            header={"Оновлення оголошення"}
-            submitButtonText={"Оновити"}
+            header={t('updateWorkOffer')}
+            submitButtonText={t('updateWorkOffer')}
             errorsList={errorList}
             onClick={handleUpdateWorkOffer}
         >
-            <TextArea
-                label={"Опис:"}
-                text={workDescription}
-                setText={setWorkDescription}
-            />
+            <TextArea label={t('descriptionLabel')} text={workDescription} setText={setWorkDescription} />
             <div className={stl.phone}>
                 <PhoneNumberInput
-                    label={"Контактний номер телефону: "}
+                    label={t('phoneNumberLabel')}
                     value={workTelephone}
                     onChange={setWorkTelephone}
                 />

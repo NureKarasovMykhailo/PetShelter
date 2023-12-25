@@ -1,26 +1,25 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../styles/EmployeesPage.css';
 import Button from "../components/UI/button/Button";
 import Modal from "../components/UI/modal/Modal";
 import AddEmployeeForm from "../components/employee/addEmployeeForm/AddEmployeeForm";
-import EmployeeItem from "../components/employee/employeeItem/EmployeeItem";
-import {fetchEmployee} from "../API/EmployeeService";
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
 import EmployeeList from "../components/employee/eployeeList/EmployeeList";
-import {getPagesArray} from "../utils/pagination";
+import { fetchEmployee } from "../API/EmployeeService";
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
+import { getPagesArray } from "../utils/pagination";
 import Pagination from "../components/UI/pagination/Pagination";
 import Filter from "../components/filter/Filter";
-import {fetchRoles} from "../API/UserService";
-import filter from "../components/filter/Filter";
+import { fetchRoles } from "../API/UserService";
 import Loader from "../components/UI/loader/Loader";
 import MySelect from "../components/UI/input/mySelect/MySelect";
 import SearchInput from "../components/UI/input/searchInput/SearchInput";
+import { useTranslation } from 'react-i18next';
 
-const EmployeesPage = observer (() => {
+const EmployeesPage = observer(() => {
     const { employees } = useContext(Context);
     const { user } = useContext(Context);
-
+    const { t } = useTranslation();
 
     const [isAddModalActive, setIsAddModalActive] = useState(false);
     const [addFormSuccess, setAddFormSuccess] = useState(false);
@@ -44,15 +43,16 @@ const EmployeesPage = observer (() => {
             label: role.role,
             value: role.role_title
         })
-    })
+    });
 
     const filters = [
-        {label: "Роль: ", options: rolesFilterOptions, defaultValue: "Роль", name: 'role'}
+        {label: t("sortingHeader"), options: rolesFilterOptions, defaultValue: t("sortingHeader"), name: 'role'}
     ];
+
     const sorting = [
-        {label: 'Прізвище: Aа - Яя', value: 'asc'},
-        {label: 'Прізвище: Яя - Аа', value: 'desc'},
-    ]
+        {label: t('ascendingSort'), value: 'asc'},
+        {label: t('descendingSort'), value: 'desc'},
+    ];
 
     useEffect(() => {
         fetchRoles().then(data => {
@@ -63,16 +63,15 @@ const EmployeesPage = observer (() => {
     useEffect(() => {
         setIsLoading(true);
         fetchEmployee(limit, page, selectedFilter.role, selectedSort).then(data => {
-            employees.setEmployees(data.employees)
-            setTotalCount(data.pagination.totalItems)
-            setTotalPages(data.pagination.totalPages)
+            employees.setEmployees(data.employees);
+            setTotalCount(data.pagination.totalItems);
+            setTotalPages(data.pagination.totalPages);
             setIsLoading(false);
             setAddFormSuccess(false);
             setDeleteSuccess(false);
             setRoleSuccess(false);
         });
     }, [page, selectedFilter, selectedSort, addFormSuccess, deleteSuccess, roleSuccess]);
-
 
     const handleAddFormSuccess = (success) => {
         setAddFormSuccess(success);
@@ -82,6 +81,7 @@ const EmployeesPage = observer (() => {
     const handleDeleteEmployee = (success) => {
         setDeleteSuccess(success);
     }
+
     const handleRoleFormSuccess = (success) => {
         setRoleSuccess(success);
     }
@@ -93,9 +93,9 @@ const EmployeesPage = observer (() => {
     const handleSearchBtnClick = () => {
         setIsLoading(true);
         fetchEmployee(limit, page, selectedFilter.role, selectedSort, searchData).then(data => {
-            employees.setEmployees(data.employees)
-            setTotalCount(data.pagination.totalItems)
-            setTotalPages(data.pagination.totalPages)
+            employees.setEmployees(data.employees);
+            setTotalCount(data.pagination.totalItems);
+            setTotalPages(data.pagination.totalPages);
             setIsLoading(false);
         });
     }
@@ -113,43 +113,42 @@ const EmployeesPage = observer (() => {
                 <div className={"employee-list__container"}>
                     <div className={"employee-list__sort-container"}>
                         <div className={"employee-list__sorting"}>
-                            <p className={"employee-list__sorting-header"}>Сортування</p>
+                            <p className={"employee-list__sorting-header"}>{t('sortingHeader')}</p>
                             <MySelect
                                 options={sorting}
                                 onChange={(e) => setSelectedSort(e.target.value)}
                                 value={selectedSort}
-                                defaultValue={"Сортування"}
+                                defaultValue={t('sortingHeader')}
                             />
                         </div>
                         <div className={"employee-list__find"}>
                             <SearchInput
                                 data={searchData}
                                 onChange={(search) => setSearchData(search)}
-                                placeholder={"Пошук"}
+                                placeholder={t('searchPlaceholder')}
                                 onClick={handleSearchBtnClick}
                             />
                         </div>
                     </div>
-                    {isLoading ?
+                    {isLoading ? (
                         <Loader />
-                        :
-                        employees.getEmployees().length > 0 ?
-                            <EmployeeList employees={employees.getEmployees()} onDelete={handleDeleteEmployee} onSuccess={handleRoleFormSuccess} />
-                            :
-                            <div className={"employee-list__empty"}>
-                                <p>Робітників не знайдено</p>
-                            </div>
-                    }
+                    ) : employees.getEmployees().length > 0 ? (
+                        <EmployeeList employees={employees.getEmployees()} onDelete={handleDeleteEmployee} onSuccess={handleRoleFormSuccess} />
+                    ) : (
+                        <div className={"employee-list__empty"}>
+                            <p>{t('noEmployeesFound')}</p>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="employees-wrapper__add-container">
                 <div className="employee-wrapper__button-container">
-                    {user.user.roles.includes('subscriber', 'workerAdmin') &&
+                    {user.user.roles.includes('subscriber', 'workerAdmin') && (
                         <Button
-                            buttonText={"Додати працівника"}
+                            buttonText={t('addEmployee')}
                             onClick={() => setIsAddModalActive(true)}
                         />
-                    }
+                    )}
                 </div>
             </div>
             <div className="employee-wrapper__pagination-container">

@@ -1,14 +1,19 @@
-import React, {useState} from 'react';
+// AddCollarForm.jsx
+
+import React, { useState } from 'react';
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import ValidationError from "../../../class/ValidationError";
-import {createCollar} from "../../../API/CollarService";
+import { createCollar } from "../../../API/CollarService";
+import { useTranslation } from "react-i18next";
 
 const AddCollarForm = ({ setAddSuccess }) => {
+    const { t } = useTranslation();
+
     const inputs = [
-        {label: 'Мінімальна допустима температура (°C)', name: 'minTemperature', id: 'minTemperature', type: 'number'},
-        {label: 'Максимальна допустима температура (°C)', name: 'maxTemperature', id: 'maxTemperature', type: 'number'},
-        {label: 'Мінімальний допустимий пульс (удари/хвилина)', name: 'minPulse', id: 'minPulse', type: 'number'},
-        {label: 'Максимальний допустимий пульс (удари/хвилина)', name: 'maxPulse', id: 'maxPulse', type: 'number'}
+        { label: t("minTemperatureLabel"), name: 'minTemperature', id: 'minTemperature', type: 'number' },
+        { label: t("maxTemperatureLabel"), name: 'maxTemperature', id: 'maxTemperature', type: 'number' },
+        { label: t("minPulseLabel"), name: 'minPulse', id: 'minPulse', type: 'number' },
+        { label: t("maxPulseLabel"), name: 'maxPulse', id: 'maxPulse', type: 'number' }
     ];
 
     const [collarData, setCollarData] = useState({
@@ -33,14 +38,13 @@ const AddCollarForm = ({ setAddSuccess }) => {
         }
     }
 
-
     return (
         <GeneralForm
             inputs={inputs}
             data={collarData}
             setData={setCollarData}
-            header={"Додавання нашийника"}
-            submitButtonText={"Додати"}
+            header={t("addCollarHeader")}
+            submitButtonText={t("addCollarButton")}
             errorsList={errorList}
             onClick={handleAddCollar}
         />

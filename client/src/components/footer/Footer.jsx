@@ -1,28 +1,28 @@
-import React from "react";
-import styles from "./Footer.module.css";
-import LinkWithIcon from "../UI/link/LinkWithIcon";
-import { IMAGES } from "../../utils/const";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import styles from './Footer.module.css';
+import LinkWithIcon from '../UI/link/LinkWithIcon';
+import { IMAGES } from '../../utils/const';
 
 const Footer = () => {
-    const imgAltText = "image not found";
+    const { t } = useTranslation();
 
     const navLinks = [
-        { text: "Контакти", imgSrc: IMAGES.CONTACTS_ICON, alt: {imgAltText}, href: "#"},
-        { text: "О нас", imgSrc: IMAGES.ABOUT_ICON, alt: {imgAltText}, href: "#"},
-        { text: "Співпраця", imgSrc: IMAGES.TOGETHER_ICON, alt: {imgAltText}, href: "#"},
-
-    ]
+        { text: t('contacts'), imgSrc: IMAGES.CONTACTS_ICON, alt: t('imageAltText'), href: '#' },
+        { text: t('aboutUs'), imgSrc: IMAGES.ABOUT_ICON, alt: t('imageAltText'), href: '#' },
+        { text: t('cooperation'), imgSrc: IMAGES.TOGETHER_ICON, alt: t('imageAltText'), href: '#' },
+    ];
 
     return (
         <div className={styles.footerContainer}>
             <div className={styles.footer}>
                 <div className={styles.footerLogoContainer}>
-                    <img className={styles.footerLogo} src={IMAGES.HEADER_LOGO} alt="Image not found" />
+                    <img className={styles.footerLogo} src={IMAGES.HEADER_LOGO} alt={t('imageAltText')} />
                     <div className={styles.footerHeaders}>
-                        <p className={styles.footerFirstHeader}>Бездомні в безпеці</p>
-                        <p className={styles.footerSecondHeader}>Спасіння тварин</p>
+                        <p className={styles.footerFirstHeader}>{t('firstHeader')}</p>
+                        <p className={styles.footerSecondHeader}>{t('secondHeader')}</p>
                     </div>
-                <div className={styles.footerLinks}>
+                    <div className={styles.footerLinks}>
                         {navLinks.map((link, index) => (
                             <LinkWithIcon
                                 key={index}
@@ -32,11 +32,11 @@ const Footer = () => {
                                 alt={link.alt}
                             />
                         ))}
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
     );
-}
+};
 
 export default Footer;

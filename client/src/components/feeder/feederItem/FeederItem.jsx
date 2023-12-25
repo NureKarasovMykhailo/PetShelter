@@ -1,13 +1,18 @@
-import React, {useState} from 'react';
+// FeederItem.js
+
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import stl from './FeederItem.module.css';
 import Button from "../../UI/button/Button";
-import {deleteFeeder, updateFeeder} from "../../../API/FeederService";
+import { deleteFeeder, updateFeeder } from "../../../API/FeederService";
 import Modal from "../../UI/modal/Modal";
 import ValidationError from "../../../class/ValidationError";
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import DeleteButton from "../../UI/button/DeleteButton";
 
-const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate}) => {
+const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate }) => {
+    const { t } = useTranslation();
+
     const [updateModalActive, setUpdateModalActive] = useState(false);
     const [errorList, setErrorList] = useState([new ValidationError()]);
     const [newFeederData, setNewFeederData] = useState({
@@ -17,11 +22,10 @@ const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate}) => {
     });
 
     const updateInputs = [
-        {label: 'Місткість', id: 'capacity', name: 'capacity', type: 'number'},
-        {label: 'Колір', id: 'feederColour', name: 'feederColour', type: 'text'},
-        {label: 'Розроблена для', id: 'designedFor', name: 'designedFor', type: 'text'},
+        { label: t('capacityLabel'), id: 'capacity', name: 'capacity', type: 'number' },
+        { label: t('colorLabel'), id: 'feederColour', name: 'feederColour', type: 'text' },
+        { label: t('designedForLabel'), id: 'designedFor', name: 'designedFor', type: 'text' },
     ];
-
 
     const handleDeleteFeeder = async () => {
         try {
@@ -50,10 +54,10 @@ const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate}) => {
             <table className={stl.feederTable}>
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Колір</th>
-                    <th>Об'м (л.)</th>
-                    <th>Спроектована для</th>
+                    <th>{t('idLabel')}</th>
+                    <th>{t('colorLabel')}</th>
+                    <th>{t('capacityLabel')}</th>
+                    <th>{t('designedForLabel')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,13 +73,13 @@ const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate}) => {
                 <div className={stl.feederItemBtnContainer}>
                     <div className={stl.feederItemButton}>
                         <Button
-                            buttonText={"Оновити"}
+                            buttonText={t('updateButton')}
                             onClick={() => setUpdateModalActive(true)}
                         />
                     </div>
                     <div className={stl.feederItemButton}>
                         <DeleteButton
-                            buttonText={"Видалити"}
+                            buttonText={t('deleteButton')}
                             onClick={handleDeleteFeeder}
                         />
                     </div>
@@ -89,9 +93,9 @@ const FeederItem = ({ feeder, user, onSuccessDelete, onSuccessUpdate}) => {
                     data={newFeederData}
                     setData={setNewFeederData}
                     inputs={updateInputs}
-                    header={"Оновити годівницю"}
+                    header={t('updateHeader')}
                     errorsList={errorList}
-                    submitButtonText={"Оновити"}
+                    submitButtonText={t('updateButton')}
                     onClick={handleUpdateFeeder}
                 />
             </Modal>

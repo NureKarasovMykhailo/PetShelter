@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getProfileInfo, getSubscriptionDetail, sendConfirmationCode } from "../API/UserService";
 import { Context } from "../index";
 import '../styles/Profile.css';
@@ -13,7 +14,8 @@ import { observer } from "mobx-react-lite";
 import CheckAuthPage from "./CheckAuthPage";
 
 const Profile = observer(() => {
-    const [modalActive, setModalActive] = useState(false)
+    const { t } = useTranslation();
+    const [modalActive, setModalActive] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useContext(Context);
 
@@ -76,11 +78,11 @@ const Profile = observer(() => {
     const formattedBirthday = `${padWithZero(birthday.getDate())}.${padWithZero(birthday.getMonth() + 1)}.${birthday.getFullYear()}`;
 
     let userFields = [
-        { name: 'Логін:', value: user.user.login },
-        { name: 'Email:', value: user.user.email },
-        { name: 'Корпоративний адрес:', value: user.user.domain_email },
-        { name: 'Дата народження:', value: formattedBirthday },
-        { name: 'Номер телефона:', value: user.user.phone_number },
+        { name: t('loginLabel'), value: user.user.login },
+        { name: t('emailLabel'), value: user.user.email },
+        { name: t('domainEmailLabel'), value: user.user.domain_email },
+        { name: t('birthdayLabel'), value: formattedBirthday },
+        { name: t('phoneNumberLabel'), value: user.user.phone_number },
     ];
     userFields = userFields.filter(userField => userField.value !== null);
 
@@ -97,18 +99,17 @@ const Profile = observer(() => {
                     </div>
                     <div className="subscribe-container">
                         {user.getSubscription.status === 'ACTIVE' || user.getSubscription.status === 'APPROVAL_PENDING'
-                            ? <p><b>Підписка: </b>Активна з <b>{formattedStartTime}</b> до <b>{formattedEndTime}</b></p>
+                            ? <p><b>{t('subscribePage.subscriptionTitle')}</b> {formattedStartTime} {t('to')} {formattedEndTime}</p>
                             : <div className="subscribe-link-container">
-                                <p className="non-subscribe-info"><b>Підписка: </b>Не активна</p>
                                 <UnderlineLink
-                                    linkText="Оформити підписку"
+                                    linkText={t('subscribePage.subscribeButtonText')}
                                     onClick={handleSubscribeLinkClick}
                                 />
                             </div>
                         }
                         <div className="profile-log-out-btn-container">
                             <Button
-                                buttonText="Вихід"
+                                buttonText={t('logoutLabel')}
                                 onClick={handleLogOutBtnClick}
                             />
                         </div>
@@ -116,7 +117,7 @@ const Profile = observer(() => {
                 </div>
                 <div className="change-image-link-container">
                     <UnderlineLink
-                        linkText="Змінити зображення"
+                        linkText={t('changeImageLabel')}
                         onClick={handleImageChangeClick}
                     />
                 </div>
@@ -140,25 +141,25 @@ const Profile = observer(() => {
                 <div className="profile-buttons-container">
                     <div className="profile-button-container">
                         <Button
-                            buttonText="Притулок"
+                            buttonText={t('shelterLabel')}
                             onClick={handleShelterBtnClick}
                         />
                     </div>
                     <div className="profile-button-container">
                         <Button
-                            buttonText="Змінити email"
+                            buttonText={t('changeEmailLabel')}
                             onClick={handleChangeEmailBtnClick}
                         />
                     </div>
                     <div className="profile-button-container">
                         <Button
-                            buttonText="Змінити пароль"
+                            buttonText={t('changePasswordLabel')}
                             onClick={handleChangePasswordClick}
                         />
                     </div>
                     <div className="profile-button-container">
                         <Button
-                            buttonText="Змінити телефон"
+                            buttonText={t('changePhoneLabel')}
                             onClick={handleChangePhoneBtnClick}
                         />
                     </div>
@@ -172,3 +173,7 @@ const Profile = observer(() => {
 });
 
 export default Profile;
+
+
+
+

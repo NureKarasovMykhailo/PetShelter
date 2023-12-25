@@ -2,11 +2,13 @@ import React from 'react';
 import stl from './AdoptionOfferItem.module.css';
 import Button from "../../UI/button/Button";
 import DeleteButton from "../../UI/button/DeleteButton";
-import {deleteAdoptionOffer} from "../../../API/AdoptionOfferService";
-import {APPLICATION_FOR_ADOPTION_PAGE, ONE_ADOPTION_OFFER_ROUTE, ONE_PET_ROUTE} from "../../../utils/const";
-import {useNavigate} from "react-router-dom";
+import { deleteAdoptionOffer } from "../../../API/AdoptionOfferService";
+import { APPLICATION_FOR_ADOPTION_PAGE, ONE_ADOPTION_OFFER_ROUTE, ONE_PET_ROUTE } from "../../../utils/const";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const AdoptionOfferItem = ({adoptionOffer, setRefresh}) => {
+const AdoptionOfferItem = ({ adoptionOffer, setRefresh }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleDelete = async () => {
@@ -23,20 +25,20 @@ const AdoptionOfferItem = ({adoptionOffer, setRefresh}) => {
             <div className={stl.adoptionOfferImageContainer}>
                 <img
                     src={process.env.REACT_APP_API_URL + adoptionOffer.pet.pet_image}
-                    alt={"Image not found"}
+                    alt={t("imageNotFound")}
                     className={stl.adoptionOfferImage}
                 />
             </div>
             <div className={stl.adoptionOfferInfo}>
-                <p>Кличка: {adoptionOffer.pet.pet_name}</p>
-                <p>Вік: {adoptionOffer.pet.pet_age}</p>
-                <p>Стать: {adoptionOffer.pet.pet_gender}</p>
-                <p>Ціна опекунства: {adoptionOffer.adoption_price} грн</p>
+                <p>{t("nameLabel")}: {adoptionOffer.pet.pet_name}</p>
+                <p>{t("ageLabel")}: {adoptionOffer.pet.pet_age}</p>
+                <p>{t("genderLabel")}: {adoptionOffer.pet.pet_gender}</p>
+                <p>{t("adoptionPriceLabel")}: {adoptionOffer.adoption_price} грн</p>
             </div>
             <div className={stl.adoptionButtonsContainer}>
                 <div className={stl.adoptionOfferButton}>
                     <Button
-                        buttonText={"Заяви"}
+                        buttonText={t("apply")}
                         onClick={() => {
                             navigate(APPLICATION_FOR_ADOPTION_PAGE.replace(':id', adoptionOffer.id))
                         }}
@@ -44,13 +46,13 @@ const AdoptionOfferItem = ({adoptionOffer, setRefresh}) => {
                 </div>
                 <div className={stl.adoptionOfferButton}>
                     <Button
-                        buttonText={"Переглянути"}
+                        buttonText={t("view")}
                         onClick={() => navigate(ONE_ADOPTION_OFFER_ROUTE.replace(':id', adoptionOffer.id))}
                     />
                 </div>
                 <div className={stl.adoptionOfferButton}>
                     <DeleteButton
-                        buttonText={"Видалити"}
+                        buttonText={t("delete")}
                         onClick={handleDelete}
                     />
                 </div>

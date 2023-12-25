@@ -1,11 +1,14 @@
+// PetItem.js
 import React from 'react';
 import stl from './PetItem.module.css';
+import { useTranslation } from 'react-i18next';
 import Button from "../../UI/button/Button";
-import {deletePet} from "../../../API/PetService";
-import {useNavigate} from "react-router-dom";
-import {CHANGE_PASSWORD_PAGE, ONE_PET_ROUTE} from "../../../utils/const";
+import { deletePet } from "../../../API/PetService";
+import { useNavigate } from "react-router-dom";
+import { ONE_PET_ROUTE } from "../../../utils/const";
 
 const PetItem = ({ pet, onDelete }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleDeletePet = async () => {
@@ -27,30 +30,30 @@ const PetItem = ({ pet, onDelete }) => {
                 <img
                     className={stl.petItemImage}
                     src={process.env.REACT_APP_API_URL + pet.pet_image}
-                    alt={"Image not found"}
+                    alt={t('imageNotFound')}
                 />
             </div>
             <div className={stl.petItemCharacteristics}>
-                <p><b>ID:</b> {pet.id}</p>
-                <p>Кличка: {pet.pet_name}</p>
-                <p>Вид: {pet.pet_kind}</p>
-                <p>Вік: {pet.pet_age}</p>
+                <p><b>{t('id')}:</b> {pet.id}</p>
+                <p>{t('name')}: {pet.pet_name}</p>
+                <p>{t('species')}: {pet.pet_kind}</p>
+                <p>{t('age')}: {pet.pet_age}</p>
             </div>
             <div className={stl.petItemCharacteristics}>
-                <p>Стать: {pet.pet_gender}</p>
-                <p>Вік: {pet.pet_age}</p>
-                <p>Номер клітки: {pet.cell_number}</p>
+                <p>{t('gender')}: {pet.pet_gender}</p>
+                <p>{t('age')}: {pet.pet_age}</p>
+                <p>{t('cageNumber')}: {pet.cell_number}</p>
             </div>
             <div className={stl.petItemButtonsContainer}>
                 <div className={stl.petItemButton}>
                     <Button
-                        buttonText={"Інформація"}
+                        buttonText={t('petDetails')}
                         onClick={() => navigate(ONE_PET_ROUTE.replace(':id', pet.id))}
                     />
                 </div>
                 <div className={stl.petItemButton}>
                     <Button
-                        buttonText={"Видалити"}
+                        buttonText={t('delete')}
                         onClick={handleDeletePet}
                     />
                 </div>

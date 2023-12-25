@@ -1,15 +1,20 @@
-import React, {useEffect, useState} from 'react';
+// AddFeederForm.js
+
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import ValidationError from "../../../class/ValidationError";
-import {createEmployee} from "../../../API/EmployeeService";
-import {createFeeder, fetchFeeder, updateFeeder} from "../../../API/FeederService";
+import { createFeeder } from "../../../API/FeederService";
 
 const AddFeederForm = ({ onSucceedAdd }) => {
+    const { t } = useTranslation();
+
     const inputs = [
-        {label: 'Місткість', id: 'capacity', name: 'capacity', type: 'number'},
-        {label: 'Колір', id: 'feederColour', name: 'feederColour', type: 'text'},
-        {label: 'Розроблена для', id: 'designedFor', name: 'designedFor', type: 'text'},
+        { label: t('capacityLabel'), id: 'capacity', name: 'capacity', type: 'number' },
+        { label: t('feederColourLabel'), id: 'feederColour', name: 'feederColour', type: 'text' },
+        { label: t('designedForLabel'), id: 'designedFor', name: 'designedFor', type: 'text' },
     ];
+
     const [errorList, setErrorList] = useState([new ValidationError()]);
     const [data, setData] = useState({
         capacity: '',
@@ -27,21 +32,18 @@ const AddFeederForm = ({ onSucceedAdd }) => {
                 setErrorList(error.response.data.message);
             }
         }
-    }
-
+    };
 
     return (
         <GeneralForm
             inputs={inputs}
             data={data}
             setData={setData}
-            header={"Додавання годівниці"}
-            submitButtonText={"Додати"}
+            header={t('formHeader')}
+            submitButtonText={t('submitButton')}
             errorsList={errorList}
             onClick={handleAddFeeder}
-        >
-
-        </GeneralForm>
+        />
     );
 };
 

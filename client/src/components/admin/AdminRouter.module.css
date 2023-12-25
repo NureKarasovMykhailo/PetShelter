@@ -1,0 +1,8 @@
+.adminRouterContainer{
+    max-width: 830px;
+    min-height: 51.6vh;
+    padding: 20px;
+    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+}

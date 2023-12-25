@@ -1,22 +1,22 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../styles/PetPage.css';
-import {observer} from "mobx-react-lite";
-import {fetchKinds, fetchPets} from "../API/PetService";
-import {Context} from "../index";
-import PetList from "../components/pet/petList/PetList";
-import Loader from "../components/UI/loader/Loader";
-import Pagination from "../components/UI/pagination/Pagination";
-import {getPagesArray} from "../utils/pagination";
-import Filter from "../components/filter/Filter";
-import MySelect from "../components/UI/input/mySelect/MySelect";
-import SearchInput from "../components/UI/input/searchInput/SearchInput";
-import {fetchEmployee} from "../API/EmployeeService";
-import Button from "../components/UI/button/Button";
-import Modal from "../components/UI/modal/Modal";
-import AddPetForm from "../components/pet/addPetForm/AddPetForm";
+import { observer } from 'mobx-react-lite';
+import { useTranslation } from 'react-i18next';
+import { fetchKinds, fetchPets } from '../API/PetService';
+import { Context } from '../index';
+import PetList from '../components/pet/petList/PetList';
+import Loader from '../components/UI/loader/Loader';
+import Pagination from '../components/UI/pagination/Pagination';
+import { getPagesArray } from '../utils/pagination';
+import Filter from '../components/filter/Filter';
+import MySelect from '../components/UI/input/mySelect/MySelect';
+import SearchInput from '../components/UI/input/searchInput/SearchInput';
+import { fetchEmployee } from '../API/EmployeeService';
+import Button from '../components/UI/button/Button';
+import Modal from '../components/UI/modal/Modal';
+import AddPetForm from '../components/pet/addPetForm/AddPetForm';
 
 const PetPage = observer(() => {
-
     const { pets, user } = useContext(Context);
     const [addModalActive, setAddModalActive] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,41 +32,43 @@ const PetPage = observer(() => {
         gender: '',
     });
 
+    const { t } = useTranslation();
+
     const petKinds = [];
     pets.getKinds().map((kinds) => {
         petKinds.push({
             label: kinds.pet_kind,
-            value: kinds.pet_kind
+            value: kinds.pet_kind,
         });
-    })
+    });
 
     const filters = [
         {
-            label: "Стать: ",
-            defaultValue: "Стать",
+            label: t('genderLabel'),
+            defaultValue: t('genderDefault'),
             name: 'gender',
             options: [
-                { label: "Самка", value: "самка" },
-                { label: "Самець", value: "самець" },
-            ]
+                { label: t('femaleLabel'), value: 'самка' },
+                { label: t('maleLabel'), value: 'самець' },
+            ],
         },
         {
-            label: "Вид: ",
-            defaultValue: "Вид",
-            name: "petKind",
-            options: petKinds
-        }
+            label: t('kindLabel'),
+            defaultValue: t('kindDefault'),
+            name: 'petKind',
+            options: petKinds,
+        },
     ];
 
     const sorting = [
-        {label: 'Вік 0 - 99', value: 'asc', name: 'sortByAge'},
-        {label: 'Вік: 99 - 0', value: 'desc', name: 'sortByAge'},
-    ]
+        { label: t('sortAscLabel'), value: 'asc', name: 'sortByAge' },
+        { label: t('sortDescLabel'), value: 'desc', name: 'sortByAge' },
+    ];
 
     const handleAddPet = (success) => {
         setIsAddSuccess(success);
         setAddModalActive(false);
-    }
+    };
 
     useEffect(() => {
         setIsLoading(true);
@@ -75,15 +77,15 @@ const PetPage = observer(() => {
             page,
             selectedFilter.petKind,
             selectedFilter.gender,
-            selectedSort
-        ).then(data => {
-           pets.setPets(data.pets);
-            setTotalCount(data.pagination.totalItems)
-            setTotalPages(data.pagination.totalPages)
+            selectedSort,
+        ).then((data) => {
+            pets.setPets(data.pets);
+            setTotalCount(data.pagination.totalItems);
+            setTotalPages(data.pagination.totalPages);
         });
-        fetchKinds().then(data => {
-            pets.setKinds(data.message)
-        })
+        fetchKinds().then((data) => {
+            pets.setKinds(data.message);
+        });
 
         setIsLoading(false);
         setIsAddSuccess(false);
@@ -98,49 +100,45 @@ const PetPage = observer(() => {
             selectedFilter.petKind,
             selectedFilter.gender,
             selectedSort,
-            search
-        ).then(data => {
+            search,
+        ).then((data) => {
             pets.setPets(data.pets);
-            setTotalCount(data.pagination.totalItems)
-            setTotalPages(data.pagination.totalPages)
+            setTotalCount(data.pagination.totalItems);
+            setTotalPages(data.pagination.totalPages);
         });
-        fetchKinds().then(data => {
-            pets.setKinds(data.message)
-        })
+        fetchKinds().then((data) => {
+            pets.setKinds(data.message);
+        });
 
         setIsLoading(false);
-    }
+    };
 
     return (
-        isLoading ?
-            <div className={"pet-wrapper__loader"}>
+        isLoading ? (
+            <div className="pet-wrapper__loader">
                 <Loader />
             </div>
-            :
-            <div className={"pet-wrapper"}>
+        ) : (
+            <div className="pet-wrapper">
                 <div className="pet-wrapper__pet-list">
-                    <div className={"pet-wrapper__filter"}>
-                        <Filter
-                            filters={filters}
-                            setData={setSelectedFilter}
-                            data={selectedFilter}
-                        />
+                    <div className="pet-wrapper__filter">
+                        <Filter filters={filters} setData={setSelectedFilter} data={selectedFilter} />
                     </div>
-                    <div className={"pet-wrapper__pet-list-container"}>
-                        <div className={"pet-wrapper__filter-sort-container"}>
-                            <div className={"pet-wrapper__sort-container"}>
-                                <h3 className={"pet-wrapper__sort-header"}>Сортування</h3>
+                    <div className="pet-wrapper__pet-list-container">
+                        <div className="pet-wrapper__filter-sort-container">
+                            <div className="pet-wrapper__sort-container">
+                                <h3 className="pet-wrapper__sort-header">{t('sortLabel')}</h3>
                                 <MySelect
                                     options={sorting}
                                     onChange={(e) => setSelectedSort(e.target.value)}
                                     value={selectedSort}
-                                    defaultValue={"Сортування"}
+                                    defaultValue={t('sortDefault')}
                                 />
                             </div>
                             <SearchInput
-                                placeholder={"кличка.."}
+                                placeholder={t('searchPlaceholder')}
                                 data={search}
-                                onChange={(search) => setSearch(search)}
+                                onChange={(newSearch) => setSearch(newSearch)}
                                 onClick={handleSearchBtnClick}
                             />
                         </div>
@@ -148,16 +146,16 @@ const PetPage = observer(() => {
                             pets={pets.getPets()}
                             onDelete={(success) => setIsDeleteSuccess(success)}
                         />
-                        {(user.user.roles.includes('subscriber') || user.user.roles.includes('petAdmin')) &&
-                            <div className={"pet-wrapper__add-pet"}>
+                        {(user.user.roles.includes('subscriber') || user.user.roles.includes('petAdmin')) && (
+                            <div className="pet-wrapper__add-pet">
                                 <div className="pet-wrapper__add-pet-btn">
                                     <Button
-                                        buttonText={"Додати тварину"}
+                                        buttonText={t('addButton')}
                                         onClick={() => setAddModalActive(true)}
                                     />
                                 </div>
                             </div>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className="pet-wrapper__pagination-container">
@@ -171,9 +169,10 @@ const PetPage = observer(() => {
                     active={addModalActive}
                     setActive={setAddModalActive}
                 >
-                    <AddPetForm onAddSuccess={handleAddPet}/>
+                    <AddPetForm onAddSuccess={handleAddPet} />
                 </Modal>
             </div>
+        )
     );
 });
 

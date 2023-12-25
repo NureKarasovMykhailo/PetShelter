@@ -1,25 +1,26 @@
-import React, {useContext, useEffect} from 'react';
+import React, { useContext, useEffect } from 'react';
 import Button from "../components/UI/button/Button";
-import {useNavigate} from "react-router-dom";
-import {MAIN_ROUTE} from "../utils/const";
+import { useNavigate } from "react-router-dom";
+import { MAIN_ROUTE } from "../utils/const";
 import '../styles/SubscribeSucceed.css';
-import {checkAuth, getToken} from "../API/UserService";
-import { observer} from "mobx-react-lite";
-import {Context} from "../index";
+import { getToken } from "../API/UserService";
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
+import { useTranslation } from 'react-i18next'; // Import the useTranslation hook
 
 const SubscribeSucceed = observer(() => {
+    const { user } = useContext(Context);
     const navigate = useNavigate();
-    const { user } = useContext(Context)
+    const { t } = useTranslation(); // Use the useTranslation hook to access the t function
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = await getToken();
-                localStorage.setItem('token', token)
+                localStorage.setItem('token', token);
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
-
         };
 
         fetchData().then();
@@ -28,14 +29,14 @@ const SubscribeSucceed = observer(() => {
     return (
         <div className={"subscribe-succeed-container"}>
             <div className="subscribe-succeed-container__header">
-                <h2>Дякуємо</h2>
+                <h2>{t('subscribeSucceedPage.header')}</h2>
             </div>
             <div className="subscribe-succeed-container__details">
-                <p>Ви успішно оформили підписку на місяць!</p>
+                <p>{t('subscribeSucceedPage.successMessage')}</p>
             </div>
             <div className="subscribe-succeed-container__button">
                 <Button
-                    buttonText={"На головну"}
+                    buttonText={t('subscribeSucceedPage.homeButton')}
                     onClick={() => navigate(MAIN_ROUTE)}
                 />
             </div>

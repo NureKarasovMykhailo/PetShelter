@@ -37,6 +37,8 @@ export const PUBLIC_WORK_OFFER_ROUTE = '/work-offer';
 
 export const PUBLIC_ONE_WORK_OFFER_ROUTE = '/work-offer/:id';
 
+export const ADMIN_PANEL = '/admin-panel';
+
 export const IMAGES = {
     HEADER_LOGO: "/assets/img/header-logo.jpg",
     VOLUNTARY_WORK: "/assets/img/voluntary-work.png",

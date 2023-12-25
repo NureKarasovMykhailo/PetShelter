@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import MyLink from "../components/UI/link/MyLink";
 import ImagePreview from "../components/UI/image/ImagePreview";
 import { AUTH_ROUTE } from "../utils/const";
@@ -11,15 +12,16 @@ import { PhoneInput } from "react-international-phone";
 import PasswordInput from "../components/UI/input/passwordInput/PasswordInput";
 
 const Registration = () => {
+    const { t } = useTranslation();
     const inputs = [
-        { label: "Логін", id: "login", type: "text", name: "login", placeholder: "login" },
-        { label: "Email", id: "email", type: "email", name: "email", placeholder: "email" },
-        { label: "Прізвище Ім'я", id: "fullName", type: "text", name: "fullName", placeholder: "Петренко Петро" },
-        { label: "Дата народження", id: "birthday", type: "date", name: "birthday" },
-        { label: "Номер телефона", type: 'phoneNumber', name: 'phoneNumber', id: 'phoneNumber' },
-        { label: "Пароль", id: "password", type: "password", name: "password", placeholder: "password" },
-        { label: "Підтвердіть пароль", id: "passwordConfirm", type: "password", name: "passwordConfirm", placeholder: "password" },
-        { label: "Зображення профілю", id: "userImage", type: "file", name: "userImage", placeholder: "Вибрати зображення" }
+        { label: t("loginLabel"), id: "login", type: "text", name: "login", placeholder: t("loginPlaceholder") },
+        { label: t("emailLabel"), id: "email", type: "email", name: "email", placeholder: t("emailPlaceholder") },
+        { label: t("fullNameLabel"), id: "fullName", type: "text", name: "fullName", placeholder: t("fullNamePlaceholder") },
+        { label: t("birthdayLabel"), id: "birthday", type: "date", name: "birthday" },
+        { label: t("phoneNumberLabel"), type: 'phoneNumber', name: 'phoneNumber', id: 'phoneNumber' },
+        { label: t("passwordLabel"), id: "password", type: "password", name: "password", placeholder: t("passwordPlaceholder") },
+        { label: t("confirmPasswordLabel"), id: "passwordConfirm", type: "password", name: "passwordConfirm", placeholder: t("passwordPlaceholder") },
+        { label: t("profileImageLabel"), id: "userImage", type: "file", name: "userImage", placeholder: t("selectImage") }
     ];
 
     const [errorString, setErrorString] = useState("");
@@ -70,10 +72,10 @@ const Registration = () => {
     return (
         <div className="registration-container">
             <GeneralForm
-                header="Реєстрація"
+                header={t("registrationHeader")}
                 inputs={inputs}
                 onClick={signUp}
-                submitButtonText="Зареєструватися"
+                submitButtonText={t("registerButton")}
                 errorsList={errorList}
                 data={userData}
                 setData={setUserData}
@@ -82,8 +84,8 @@ const Registration = () => {
                     errorText={errorString}
                 />
                 <div className="registration-link-container">
-                    <p>Маєте аккаунт? </p>
-                    <MyLink linkText="Авторизуйтесь!" onClick={handleAuthLinkClick} />
+                    <p>{t("haveAccountQuestion")}</p>
+                    <MyLink linkText={t("loginLinkText")} onClick={handleAuthLinkClick} />
                 </div>
             </GeneralForm>
         </div>

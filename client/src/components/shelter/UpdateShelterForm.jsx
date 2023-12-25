@@ -1,15 +1,17 @@
-import React, {useState} from 'react';
-import Loader from "../UI/loader/Loader";
-import GeneralForm from "../forms/generalForm/GeneralForm";
-import ImagePreview from "../UI/image/ImagePreview";
-import ErrorString from "../UI/error/errorString/ErrorString";
-import Modal from "../UI/modal/Modal";
-import {updateShelter} from "../../API/ShelterService";
-import {useNavigate} from "react-router-dom";
-import {PROFILE_ROUTE} from "../../utils/const";
+import React, { useState } from 'react';
+import Loader from '../UI/loader/Loader';
+import GeneralForm from '../forms/generalForm/GeneralForm';
+import ImagePreview from '../UI/image/ImagePreview';
+import ErrorString from '../UI/error/errorString/ErrorString';
+import Modal from '../UI/modal/Modal';
+import { updateShelter } from '../../API/ShelterService';
+import { useNavigate } from 'react-router-dom';
+import { PROFILE_ROUTE } from '../../utils/const';
+import { useTranslation } from 'react-i18next';
 
-const UpdateShelterForm = ({updateModalActive, setUpdateModalActive, shelter, subscriberDomain}) => {
-    const addressParts = shelter.shelter_address.split(' ')
+const UpdateShelterForm = ({ updateModalActive, setUpdateModalActive, shelter, subscriberDomain }) => {
+    const { t } = useTranslation();
+    const addressParts = shelter.shelter_address.split(' ');
     const streetAndNumber = addressParts.slice(2).join(' ');
     const lastSpaceIndex = streetAndNumber.lastIndexOf(' ');
 
@@ -23,14 +25,15 @@ const UpdateShelterForm = ({updateModalActive, setUpdateModalActive, shelter, su
         street = '';
         number = streetAndNumber;
     }
+
     const updateInputs = [
-        {label: 'Назва притулку', type: 'text', id: 'newShelterName', name: 'newShelterName'},
-        {label: 'Країна', type: 'text', id: 'newShelterCountry', name: 'newShelterCountry'},
-        {label: 'Місто', type: 'text', id: 'newShelterCity', name: 'newShelterCity'},
-        {label: 'Вулиця', type: 'text', id: 'newShelterStreet', name: 'newShelterStreet'},
-        {label: 'Номер будинку', type: 'text', id: 'newShelterHouse', name: 'newShelterHouse'},
-        {label: 'Домений адрес', type: 'text', id: 'newShelterDomain', name: 'newShelterDomain'},
-        {label: 'Логотип притулку', type: 'file', id: 'shelterImage', name: 'shelterImage'},
+        { label: t('shelterName'), type: 'text', id: 'newShelterName', name: 'newShelterName' },
+        { label: t('shelterCountry'), type: 'text', id: 'newShelterCountry', name: 'newShelterCountry' },
+        { label: t('shelterCity'), type: 'text', id: 'newShelterCity', name: 'newShelterCity' },
+        { label: t('shelterStreet'), type: 'text', id: 'newShelterStreet', name: 'newShelterStreet' },
+        { label: t('shelterHouse'), type: 'text', id: 'newShelterHouse', name: 'newShelterHouse' },
+        { label: t('shelterDomain'), type: 'text', id: 'newShelterDomain', name: 'newShelterDomain' },
+        { label: t('shelterImage'), type: 'file', id: 'shelterImage', name: 'shelterImage' },
     ];
 
     const [isLoading, setIsLoading] = useState(false);
@@ -46,52 +49,51 @@ const UpdateShelterForm = ({updateModalActive, setUpdateModalActive, shelter, su
         newShelterDomain: shelter.shelter_domain,
         shelterImage: null,
     });
-    const [errorList, setErrorList] = useState([{
-        msg: '',
-        path: '',
-        type: '',
-        location: '',
-    }]);
+    const [errorList, setErrorList] = useState([
+        {
+            msg: '',
+            path: '',
+            type: '',
+            location: '',
+        },
+    ]);
 
     const handleUpdateShelterClick = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            console.log(updateShelterInfo)
+            console.log(updateShelterInfo);
             const response = await updateShelter(updateShelterInfo, shelter.id);
             localStorage.setItem('token', response.data.token);
             navigate(PROFILE_ROUTE);
         } catch (error) {
             console.log(error);
             if (error.response.status === 400) {
-                setErrorList(error.response.data.message)
+                setErrorList(error.response.data.message);
             } else if (error.response.status === 409) {
                 setErrorString(error.response.data.message);
             }
             setIsLoading(false);
         }
-    }
+    };
 
     return (
-        <Modal
-            active={updateModalActive}
-            setActive={setUpdateModalActive}
-        >
-            {isLoading ?
+        <Modal active={updateModalActive} setActive={setUpdateModalActive}>
+            {isLoading ? (
                 <Loader />
-                :
+            ) : (
                 <GeneralForm
                     inputs={updateInputs}
                     data={updateShelterInfo}
                     setData={setUpdateShelterInfo}
-                    submitButtonText="Оновити притулок"
-                    header={"Оновлення притулку"}
+                    submitButtonText={t('updateShelter')}
+                    header={t('updateShelter')}
                     errorsList={errorList}
                     onClick={handleUpdateShelterClick}
                 >
-                    <ErrorString errorText={errorString}/>
+                    <ErrorString errorText={errorString} />
                 </GeneralForm>
-            }
+            )}
         </Modal>
     );
 };

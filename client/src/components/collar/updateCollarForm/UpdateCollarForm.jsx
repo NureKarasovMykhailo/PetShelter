@@ -1,20 +1,24 @@
-import React, {useState} from 'react';
+// UpdateCollarForm.jsx
+
+import React, { useState } from 'react';
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import ValidationError from "../../../class/ValidationError";
-import {updateCollar} from "../../../API/CollarService";
+import { updateCollar } from "../../../API/CollarService";
+import { useTranslation } from "react-i18next";
 
 const UpdateCollarForm = ({ collar, setOnSuccess }) => {
+    const { t } = useTranslation();
     const inputs = [
-        {label: 'Мінімальна допустима температура (°C)', name: 'newMinTemperature', id: 'newMinTemperature', type: 'number'},
-        {label: 'Максимальна допустима температура (°C)', name: 'newMaxTemperature', id: 'newMaxTemperature', type: 'number'},
-        {label: 'Мінімальний допустимий пульс (удари/хвилина)', name: 'newMinPulse', id: 'newMinPulse', type: 'number'},
-        {label: 'Максимальний допустимий пульс (удари/хвилина)', name: 'newMaxPulse', id: 'newMaxPulse', type: 'number'}
+        { label: t("minTemperatureLabel"), name: 'newMinTemperature', id: 'newMinTemperature', type: 'number' },
+        { label: t("maxTemperatureLabel"), name: 'newMaxTemperature', id: 'newMaxTemperature', type: 'number' },
+        { label: t("minPulseLabel"), name: 'newMinPulse', id: 'newMinPulse', type: 'number' },
+        { label: t("maxPulseLabel"), name: 'newMaxPulse', id: 'newMaxPulse', type: 'number' }
     ];
     const [newCollarData, setNewCollarData] = useState({
-       newMinTemperature: collar.min_temperature,
-       newMaxTemperature: collar.max_temperature,
-       newMinPulse: collar.min_pulse,
-       newMaxPulse: collar.max_pulse
+        newMinTemperature: collar.min_temperature,
+        newMaxTemperature: collar.max_temperature,
+        newMinPulse: collar.min_pulse,
+        newMaxPulse: collar.max_pulse
     });
     const [errorList, setErrorList] = useState([new ValidationError()]);
 
@@ -34,12 +38,12 @@ const UpdateCollarForm = ({ collar, setOnSuccess }) => {
 
     return (
         <GeneralForm
-            header={"Оновлення нашийника"}
+            header={t("collarUpdateHeader")}
             inputs={inputs}
             data={newCollarData}
             setData={setNewCollarData}
             errorsList={errorList}
-            submitButtonText={"Оновити"}
+            submitButtonText={t("updateButton")}
             onClick={handleUpdateCollar}
         />
     );

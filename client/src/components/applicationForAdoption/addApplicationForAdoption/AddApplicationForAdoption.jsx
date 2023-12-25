@@ -1,17 +1,23 @@
-import React, {useState} from 'react';
+// AddApplicationForAdoption.jsx
+
+import React, { useState } from 'react';
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import ValidationError from "../../../class/ValidationError";
 import ErrorString from "../../UI/error/errorString/ErrorString";
-import {createApplicationForAdoption} from "../../../API/ApplicationForAdoptionService";
+import { createApplicationForAdoption } from "../../../API/ApplicationForAdoptionService";
 import Button from "../../UI/button/Button";
 import stl from './AddApplicationForAdoption.module.css';
-import {useNavigate} from "react-router-dom";
-import {ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE} from "../../../utils/const";
+import { useNavigate } from "react-router-dom";
+import { ADOPTION_OFFER_ROUTE, ALL_ADOPTION_OFFER_ROUTE } from "../../../utils/const";
+import { useTranslation } from "react-i18next";
 
-const AddApplicationForAdoption = ({adoptionOffer}) => {
+const AddApplicationForAdoption = ({ adoptionOffer }) => {
+    const { t } = useTranslation();
+
     const input = [
-        {label: "Адреси проживання", id: "applicationAddress", name: "applicationAddress", type: "text"},
+        { label: t("residenceAddressLabel"), id: "applicationAddress", name: "applicationAddress", type: "text" },
     ];
+
     const [applicationData, setApplicationData] = useState({
         applicationAddress: '',
     });
@@ -41,11 +47,11 @@ const AddApplicationForAdoption = ({adoptionOffer}) => {
         isCreated
             ?
             <div>
-                <p>Вітаю! Ваша заявка відправлена на розгляд. Робітники притулку зв'яжуться з вами найближчим часом</p>
+                <p>{t("congratulationsMessage")}</p>
                 <div className={stl.applicationForAdoptionButtonContainer}>
                     <div className={stl.applicationForAdoptionNextBtn}>
                         <Button
-                            buttonText={"Далі"}
+                            buttonText={t("next")}
                             onClick={() => navigate(ALL_ADOPTION_OFFER_ROUTE)}
                         />
                     </div>
@@ -56,8 +62,8 @@ const AddApplicationForAdoption = ({adoptionOffer}) => {
                 inputs={input}
                 data={applicationData}
                 setData={setApplicationData}
-                header={"Оформлення заявки"}
-                submitButtonText={"Відправити"}
+                header={t("applicationFormHeader")}
+                submitButtonText={t("submit")}
                 errorsList={errorList}
                 onClick={handleCreateApplicationForAdoption}
             >

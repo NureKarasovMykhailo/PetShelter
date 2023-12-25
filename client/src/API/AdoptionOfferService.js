@@ -54,3 +54,13 @@ export const fetchAllAdoptionOffers = async (
     return data;
 }
 
+export const adminFetchAllAdoptionOffers = async (
+    limit = 9,
+    page = 1
+) => {
+    const { data } = await $authHost.get('api/pet-adoption-offer/admin', {
+
+    });
+    return data;
+}
+

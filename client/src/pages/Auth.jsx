@@ -1,20 +1,23 @@
 import React, { useContext, useState } from 'react';
-import "../styles/Auth.css";
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ENTER_EMAIL_PAGE, MAIN_ROUTE, REGISTRATION_ROUTE } from '../utils/const';
-import MyLink from "../components/UI/link/MyLink";
-import { useNavigate } from "react-router-dom";
-import { authorization } from "../API/UserService";
-import ErrorString from "../components/UI/error/errorString/ErrorString";
-import { observer } from "mobx-react-lite";
-import { Context } from "../index";
-import GeneralForm from "../components/forms/generalForm/GeneralForm";
-import PasswordInput from "../components/UI/input/passwordInput/PasswordInput";
+import MyLink from '../components/UI/link/MyLink';
+import { authorization } from '../API/UserService';
+import ErrorString from '../components/UI/error/errorString/ErrorString';
+import { observer } from 'mobx-react-lite';
+import { Context } from '../index';
+import GeneralForm from '../components/forms/generalForm/GeneralForm';
+import PasswordInput from '../components/UI/input/passwordInput/PasswordInput';
 
 const Auth = observer(() => {
+    const { t } = useTranslation();
+    const { user } = useContext(Context);
+    const navigate = useNavigate();
 
     const inputs = [
-        { label: "Логін", id: "login", name: "login", type: "text", placeholder: "login" },
-        { label: "Пароль", id: "password", name: "password", type: "password", placeholder: "password" },
+        { label: t('labelLogin'), id: 'login', name: 'login', type: 'text', placeholder: t('placeholderLogin') },
+        { label: t('labelPassword'), id: 'password', name: 'password', type: 'password', placeholder: t('placeholderPassword') },
     ];
 
     const [authData, setAuthData] = useState({
@@ -24,11 +27,8 @@ const Auth = observer(() => {
 
     const [error, setError] = useState('');
 
-    const navigate = useNavigate();
-    const { user } = useContext(Context);
-
     const handleAuthBtnClick = async (event) => {
-        event.preventDefault()
+        event.preventDefault();
         try {
             const userData = await authorization(authData.login, authData.password);
             user.setIsAuth(true);
@@ -39,33 +39,25 @@ const Auth = observer(() => {
                 setError(error.response.data.message);
             }
         }
-    }
+    };
 
     return (
         <div className="auth-container">
             <GeneralForm
-                header="Авторизація"
+                header={t('formHeader')}
                 inputs={inputs}
                 onClick={handleAuthBtnClick}
-                submitButtonText="Авторизація"
+                submitButtonText={t('submitButtonText')}
                 data={authData}
                 setData={setAuthData}
             >
                 <div className="auth__children">
                     <div className="auth-link">
-                        <p>Досі не маєте аккаунту?</p>
-                        <MyLink
-                            linkText="&nbsp;Зараєструйтесь!"
-                            onClick={() => navigate(REGISTRATION_ROUTE)}
-                        />
+                        <p>{t('notHaveAccount')}</p>
+                        <MyLink linkText={` ${t('registerNow')} `} onClick={() => navigate(REGISTRATION_ROUTE)} />
                     </div>
-                    <MyLink
-                        linkText="Забули пароль?"
-                        onClick={() => navigate(ENTER_EMAIL_PAGE)}
-                    />
-                    <ErrorString
-                        errorText={error}
-                    />
+                    <MyLink linkText={t('forgotPassword')} onClick={() => navigate(ENTER_EMAIL_PAGE)} />
+                    <ErrorString errorText={error} />
                 </div>
             </GeneralForm>
         </div>
@@ -73,3 +65,4 @@ const Auth = observer(() => {
 });
 
 export default Auth;
+

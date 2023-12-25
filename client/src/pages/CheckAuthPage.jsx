@@ -1,15 +1,17 @@
-import React, {useContext, useState} from 'react';
-import {useLocation, useNavigate, useNavigation} from "react-router-dom";
-import GeneralForm from "../components/forms/generalForm/GeneralForm";
-import ErrorString from "../components/UI/error/errorString/ErrorString";
-import {authorization} from "../API/UserService";
-import {CHANGE_EMAIL_ROUTE, CHANGE_PHONE_ROUTE} from "../utils/const";
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import React, { useContext, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import GeneralForm from '../components/forms/generalForm/GeneralForm';
+import ErrorString from '../components/UI/error/errorString/ErrorString';
+import { authorization } from '../API/UserService';
+import { CHANGE_EMAIL_ROUTE, CHANGE_PHONE_ROUTE } from '../utils/const';
+import { observer } from 'mobx-react-lite';
+import { Context } from '../index';
+import { useTranslation } from 'react-i18next'; // Import the useTranslation hook
 
 const CheckAuthPage = observer(() => {
+    const { t } = useTranslation(); // Initialize the useTranslation hook
     const inputs = [
-        {label: "Пароль", id: "password", name: "password", type: "password", placeholder: "password", value: ''},
+        { label: t('passwordLabel'), id: 'password', name: 'password', type: 'password', placeholder: t('passwordPlaceholder'), value: '' },
     ];
     const [confirmData, setConfirmData] = useState({
         password: '',
@@ -22,33 +24,30 @@ const CheckAuthPage = observer(() => {
     const handleConfirmBtnClick = async (event) => {
         event.preventDefault();
         try {
-            console.log(user.user.login)
-            console.log(confirmData.password)
+            console.log(user.user.login);
+            console.log(confirmData.password);
             await authorization(user.user.login, confirmData.password);
             if (location.state.email) {
                 navigation(CHANGE_EMAIL_ROUTE);
             } else if (location.state.phone) {
                 navigation(CHANGE_PHONE_ROUTE);
             }
-
         } catch (error) {
-            setError(error.response.data.message);
+            setError(t('serverError'));
         }
-    }
+    };
 
     return (
         <div>
             <GeneralForm
-                header="Підтердження"
+                header={t('confirmHeader')}
                 inputs={inputs}
                 onClick={handleConfirmBtnClick}
-                submitButtonText="Підтвердити"
+                submitButtonText={t('confirmButtonText')}
                 data={confirmData}
                 setData={setConfirmData}
             >
-                <ErrorString
-                    errorText={error}
-                />
+                <ErrorString errorText={error} />
             </GeneralForm>
         </div>
     );

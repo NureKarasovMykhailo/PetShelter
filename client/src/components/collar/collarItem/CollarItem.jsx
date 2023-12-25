@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+// CollarItem.jsx
+
+import React, { useState } from 'react';
 import stl from './CollarItem.module.css';
 import Button from "../../UI/button/Button";
 import DeleteButton from "../../UI/button/DeleteButton";
 import Modal from "../../UI/modal/Modal";
 import UpdateCollarForm from "../updateCollarForm/UpdateCollarForm";
-import {deleteCollar} from "../../../API/CollarService";
+import { deleteCollar } from "../../../API/CollarService";
+import { useTranslation } from "react-i18next";
 
 const CollarItem = ({ collar, setOnSuccess }) => {
+    const { t } = useTranslation();
     const [isUpdateModalActive, setIsUpdateModalActive] = useState(false);
 
     const handleUpdateSuccess = (success) => {
@@ -29,10 +33,10 @@ const CollarItem = ({ collar, setOnSuccess }) => {
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Мін. температура (°C)</th>
-                    <th>Макс. температура (°C)</th>
-                    <th>Мін. пульс (удари/хв)</th>
-                    <th>Макс. пульс (удари/хв)</th>
+                    <th>{t("minTemperatureLabel")} (°C)</th>
+                    <th>{t("maxTemperatureLabel")} (°C)</th>
+                    <th>{t("minPulseLabel")} (удари/хв)</th>
+                    <th>{t("maxPulseLabel")} (удари/хв)</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,18 +44,18 @@ const CollarItem = ({ collar, setOnSuccess }) => {
                     <td>{collar.id}</td>
                     <td>{collar.min_temperature} C</td>
                     <td>{collar.max_temperature} C</td>
-                    <td>{collar.min_pulse} ударів/хв</td>
-                    <td>{collar.max_pulse} ударів/хв</td>
+                    <td>{collar.min_pulse} {t("pulsesPerMinute")}</td>
+                    <td>{collar.max_pulse} {t("pulsesPerMinute")}</td>
                 </tr>
                 </tbody>
             </table>
             <div className={stl.collarItemBtnContainer}>
                 <Button
-                    buttonText={"Редагувати"}
+                    buttonText={t("edit")}
                     onClick={() => setIsUpdateModalActive(true)}
                 />
                 <DeleteButton
-                    buttonText={"Видалити"}
+                    buttonText={t("delete")}
                     onClick={handleDeleteCollar}
                 />
             </div>
@@ -59,7 +63,7 @@ const CollarItem = ({ collar, setOnSuccess }) => {
                 active={isUpdateModalActive}
                 setActive={setIsUpdateModalActive}
             >
-                <UpdateCollarForm collar={collar} setOnSuccess={handleUpdateSuccess}/>
+                <UpdateCollarForm collar={collar} setOnSuccess={handleUpdateSuccess} />
             </Modal>
         </div>
     );

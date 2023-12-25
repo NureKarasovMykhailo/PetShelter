@@ -1,21 +1,21 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import React, { useContext, useEffect, useState } from 'react';
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
+import { useTranslation } from 'react-i18next';
 import '../styles/ShelterPage.css';
 import Button from "../components/UI/button/Button";
 import ShelterForm from "../components/shelter/ShelterForm";
-import {deleteShelter, getShelter} from "../API/ShelterService";
+import { deleteShelter, getShelter } from "../API/ShelterService";
 import ShelterInfo from "../components/shelter/ShelterInfo";
 import Loader from "../components/UI/loader/Loader";
 import UnderlineLink from "../components/UI/link/underlineLink/UnderlineLink";
-import {IMAGES, PROFILE_ROUTE} from "../utils/const";
-import {useNavigate} from "react-router-dom";
+import { IMAGES, PROFILE_ROUTE } from "../utils/const";
+import { useNavigate } from "react-router-dom";
 import UpdateShelterForm from "../components/shelter/UpdateShelterForm";
 
 const ShelterPage = observer(() => {
-
-    const { user } = useContext(Context);
-    const { shelter } = useContext(Context);
+    const { t } = useTranslation();
+    const { user, shelter } = useContext(Context);
     const [isLoading, setIsLoading] = useState(true);
     const [shelterInfo, setShelterInfo] = useState({})
     const [updateModalActive, setUpdateModalActive] = useState(false);
@@ -34,9 +34,9 @@ const ShelterPage = observer(() => {
 
         if (user.user.shelterId) {
             fetchShelterData().then(response => {
-               shelter.setShelter(response.data);
-               setShelterInfo(shelter.getShelter())
-               setIsLoading(false)
+                shelter.setShelter(response.data);
+                setShelterInfo(shelter.getShelter())
+                setIsLoading(false)
             });
         } else {
             setIsLoading(false)
@@ -54,7 +54,6 @@ const ShelterPage = observer(() => {
         }
     }
 
-
     return (
         isLoading ? (
             <Loader />
@@ -66,15 +65,15 @@ const ShelterPage = observer(() => {
                             shelter={shelter.getShelter()}
                         />
                         <div className="shelter-container__control-button-container">
-                            <h3>Керування притулком</h3>
+                            <h3>{t("shelterManagement")}</h3>
                             <div className="shelter-container__control-button">
                                 <UnderlineLink
-                                    linkText={"Оновити притулок"}
+                                    linkText={t("updateShelter")}
                                     imgSrc={IMAGES.UPDATE_ICON}
                                     onClick={() => setUpdateModalActive(true)}
                                 />
                                 <UnderlineLink
-                                    linkText={"Видалити притулок"}
+                                    linkText={t("deleteShelter")}
                                     imgSrc={IMAGES.DELETE_ICON}
                                     onClick={handleDeleteShelterClick}
                                 />
@@ -90,11 +89,11 @@ const ShelterPage = observer(() => {
                 ) : (
                     <div className="shelter-wrapper__container shelter-container">
                         <div className="shelter-container__label">
-                            <p>Ви ще не створили меню свого притулку</p>
+                            <p>{t("noShelterMessage")}</p>
                         </div>
                         <div className="shelter-container__add-shelter-button">
                             <Button
-                                buttonText={"Додати притулок"}
+                                buttonText={t("addShelter")}
                                 onClick={() => setAddModalActive(true)}
                             />
                         </div>
@@ -107,7 +106,6 @@ const ShelterPage = observer(() => {
             </div>
         )
     );
-
 });
 
 export default ShelterPage;

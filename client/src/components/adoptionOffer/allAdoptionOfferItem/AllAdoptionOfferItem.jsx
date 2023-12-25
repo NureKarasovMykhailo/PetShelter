@@ -1,10 +1,14 @@
+// AllAdoptionOfferItem.jsx
+
 import React from 'react';
 import stl from './AllAdoptionOfferItem.module.css';
 import Button from "../../UI/button/Button";
-import {useNavigate} from "react-router-dom";
-import {GENERAL_ADOPTION_OFFER_ROUTE} from "../../../utils/const";
+import { useNavigate } from "react-router-dom";
+import { GENERAL_ADOPTION_OFFER_ROUTE } from "../../../utils/const";
+import { useTranslation } from "react-i18next";
 
-const AllAdoptionOfferItem = ({adoptionOffer}) => {
+const AllAdoptionOfferItem = ({ adoptionOffer }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     return (
@@ -12,21 +16,21 @@ const AllAdoptionOfferItem = ({adoptionOffer}) => {
             <div className={stl.adoptionOfferImageContainer}>
                 <img
                     src={process.env.REACT_APP_API_URL + adoptionOffer.pet.pet_image}
-                    alt={"Image not found"}
+                    alt={t("imageNotFound")}
                     className={stl.adoptionOfferImage}
                 />
             </div>
             <div className={stl.adoptionOfferInfoContainer}>
-                <p>Кличка: {adoptionOffer.pet.pet_name}</p>
-                <p>Вік: {adoptionOffer.pet.pet_age}</p>
-                <p>Стать: {adoptionOffer.pet.pet_gender}</p>
-                <p>Ціна опекунства: {adoptionOffer.adoption_price}</p>
-                <p>Адреса: {adoptionOffer.pet.shelter.shelter_address}</p>
+                <p>{t("nameLabel")}: {adoptionOffer.pet.pet_name}</p>
+                <p>{t("ageLabel")}: {adoptionOffer.pet.pet_age}</p>
+                <p>{t("genderLabel")}: {adoptionOffer.pet.pet_gender}</p>
+                <p>{t("adoptionPriceLabel")}: {adoptionOffer.adoption_price}</p>
+                <p>{t("addressLabel")}: {adoptionOffer.pet.shelter.shelter_address}</p>
             </div>
             <div className={stl.adoptionOfferButtonContainer}>
                 <div className={stl.adoptionOfferBtn}>
                     <Button
-                        buttonText={"Подробніше"}
+                        buttonText={t("details")}
                         onClick={() => {
                             navigate(GENERAL_ADOPTION_OFFER_ROUTE.replace(':id', adoptionOffer.id))
                         }}

@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Loader from "../components/UI/loader/Loader";
 import '../styles/PublicWorkOfferPage.css';
-import {fetchAllWorkOffers} from "../API/WorkOfferService";
+import { fetchAllWorkOffers } from "../API/WorkOfferService";
 import WorkOfferList from "../components/workOffer/workOfferList/WorkOfferList";
 import Pagination from "../components/UI/pagination/Pagination";
-import {getPagesArray} from "../utils/pagination";
+import { getPagesArray } from "../utils/pagination";
 import SearchInput from "../components/UI/input/searchInput/SearchInput";
-import addWorkOfferForm from "../components/workOffer/addWorkOfferForm/AddWorkOfferForm";
 
 const PublicWorkOfferPage = () => {
+    const { t } = useTranslation();
     const [workOffers, setWorkOffers] = useState([{}]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -23,7 +24,7 @@ const PublicWorkOfferPage = () => {
             setPage(data.pagination.currentPage);
             setTotalPages(data.pagination.totalPages);
             setIsLoading(false);
-        })
+        });
     }, [page]);
 
     const handleSearchByTitle = async () => {
@@ -33,11 +34,11 @@ const PublicWorkOfferPage = () => {
                 setPage(data.pagination.currentPage);
                 setTotalPages(data.pagination.totalPages);
                 setIsLoading(false);
-            })
+            });
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     const handleSearchByAddress = async () => {
         try {
@@ -50,11 +51,11 @@ const PublicWorkOfferPage = () => {
                 setPage(data.pagination.currentPage);
                 setTotalPages(data.pagination.totalPages);
                 setIsLoading(false);
-            })
+            });
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         isLoading
@@ -66,25 +67,25 @@ const PublicWorkOfferPage = () => {
             <div className={"public-work__wrapper"}>
                 <div className="public-work__search-container">
                     <div className="public-work__search">
-                        <p>Адреса: </p>
+                        <p>{t('addressLabel')}: </p>
                         <SearchInput
-                            placeholder={"Україна Київ"}
+                            placeholder={t('addressPlaceholder')}
                             data={address}
                             onChange={setAddress}
                             onClick={handleSearchByAddress}
                         />
                     </div>
                     <div className="public-work__search">
-                        <p>Назва: </p>
+                        <p>{t('titleLabel')}: </p>
                         <SearchInput
-                            placeholder={"Очистка вольєрів"}
+                            placeholder={t('titlePlaceholder')}
                             data={title}
                             onChange={setTitle}
                             onClick={handleSearchByTitle}
                         />
                     </div>
                 </div>
-                { workOffers.length !== 0
+                {workOffers.length !== 0
                     ?
                     <WorkOfferList
                         workOffers={workOffers}
@@ -92,7 +93,7 @@ const PublicWorkOfferPage = () => {
                     />
                     :
                     <div className={"public-work__empty"}>
-                        <p>Оголошень про работу не знайдено</p>
+                        <p>{t('noWorkOffers')}</p>
                     </div>
                 }
                 <div className="public-work__pagination">

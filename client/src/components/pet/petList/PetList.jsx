@@ -1,8 +1,11 @@
 import React from 'react';
 import PetItem from "../petItem/PetItem";
 import stl from './PetList.module.css';
+import { useTranslation} from "react-i18next";
 
 const PetList = ({ pets, onDelete }) => {
+    const { t } = useTranslation();
+
     return (
         pets.length !== 0 ?
            <div className={stl.petList}>
@@ -16,7 +19,7 @@ const PetList = ({ pets, onDelete }) => {
            </div>
             :
             <div className={stl.petEmptyContainer}>
-                <h2>Тварин не знайдено</h2>
+                <h2>{t('noPets')}</h2>
             </div>
     );
 };

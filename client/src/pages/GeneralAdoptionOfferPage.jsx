@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
-import {fetchOneAdoptionOffer} from "../API/AdoptionOfferService";
+import React, { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+import { fetchOneAdoptionOffer } from "../API/AdoptionOfferService";
 import Loader from "../components/UI/loader/Loader";
 import '../styles/GeneralAdoptionOfferPage.css';
 import Button from "../components/UI/button/Button";
 import Modal from "../components/UI/modal/Modal";
-import AddApplicationForAdoption
-    from "../components/applicationForAdoption/addApplicationForAdoption/AddApplicationForAdoption";
+import AddApplicationForAdoption from "../components/applicationForAdoption/addApplicationForAdoption/AddApplicationForAdoption";
+import {useTranslation} from "react-i18next";
 
 const GeneralAdoptionOfferPage = () => {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [adoptionOffer, setAdoptionOffer] = useState({});
+    const { t } = useTranslation();
     const [modalActive, setModalActive] = useState(false);
 
     useEffect(() => {
@@ -23,12 +24,11 @@ const GeneralAdoptionOfferPage = () => {
     }, []);
 
     return (
-        isLoading
-            ?
+        isLoading ? (
             <div className={"general-adoption__wrapper general-adoption"}>
                 <Loader />
             </div>
-            :
+        ) : (
             <div className={"general-adoption__wrapper general-adoption"}>
                 <div className="general-adoption__pet-info">
                     <div className="general-adoption__image-container">
@@ -40,17 +40,17 @@ const GeneralAdoptionOfferPage = () => {
                     </div>
                     <div className="general-adoption__info">
                         <div className="general-adoption__header">
-                            <h3>Інформація: </h3>
+                            <h3>{t('petInfoHeader')}</h3>
                         </div>
                         <div className="general-adoption__information">
-                            <p>Кличка: {adoptionOffer.pet.pet_name}</p>
-                            <p>Вік: {adoptionOffer.pet.pet_age}</p>
-                            <p>Стать: {adoptionOffer.pet.pet_gender}</p>
-                            <p>Вид: {adoptionOffer.pet.pet_kind}</p>
+                            <p>{t('infoTitleName')}: {adoptionOffer.pet.pet_name}</p>
+                            <p>{t('infoTitleAge')}: {adoptionOffer.pet.pet_age}</p>
+                            <p>{t('infoTitleGender')}: {adoptionOffer.pet.pet_gender}</p>
+                            <p>{t('infoTitleKind')}: {adoptionOffer.pet.pet_kind}</p>
                             {adoptionOffer.pet.pet_characteristics &&
                                 adoptionOffer.pet.pet_characteristics.map(info =>
-                                <p>{info.title}: {info.description}</p>
-                            )}
+                                    <p key={info.title}>{info.title}: {info.description}</p>
+                                )}
                         </div>
                     </div>
                 </div>
@@ -58,20 +58,20 @@ const GeneralAdoptionOfferPage = () => {
                     <hr />
                 </div>
                 <div className="general-adoption__adoption-info-container">
-                    <p>Адреса: {adoptionOffer.pet.shelter.shelter_address}</p>
-                    <p>Притулок: {adoptionOffer.pet.shelter.shelter_name}</p>
-                    <p>Ціна усивновлення: {adoptionOffer.adoption_price}</p>
-                    <p>Контактний email: {adoptionOffer.adoption_email}</p>
-                    <p>Контактний номер телефону: {adoptionOffer.adoption_telephone}</p>
+                    <p>{t('shelterAddress')}: {adoptionOffer.pet.shelter.shelter_address}</p>
+                    <p>{t('shelterName')}: {adoptionOffer.pet.shelter.shelter_name}</p>
+                    <p>{t('adoptionPrice')}: {adoptionOffer.adoption_price}</p>
+                    <p>{t('adoptionEmail')}: {adoptionOffer.adoption_email}</p>
+                    <p>{t('adoptionTelephone')}: {adoptionOffer.adoption_telephone}</p>
                 </div>
                 <div className="general-adoption__additional-info-container">
-                    <p>Додаткова інформація: </p>
+                    <p>{t('additionalInfoHeader')}:</p>
                     <p>{adoptionOffer.adoption_info}</p>
                 </div>
                 <div className="general-adoption__create-application-btn">
                     <div className="general-adoption__btn">
                         <Button
-                            buttonText={"Відправити заявку для оформлення опеки"}
+                            buttonText={t('sendApplicationButton')}
                             onClick={() => setModalActive(true)}
                         />
                     </div>
@@ -80,9 +80,10 @@ const GeneralAdoptionOfferPage = () => {
                     active={modalActive}
                     setActive={setModalActive}
                 >
-                    <AddApplicationForAdoption adoptionOffer={adoptionOffer}/>
+                    <AddApplicationForAdoption adoptionOffer={adoptionOffer} />
                 </Modal>
             </div>
+        )
     );
 };
 

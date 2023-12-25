@@ -1,15 +1,20 @@
-import React, { useState} from 'react';
+// AdoptionOfferUpdate.jsx
+
+import React, { useState } from 'react';
 import GeneralForm from "../../forms/generalForm/GeneralForm";
 import ValidationError from "../../../class/ValidationError";
 import TextArea from "../../UI/input/textArea/TextArea";
 import PhoneNumberInput from "../../UI/input/phoneNumberInput/PhoneNumberInput";
 import stl from './AdoptionOfferUpdate.module.css';
-import {updateAdoptionOffer} from "../../../API/AdoptionOfferService";
+import { updateAdoptionOffer } from "../../../API/AdoptionOfferService";
+import { useTranslation } from "react-i18next";
 
-const AdoptionOfferUpdate = ({adoptionOffer, setRefresh }) => {
+const AdoptionOfferUpdate = ({ adoptionOffer, setRefresh }) => {
+    const { t } = useTranslation();
+
     const inputs = [
-        {label: 'Ціна оформлення', id: 'adoptionPrice', name: 'adoptionPrice', type: 'text'},
-        {label: 'Email для зв\'яку', id: 'adoptionEmail', name: 'adoptionEmail', type: 'email'},
+        { label: t('adoptionPriceLabel'), id: 'adoptionPrice', name: 'adoptionPrice', type: 'text' },
+        { label: t('adoptionEmailLabel'), id: 'adoptionEmail', name: 'adoptionEmail', type: 'email' },
     ];
 
     const [adoptionOfferData, setAdoptionOfferData] = useState({
@@ -45,21 +50,21 @@ const AdoptionOfferUpdate = ({adoptionOffer, setRefresh }) => {
             inputs={inputs}
             data={adoptionOfferData}
             setData={setAdoptionOfferData}
-            submitButtonText={"Прийняти"}
-            header={"Редагування оголошення про опекунство"}
+            submitButtonText={t("accept")}
+            header={t("adoptionOfferUpdateHeader")}
             errorsList={errorList}
             onClick={handleUpdateAdoptionOffer}
         >
             <div className={stl.adoptionInfo}>
                 <TextArea
-                    label={"Додаткова інформація: "}
+                    label={t("additionalInformationLabel")}
                     text={adoptionInfo}
                     setText={setAdoptionInfo}
                 />
             </div>
             <div className={stl.adoptionTelephone}>
                 <PhoneNumberInput
-                    label={"Контактний номер телефону: "}
+                    label={t("contactPhoneNumberLabel")}
                     value={adoptionTelephone}
                     onChange={setAdoptionTelephone}
                 />

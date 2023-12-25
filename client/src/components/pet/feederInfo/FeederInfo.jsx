@@ -1,24 +1,25 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import stl from './FeederInfo.module.css';
-import SelectInput from "../../UI/input/selectInput/SelectInput";
-import Button from "../../UI/button/Button";
-import {useParams} from "react-router-dom";
-import {setFeeder} from "../../../API/FeederService";
-import {Context} from "../../../index";
-import {clearFeederInfo, deleteFeederInfo, fetchFeederInfo} from "../../../API/FeederInfoService";
-import {observer} from "mobx-react-lite";
-import DeleteButton from "../../UI/button/DeleteButton";
+import SelectInput from '../../UI/input/selectInput/SelectInput';
+import Button from '../../UI/button/Button';
+import { useParams } from 'react-router-dom';
+import { setFeeder } from '../../../API/FeederService';
+import { Context } from '../../../index';
+import { clearFeederInfo, deleteFeederInfo, fetchFeederInfo } from '../../../API/FeederInfoService';
+import { observer } from 'mobx-react-lite';
+import DeleteButton from '../../UI/button/DeleteButton';
+import {useTranslation} from "react-i18next";
 
-
-const FeederInfo = observer(({pet, feeder, feederInfo, onSuccessSet}) => {
+const FeederInfo = observer(({ pet, feeder, feederInfo, onSuccessSet }) => {
     const [selectedFeeder, setSelectedFeeder] = useState('');
     const [isUpdate, setIsUpdate] = useState(false);
     const options = [];
     const { id } = useParams();
+    const { t } = useTranslation();
 
     feeder.map(f => {
         if (f.petId === null) {
-            options.push({value: f.id, name: f.id})
+            options.push({ value: f.id, name: f.id })
         }
     });
 
@@ -51,26 +52,24 @@ const FeederInfo = observer(({pet, feeder, feederInfo, onSuccessSet}) => {
         }
     }
 
-
-
     return (
         pet.feederId === null ?
             <div className={stl.feederSelectContainer}>
                 <div className={stl.feederSelectHeader}>
-                    <h3>Оберіть годівницю</h3>
+                    <h3>{t('selectFeederHeader')}</h3>
                 </div>
                 <div className={stl.selectFeeder}>
                     <SelectInput
                         options={options}
                         value={selectedFeeder}
                         setValue={setSelectedFeeder}
-                        defaultValue={"ID годівниці"}
+                        defaultValue={t('selectFeeder')}
                     />
                 </div>
                 <div className={stl.selectFeederBtnContainer}>
                     <div className={stl.selectFeederButton}>
                         <Button
-                            buttonText={"Закріпити годівницю"}
+                            buttonText={t('selectFeederButton')}
                             onClick={handleSetFeeder}
                             isDisable={selectedFeeder === ''}
                         />
@@ -80,7 +79,7 @@ const FeederInfo = observer(({pet, feeder, feederInfo, onSuccessSet}) => {
             :
             <div className={stl.feederInfoContainer}>
                 <div className={stl.feederInfoHeader}>
-                    <h3>Інформаці про годування</h3>
+                    <h3>{t('infoHeader')}</h3>
                 </div>
                 <div className={stl.feederInfoItemsContainer}>
                     {feederInfo.length !== 0 ?
@@ -102,7 +101,7 @@ const FeederInfo = observer(({pet, feeder, feederInfo, onSuccessSet}) => {
                                         <td>{info.message}</td>
                                         <td>
                                             <DeleteButton
-                                                buttonText={"Видалити"}
+                                                buttonText={t('deleteButton')}
                                                 onClick={() => handleDeleteOneInfo(info.id)}
                                             />
                                         </td>
@@ -112,17 +111,16 @@ const FeederInfo = observer(({pet, feeder, feederInfo, onSuccessSet}) => {
                             </table>
                             <div className={stl.feederInfoClearBtn}>
                                 <DeleteButton
-                                    buttonText={"Очистити інформаці"}
+                                    buttonText={t('clearInfoButton')}
                                     onClick={handleDeleteFeederInfo}
                                 />
                             </div>
                         </div>
                         :
                         <div>
-                            Інформація про годування відсутня
+                            {t('noInfoMessage')}
                         </div>
                     }
-
                 </div>
             </div>
     );

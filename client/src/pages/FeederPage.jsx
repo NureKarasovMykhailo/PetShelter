@@ -1,15 +1,16 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../styles/FeederPage.css';
 import Button from "../components/UI/button/Button";
 import Modal from "../components/UI/modal/Modal";
 import AddFeederForm from "../components/feeder/addFeederForm/AddFeederForm";
-import {observer} from "mobx-react-lite";
-import {fetchFeeder} from "../API/FeederService";
-import {Context} from "../index";
+import { observer } from "mobx-react-lite";
+import { fetchFeeder } from "../API/FeederService";
+import { Context } from "../index";
 import FeederList from "../components/feeder/feederList/FeederList";
 import Loader from "../components/UI/loader/Loader";
 import Pagination from "../components/UI/pagination/Pagination";
-import {getPagesArray} from "../utils/pagination";
+import { getPagesArray } from "../utils/pagination";
+import {useTranslation} from "react-i18next";
 
 const FeederPage = observer(() => {
     const [addModalActive, setAddModalActive] = useState(false);
@@ -22,34 +23,34 @@ const FeederPage = observer(() => {
     const [totalPages, setTotalPages] = useState(0);
     const [limit, setLimit] = useState(4);
     const { feeder, user } = useContext(Context);
+    const { t} = useTranslation();
 
     const onSucceedFeederAdd = (succeed) => {
         setAddFeederSucceed(succeed);
         setAddModalActive(false);
-    }
+    };
 
     const onSuccessDelete = (succeed) => {
         setSuccessDelete(succeed);
-    }
+    };
 
     useEffect(() => {
-        setIsLoading(true)
+        setIsLoading(true);
         fetchFeeder(limit, page).then(data => {
-            feeder.setFeeder(data.feeders)
-            setTotalCount(data.pagination.totalItems)
-            setTotalPages(data.pagination.totalPages)
-            setIsLoading(false)
-        })
+            feeder.setFeeder(data.feeders);
+            setTotalCount(data.pagination.totalItems);
+            setTotalPages(data.pagination.totalPages);
+            setIsLoading(false);
+        });
         setAddFeederSucceed(false);
         setSuccessDelete(false);
         setSuccessUpdate(false);
     }, [addFeederSucceed, successDelete, successUpdate, page]);
 
-
     return (
-        isLoading ?
+        isLoading ? (
             <Loader />
-            :
+        ) : (
             <div className={"feeder-wrapper"}>
                 <div className="feeder-wrapper__list-container">
                     <FeederList
@@ -61,7 +62,7 @@ const FeederPage = observer(() => {
                 <div className="feeder-wrapper__add-container">
                     <div className="feeder-wrapper__add-btn">
                         <Button
-                            buttonText={"Додати годівницю"}
+                            buttonText={t('addFeederButton')}
                             onClick={() => setAddModalActive(true)}
                         />
                     </div>
@@ -77,9 +78,10 @@ const FeederPage = observer(() => {
                     active={addModalActive}
                     setActive={setAddModalActive}
                 >
-                    <AddFeederForm onSucceedAdd={onSucceedFeederAdd}/>
+                    <AddFeederForm onSucceedAdd={onSucceedFeederAdd} />
                 </Modal>
             </div>
+        )
     );
 });
 
