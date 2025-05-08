@@ -1,0 +1,10 @@
+.app-main-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 51.6vh;
+    margin: 15px 15%;
+  }
+  
+  

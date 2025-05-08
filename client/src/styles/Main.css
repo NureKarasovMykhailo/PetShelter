@@ -1,0 +1,61 @@
+.new-main-page-container {
+    width: 100%;
+    height: 100%;
+}
+
+.new-adoption-offer-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.new-adoption-offer-header {
+    width: 100%;
+    text-align: center;
+}
+
+.new-adoption-offer-links-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.new-adoption-offer-btn {
+    display: flex;
+    width: 100%;
+    padding: 0 30%;
+    justify-content: center;
+}
+
+.new-work-offer-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding-top: 30px;
+}
+
+.new-work-offer-image-container {
+    width: 50%;
+}
+
+.new-work-offer-image {
+    width: 100%;
+    height: 500px;
+}
+
+.new-work-offer {
+    width: 50%;
+    padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    line-height: 2;
+}
+
+.new-work-offer-detail {
+    font-size: 18px;
+}
+
+.new-main-image {
+    padding-top: 15px;
+}

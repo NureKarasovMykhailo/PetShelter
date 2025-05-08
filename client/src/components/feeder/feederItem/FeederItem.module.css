@@ -1,0 +1,43 @@
+.feederItemContainer{
+    display: flex;
+    width: 97%;
+    padding: 5px;
+    margin: 20px;
+}
+.feederTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.feederTable th, .feederTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    width: 25%;
+}
+
+.feederTable th {
+    background-color: #f2f2f2;
+}
+
+
+.feederIdContainer{
+    font-size: 24px;
+}
+.feederItemSecondColumn{
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.feederItemThirdColumn{
+    font-size: 20px;
+    text-align: center;
+}
+.feederItemBtnContainer{
+    padding-bottom: 10px;
+}
+.feederItemButton{
+    margin: 5px;
+}

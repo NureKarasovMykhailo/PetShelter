@@ -1,0 +1,26 @@
+.collarItemContainer{
+    display: flex;
+    width: 97%;
+    padding: 5px;
+    margin: 20px;
+}
+.column{
+    font-size: 18px;
+    width: 50%;
+    margin: 5px;
+}
+.firstColumn{
+    width: 15%;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.collarItemBtnContainer{
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+}
+.collarItemBtnContainer *{
+    margin: 5px;
+}

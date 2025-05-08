@@ -1,0 +1,28 @@
+.workOfferItem{
+    display: flex;
+    padding: 20px;
+    margin: 30px;
+    align-items: center;
+    border-top: black solid 1px;
+    border-bottom: black solid 1px;
+    font-size: 18px;
+}
+.workOfferInfo{
+
+}
+.workTitle{
+
+}
+.workOfferDescription{
+
+}
+.workOfferButtons{
+    width: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.button{
+    padding: 10px;
+    width: 40%;
+}

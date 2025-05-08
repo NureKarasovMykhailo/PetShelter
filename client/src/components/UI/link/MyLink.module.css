@@ -1,0 +1,14 @@
+.link {
+    color: #3498db;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s ease-in-out;
+}
+
+.link:hover {
+    color: #2980b9;
+}
+
+.link:active {
+    color: #216a94;
+}

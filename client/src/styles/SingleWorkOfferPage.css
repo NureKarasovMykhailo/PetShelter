@@ -1,0 +1,8 @@
+.public-single-work__wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 51.6vh;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,0 +1,85 @@
+.profile-container {
+    width: 100%;
+}
+
+.profile-image-row {
+    display: flex;
+    align-items: end;
+    width: 100%;
+}
+
+.profile-image-container {
+    width: 50%;
+    padding: 15px;
+    display: flex;
+    justify-content: start;
+}
+
+.profile-image {
+    min-width: 100px;
+    min-height: 100px;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 5px;
+}
+
+.subscribe-container {
+    width: 100%;
+    padding: 10px 20px;
+    line-height: 3;
+    font-size: 18px;
+}
+
+.subscribe-link-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.non-subscribe-info {
+    margin-right: 5px;
+}
+
+.change-image-link-container {
+    min-width: 100px;
+    width: 250px;
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.profile-user-info-container {
+    padding: 10px;
+}
+
+.profile-user-full-name-container {
+    font-weight: 800;
+    font-size: 24px;
+}
+
+.profile-user-field-container {
+    width: 100%;
+    font-size: 22px;
+    display: flex;
+    line-height: 2;
+}
+
+.profile-user-field-name {
+    width: 40%;
+    text-align: end;
+    font-weight: 800;
+}
+
+.profile-user-field-value {
+    width: 50%;
+    padding-left: 20px;
+}
+
+.profile-buttons-container {
+    padding: 10px 20%;
+}
+
+.profile-button-container {
+    padding: 10px 0;
+    height: 100px;
+}

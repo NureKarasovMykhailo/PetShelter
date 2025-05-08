@@ -1,0 +1,30 @@
+.shelter-wrapper{
+    width: 100%;
+    min-height: 51.6vh;
+}
+.shelter-wrapper__container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.shelter-container__label{
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+}
+.shelter-container__add-shelter-button{
+    padding: 10px;
+}
+.shelter-container__control-button-container{
+    width: 50%;
+}
+.shelter-container__control-button{
+    padding-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

@@ -1,0 +1,33 @@
+.roleContainer{
+    padding: 10px;
+}
+.roleContainerHeader{
+    width: 100%;
+    text-align: center;
+}
+.rolesListContainer{
+    margin: 10px;
+}
+.roleItem{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px;
+    font-size: 20px;
+}
+.role{
+    font-size: 20px;
+    margin-right: 10px;
+}
+.addRoleContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.addRoleBtn{
+
+}
+.roleToAdd{
+    font-size: 20px;
+}

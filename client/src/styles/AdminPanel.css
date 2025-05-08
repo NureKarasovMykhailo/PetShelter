@@ -1,0 +1,27 @@
+.admin-panel__wrapper{
+    display: flex;
+    width: 100%;
+    min-height: 51.6vh;
+    justify-content: flex-start;
+    align-items: center;
+}
+.admin-panel__navigation{
+    height: 100%;
+    padding: 20px;
+}
+.navigation__header{
+    font-size: 23px;
+    margin-bottom: 10px;
+}
+.navigation__element{
+    padding-left: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+}
+.navigation__element:hover {
+    background-color: rgba(85, 85, 85, 0.5);
+}
+.admin-panel__table{
+    width: 100%;
+    height: 100%;
+}

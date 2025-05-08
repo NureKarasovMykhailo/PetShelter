@@ -1,0 +1,18 @@
+.selector {
+    font-size: 16px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    height: 40px;
+}
+.selector option {
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+}
+  
+.selector option:checked {
+    background-color: #e0e0e0;
+}

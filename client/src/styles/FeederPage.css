@@ -1,0 +1,20 @@
+.feeder-wrapper{
+    width: 100%;
+    min-height: 56vh;
+}
+.feeder-wrapper__add-container{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.feeder-wrapper__add-btn{
+    width: 20%;
+}
+.feeder-wrapper__pagination-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.feeder-wrapper__list-container{
+    width: 100%;
+}

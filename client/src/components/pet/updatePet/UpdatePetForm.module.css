@@ -1,0 +1,30 @@
+.infoContainer{
+    width: 100%;
+}
+.addInfoBtnContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+.addInfoBtn{
+    width: 80%;
+
+}
+.infoList{
+    padding: 10px;
+    width: 100%;
+}
+.infoItem{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.infoInput{
+    margin: 10px;
+}
+.deleteBtn{
+    height: 50px;
+    padding-top: 15px;
+}

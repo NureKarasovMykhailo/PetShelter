@@ -1,0 +1,50 @@
+
+.formErrorContainer {
+    position: relative;
+}
+
+.errorIcon {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: red;
+}
+
+.errorTooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    z-index: 1000;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.errorTooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.errorTooltip li {
+    margin-bottom: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: red;
+}
+.errorImg{
+    width: 30px;
+    height: 30px;
+    padding-right: 3px;
+}
+.errorTooltip li::before {
+    content: '•'; /* Используем символ маркера */
+    color: red; /* Устанавливаем цвет маркера */
+    font-size: 32px;
+    margin-right: 4px;
+}

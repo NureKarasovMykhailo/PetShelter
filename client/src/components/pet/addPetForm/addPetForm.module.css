@@ -1,0 +1,10 @@
+.addFeatureContainer{
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+}
+.addFeatureBtn{
+    width: 50%;
+}

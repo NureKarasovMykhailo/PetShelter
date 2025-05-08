@@ -1,0 +1,8 @@
+.applicationForAdoptionButtonContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.applicationForAdoptionNextBtn{
+    width: 20%;
+}

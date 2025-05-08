@@ -1,0 +1,32 @@
+.applicationItem{
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 30px;
+    align-items: center;
+    border-top: #000000 solid 1px;
+    border-bottom: #000000 solid 1px;
+}
+.applicationImageContainer{
+    margin-right: 10px;
+}
+.applicationImage{
+    border-radius: 50%;
+    max-height: 150px;
+    max-width: 150px;
+}
+.applicationInfo{
+    font-size: 18px;
+    line-height: 2;
+}
+.buttonsContainer{
+
+}
+.button{
+    margin: 10px;
+}
+.approved{
+    color: #2ecc71;
+    font-weight: bold;
+    font-size: 16px;
+}

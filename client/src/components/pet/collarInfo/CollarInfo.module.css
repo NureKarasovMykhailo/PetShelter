@@ -1,0 +1,25 @@
+.collarSelectContainer{
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.collarSelectHeader{
+    width: 100%;
+    text-align: center;
+}
+.selectCollar{
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+}
+.selectCollarBtnContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.selectCollarButton{
+    width: 40%;
+}

@@ -1,0 +1,101 @@
+.headerContainer{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    margin: 0 15%;
+}
+.headerTitleRow{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.headerLogoContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.headerLogo{
+    min-width: 110px;
+    min-height: 110px;
+    max-width: 115px;
+    max-height: 120px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+.headerLogo:hover {
+    transform: scale(1.1);
+}
+
+.headerLogo:active {
+    transform: scale(0.9);
+}
+.headerText{
+    text-align: center;
+    padding-left: 5px;
+}
+.headerTextFirstRow{
+    font-size: 24px;
+    font-weight: 800;
+}
+.headerTextSecondRow{
+    font-size: 18px;
+    font-style: italic;
+}
+.headerSettingContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.headerLogIn {
+    padding-left: 5px;
+}
+
+.headerNavBar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #03DE75;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+.headerLinkContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.headerLinkIcon{
+    max-width: 50px;
+    max-height: 50px;
+}
+.headerLinkText{
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-left: 5px;
+}
+.logInButtonContainer{
+    height: 40px;
+}
+.headerProfileInfoContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+}
+.headerProfileLogin{
+    font-size: 24px;
+    cursor: pointer;
+}
+.headerProfileLogin:hover{
+    opacity: 0.5;
+}
+.headerProfileImage{
+    margin-left: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

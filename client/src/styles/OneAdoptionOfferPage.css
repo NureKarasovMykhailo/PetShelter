@@ -1,0 +1,49 @@
+.one-adoption-offer__wrapper{
+    width: 100%;
+    min-height: 51.7vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.pet-offer{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+.pet-offer_image-container{
+    padding: 10px;
+}
+.pet-offer__image{
+    max-height: 500px;
+    max-width: 500px;
+    border-radius: 5px;
+}
+.pet-offer__info-container{
+    padding: 10px;
+    font-size: 18px;
+}
+.one-adoption-offer__line-container{
+    width: 100%;
+}
+.one-adoption-offer__adoption-info{
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+}
+.one-adoption-offer_info{
+    padding: 10px;
+    font-size: 18px;
+}
+.one-adoption-offer__buttons{
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.one-adoption-offer__btn{
+    width: 30%;
+    margin: 10px;
+}
