@@ -1,6 +1,6 @@
 const {User, UserRole, Role} = require('../models/models');
 const {Sequelize} = require("sequelize");
-const getUserRole = require("../middleware/getUserRoles");
+const getUserRoles = require("../middleware/getUserRoles");
 const generateJwt = require("../functions/generateJwt");
 
 const ROLES = {
@@ -45,13 +45,19 @@ class UserService {
     }
 
     async setSubscriberId (userId, subscriptionId) {
-        const user = await User.findOne({where: {id: userId}});
+        const user = await User.findOne({ where: { id: userId } });
+        if (!user) throw new Error('User not found');
+    
         user.subscriptionId = subscriptionId;
-        const userRole = await getUserRole(user);
-        if (!userRole.includes('subscriber')){
-            const subscriptionRole = await Role.findOne({where: {role_title: 'subscriber'}});
-            await UserRole.create({userId: user.id, roleId: subscriptionRole.id});
+    
+        const userRoles = await getUserRoles(user);
+        if (!userRoles.includes('subscriber')) {
+            const subscriberRole = await Role.findOne({ where: { role_title: 'subscriber' } });
+            if (subscriberRole) {
+                await UserRole.create({ userId: user.id, roleId: subscriberRole.id });
+            }
         }
+    
         await user.save();
     }
 

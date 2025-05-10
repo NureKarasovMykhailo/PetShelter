@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Context } from "./index";
 import { checkAuth } from "./API/UserService";
-import Header from "./components/header/Header";
+import Header from "./components/Header/Header";
 import AppRouter from "./components/AppRouter";
 import Footer from "./components/footer/Footer";
 import "./styles/App.css";

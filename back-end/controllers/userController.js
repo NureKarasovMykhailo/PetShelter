@@ -1,4 +1,5 @@
 const {User, Role, ConfirmationCode} = require('../models/models');
+const {Subcription} = require('../classes/Subscription');
 const bcrypt = require('bcrypt');
 const {validationResult} = require('express-validator');
 const ApiError = require('../error/ApiError');
@@ -13,6 +14,7 @@ const subscription = require('../classes/Subscription');
 const nodemailer = require('../classes/Nodemailer');
 const conformationCode = require('../classes/ConformationCode');
 const i18n = require('i18n'); 
+const Subscription = require('../classes/Subscription');
 
 class UserController {
 
@@ -405,6 +407,31 @@ class UserController {
         }
         await user.destroy();
         return res.status(200).json({message: i18n.__('userWithIdWasDeleted') + user.id });
+    }
+
+    async getSubscriptionDetails(req, res, next){
+        try {
+            const user = await User.findOne({
+                where: { id: req.user.id }
+            });
+    
+            const response = await fetch(
+                `https://api-m.sandbox.paypal.com/v1/billing/subscriptions/${user.subscriptionId}`, 
+                {
+                    method: 'get',
+                    headers: {
+                        'Authorization': 'Basic ' + subscription.AUTH, 
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+    
+            const subscriptionDetails = await response.json();
+            return res.status(200).json(subscriptionDetails);
+        } catch (error) {
+            console.error(error);
+            return next(ApiError.internal('Failed to fetch subscription details.'));
+        }
     }
 
 }
