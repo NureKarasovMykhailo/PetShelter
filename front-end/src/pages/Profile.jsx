@@ -67,7 +67,7 @@ const Profile = observer(() => {
     const handleShelterBtnClick = () => {
         navigate(SHELTER_ROUTE);
     }
-
+    console.log(user)
     const startTime = new Date(user.getSubscription.start_time);
     const formattedStartTime = `${padWithZero(startTime.getDate())}.${padWithZero(startTime.getMonth() + 1)}.${startTime.getFullYear()}`;
     const endTime = new Date(startTime);

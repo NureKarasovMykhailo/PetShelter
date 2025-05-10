@@ -24,7 +24,8 @@ router.delete('/:userId', checkUserRoleMiddleware(['systemAdmin']), userControll
 router.delete('/', checkAuthMiddleware, userController.deleteUserByToken);
 
 router.get('/subscribe/succeed', (req, res, next) => {
-    return res.status(200).json({message: 'Successfully payment'})
+    return res.redirect('http://localhost:3000/subscription/succeed');
+
 });
 router.get('/subscribe/detail', checkAuthMiddleware, userController.getSubscriptionDetails);
 
